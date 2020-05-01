@@ -1,0 +1,29 @@
+
+INPUTS {
+	x1 fl64 : (0.01, 0.1) ;
+	x2 fl64 : (0.01, 0.1) ;
+	x3 fl64 : (0.01, 0.1) ;
+	x4 fl64 : (0.01, 0.1) ;
+}
+
+OUTPUTS {
+	y ;
+}
+
+EXPRS {
+	g rnd64 = x2*(x1*x1);
+	h rnd64 = x2*(x3+x4);
+	i rnd64 = 4;
+	j rnd64 = 6;
+
+
+	if ((x1-x2) < 0.4) && ((x3*x3*x3) < 0) then
+		if ( i < 50) && ( i-j < 0) then
+			y1 rnd64 = x1 / x2 ;
+		else
+			y1 rnd64 = g ;
+		endif
+	endif
+
+	y rnd64 = y1 + x1 ;
+}
