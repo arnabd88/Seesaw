@@ -29,8 +29,18 @@ class AST(object):
 		return obj.f_expression
 
 	@staticmethod
+	def get_noise(obj):
+		return obj.f_expression if obj.f_expression is not None else 0.0
+
+	@staticmethod
 	def rec_eval(obj):
 		return obj.eval(obj)
+
+	def set_rounding(self, rnd_type):
+		self.rnd = ops._FP_RND[rnd_type]
+
+	def get_rounding(self):
+		return self.rnd * 1.0
 
 
 
@@ -61,6 +71,10 @@ class Num(AST):
 		return  SymTup((Sym( obj.token.value, Globals.__T__),))
 		#return obj.token.value
 
+	@staticmethod
+	def get_noise(obj):
+		return 0.0
+
 
 
 
@@ -86,7 +100,9 @@ class FreeVar(AST):
 			return SymTup((Sym(obj.token.value, Globals.__T__),))
 
 	
-
+	@staticmethod
+	def get_noise(obj):
+		return 0.0
 
 
 
@@ -150,6 +166,10 @@ class LiftOp(AST):
 
 		#return SymTup( n[0].f_expression.__and__(n[1])  for n in obj.nodeList  )
 
+	@staticmethod
+	def get_noise(obj):
+		return 0.0
+
 
 
 
@@ -179,7 +199,8 @@ class TransOp(AST):
 		return lexpr
 
 
-
+	def get_rounding(self):
+		return self.rnd * ops._ALLOC_ULP[self.token.type]
 
 
 
@@ -208,6 +229,9 @@ class BinOp(AST):
 
 		return lexpr
 
+
+	def get_rounding(self):
+		return self.rnd * ops._ALLOC_ULP[self.token.type]
 
 
 

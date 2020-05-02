@@ -1,6 +1,7 @@
 import symengine as seng
 import sympy as sym
 import Globals
+import numbers
 
 
 opLimit = 8000
@@ -123,8 +124,9 @@ class Sym(object):
 		self.exprCond = (expr, cond)
 
 	def __add__(self, obj):
-		symexpr = self.exprCond[0] + obj.exprCond[0]
-		return Sym( seng.expand(symexpr) if seng.count_ops(symexpr) < 8000 else symexpr	,\
+		#symexpr = self.exprCond[0] + obj.exprCond[0]
+		return Sym( self.exprCond[0]+obj, self.exprCond[1]) if isinstance(obj, numbers.Number) else \
+		Sym( seng.expand(self.exprCond[0] + obj.exprCond[0]) if seng.count_ops(self.exprCond[0] + obj.exprCond[0]) < 8000 else self.exprCond[0] + obj.exprCond[0]	,\
 				(self.exprCond[1] & obj.exprCond[1]).simplify() )
 
 	def __sub__(self, obj):
@@ -133,8 +135,9 @@ class Sym(object):
 				(self.exprCond[1] & obj.exprCond[1]).simplify() )
 
 	def __mul__(self, obj):
-		symexpr = self.exprCond[0] * obj.exprCond[0]
-		return Sym( seng.expand(symexpr) if seng.count_ops(symexpr) < 8000 else symexpr	,\
+		#symexpr = self.exprCond[0] * obj.exprCond[0]
+		return Sym( self.exprCond[0]*obj, self.exprCond[1]) if isinstance(obj, numbers.Number) else \
+		Sym( seng.expand(self.exprCond[0] * obj.exprCond[0]) if seng.count_ops(self.exprCond[0] * obj.exprCond[0]) < 8000 else self.exprCond[0] * obj.exprCond[0]	,\
 				(self.exprCond[1] & obj.exprCond[1]).simplify() )
 
 	def __truediv__(self, obj):
@@ -166,6 +169,9 @@ class Sym(object):
 
 	def __and__(self, condSym):
 		return Sym( self.exprCond[0], (self.exprCond[1] & condSym) )
+
+	def __abs__(self):
+		return Sym( self.exprCond[0].__abs__(), self.exprCond[1] )
 
 	def __eq__(self, other):
 		return True if(self.exprCond[1]==other.exprCond[1] and \
@@ -201,13 +207,15 @@ class SymTup(tuple):
 		return tuple.__new__(SymTup, tup)
 
 	def __add__(self, obj):
-		return  SymTup((fl+sl for fl in self for sl in obj))
+		return  SymTup((fl+obj for fl in self)) if isinstance(obj, numbers.Number) else \
+		  SymTup((fl+sl for fl in self for sl in obj))
 
 	def __sub__(self, obj):
 		return  SymTup((fl-sl for fl in self for sl in obj))
 
 	def __mul__(self, obj):
-		return  SymTup((fl*sl for fl in self for sl in obj))
+		return SymTup((fl*obj for fl in self)) if isinstance(obj, numbers.Number) else \
+		 SymTup((fl*sl for fl in self for sl in obj))
 
 	def __truediv__(self, obj):
 		return  SymTup((fl/sl for fl in self for sl in obj))
@@ -229,6 +237,9 @@ class SymTup(tuple):
 
 	def __and__(self, condSym):
 		return SymTup((fl.__and__(condSym) for fl in self))
+
+	def __abs__(self):
+		return SymTup((fl.__abs__() for fl in self))
 
 	
 	def __concat__(self, other, trim=False):
