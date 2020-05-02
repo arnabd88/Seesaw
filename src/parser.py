@@ -33,7 +33,7 @@ class Sparser(object):
 		raise Exception('Invalid syntax while parsing')
 
 	def consume(self, token_type):
-		print(self.current_token.type, token_type, self.current_token.value)
+		#print(self.current_token.type, token_type, self.current_token.value)
 		if self.current_token.type == token_type:
 			self.current_token = self.lexer.get_next_token()
 		else:
@@ -66,6 +66,7 @@ class Sparser(object):
 			token = self.current_token
 			self.consume(token.type)
 			node = BinOp(left=node, token=token, right=self.arith_factor())
+			self.addDepthInfo(node)
 
 		return node
 
@@ -411,9 +412,9 @@ class Sparser(object):
 		self.lexer.create_token_generator(text)
 		self.current_token = self.lexer.get_next_token()#current_token()
 		self.program()
-		print(self.current_symtab._symTab)
-		print(self.current_symtab._scope)
-		print(self.current_symtab._scopeCond)
+		#print(self.current_symtab._symTab)
+		#print(self.current_symtab._scope)
+		#print(self.current_symtab._scopeCond)
 
 
 

@@ -50,6 +50,7 @@ class AnalyzeNode_Cond(object):
 
 		
 	def converge_parents(self, node):
+		#print(type(node).__name__, node.depth, self.parentTracker[node], len(node.parents) , len(self.parent_dict[node]), node.f_expression)
 		return True if self.parentTracker[node] >= len(self.parent_dict[node]) else False
 
 
@@ -117,11 +118,11 @@ class AnalyzeNode_Cond(object):
 							(node.get_noise(node)) * node.get_rounding())\
 							).__abs__()
 			acc = self.Accumulator.get(outVar, SymTup((Sym(0.0, Globals.__T__),)))
-			print("\n------------------------")
-			print(expr_solve)
-			print(node.get_noise(node))
-			print((self.bwdDeriv[node][outVar]))
-			print("------------------------\n")
+			#print("\n------------------------")
+			#print(expr_solve)
+			#print(node.get_noise(node))
+			#print((self.bwdDeriv[node][outVar]))
+			#print("------------------------\n")
 			self.Accumulator[outVar] = acc.__concat__(expr_solve, trim=True)
 
 
@@ -157,6 +158,16 @@ class AnalyzeNode_Cond(object):
 		self.Accumulator = {k : self.condmerge(v) for k,v in self.Accumulator.items()}
 		#for k,v in self.Accumulator.items():
 		#	print(v)
+
+		## Placeholder for gelpia invocation
+		for node, tupleList in self.Accumulator.items():
+			errList = []
+			for els in tupleList:
+				expr, cond = els.exprCond
+				errIntv = utils.generate_signature(expr)
+				err = max([abs(i) for i in errIntv])
+				errList.append(err)
+			print("MaxError:", max(errList)*pow(2,-53))
 
 
 	def start(self):

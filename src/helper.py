@@ -41,16 +41,17 @@ def getProbeList():
 def dfs_expression_builder(node, reachable, parent_dict, cond):
 
 	for child in node.children:
-		if not reachable[node.depth].__contains__(child):
+		if not reachable[child.depth].__contains__(child):
 			dfs_expression_builder(child, reachable, parent_dict, cond=Globals.__T__)
 
 		parent_dict[child].append(node)
 
 	#print(type(node).__name__, node.token)
 	fexpr = node.eval(node)
-	print(node.depth, type(node).__name__, node.cond)
-	print(fexpr,"\n")
+	#print(node.depth, type(node).__name__, node.cond)
+	#print(fexpr,"\n")
 	node.set_expression(fexpr)
+	reachable[node.depth].add(node)
 
 
 
@@ -100,11 +101,11 @@ def PreProcessAST():
 		if not reachable[node.depth].__contains__(node):
 			pretraverse(node, reachable)
 
-	print("Pre :", len(Globals.GS[0]._symTab))
-	Globals.GS[0]._symTab = {syms: tuple(n for n in nodeCondList \
-										if reachable[n[0].depth].__contains__(n[0])) \
+	print("Pre :", len(Globals.GS[0]._symTab.keys()))
+	Globals.GS[0]._symTab = {syms: tuple(set(n for n in nodeCondList \
+										if reachable[n[0].depth].__contains__(n[0]))) \
 										for nodeCondList,syms in rhstbl.items() }
-	print("Post :", len(Globals.GS[0]._symTab))
+	print("Post :", len(Globals.GS[0]._symTab.keys()))
 	#print(Globals.GS[0]._symTab[seng.var('g')])
 	prev_numNodes = sum([ len(Globals.depthTable[el]) for el in Globals.depthTable.keys() if el!=0] )
 	Globals.depthTable = reachable
