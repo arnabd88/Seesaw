@@ -6,6 +6,8 @@ import sys
 import utils
 
 from gtokens import *
+from PredicatedSymbol import Sym, SymTup, SymConcat
+import Globals
 
 #_FOPS = { PLUS : lambda L : L[0]+L[1]	,\
 #		  MINUS : lambda L : L[0]-L[1]	,\
@@ -40,28 +42,42 @@ _COPS = {	\
 			GEQ		:	lambda L	:	L[0] >= L[1] \
 }
 
+_BOPS = { \
+			AND		:	lambda L	:	((L[0]) & (L[1])), \
+			OR		:	lambda L	:	((L[0]) | (L[1])), \
+			NOT		:	lambda L	:	(~(L[0]))	\
+}
+
+
+_DFOPS = { \
+			PLUS	:	[lambda L : SymTup((Sym(1.0,Globals.__T__),)), \
+			             lambda L : SymTup((Sym(1.0,Globals.__T__),))],\
+			MINUS	:	[lambda L : SymTup((Sym(1.0,Globals.__T__),)), \
+			             lambda L : SymTup((Sym(-1.0,Globals.__T__),))],\
+			MUL		:	[lambda L : L[1], lambda L : L[0]]	,\
+			DIV		:	[lambda L : SymTup((Sym(1.0, Globals.__T__),))/L[1], \
+						 lambda L : (SymTup((Sym(-1.0, Globals.__T__),))*L[0])/(L[1]*L[1])] \
+}
 
 
 
 
 
-
-
-_DFOPS = { PLUS  : [lambda L : 1, lambda L : 1],\
-		   MINUS : [lambda L : 1, lambda L : -1]	,\
-		   MUL   : [lambda L : L[1], lambda L : L[0]]	,\
-		   DIV   : [lambda L : 1/L[1], lambda L : -L[0]/(L[1]**2)]	,\
-		   SQRT  : [lambda L : (-1)/(2*sqrt(L[0]))]	,\
-		   SIN   : [lambda L : cos(L[0])], \
-		   COS   : [lambda L : -sin(L[0])], \
-		   LOG   : [lambda L : 1/L[0]], \
-		   IDEN    : [lambda L : 1, lambda L : 1], \
-		   EXP 	 : [lambda L : L[0]], \
-		   TAN   : [lambda L : cot(L[0])], \
-		   COT	 : [lambda L : tan(L[0])], \
-		   COSH  : [lambda L : sinh(L[0])], \
-		   SINH  : [lambda L : cosh(L[0])]	\
-		 }
+#_DFOPS = { PLUS  : [lambda L : 1, lambda L : 1],\
+#		   MINUS : [lambda L : 1, lambda L : -1]	,\
+#		   MUL   : [lambda L : L[1], lambda L : L[0]]	,\
+#		   DIV   : [lambda L : 1/L[1], lambda L : -L[0]/(L[1]**2)]	,\
+#		   SQRT  : [lambda L : (-1)/(2*sqrt(L[0]))]	,\
+#		   SIN   : [lambda L : cos(L[0])], \
+#		   COS   : [lambda L : -sin(L[0])], \
+#		   LOG   : [lambda L : 1/L[0]], \
+#		   IDEN    : [lambda L : 1, lambda L : 1], \
+#		   EXP 	 : [lambda L : L[0]], \
+#		   TAN   : [lambda L : cot(L[0])], \
+#		   COT	 : [lambda L : tan(L[0])], \
+#		   COSH  : [lambda L : sinh(L[0])], \
+#		   SINH  : [lambda L : cosh(L[0])]	\
+#		 }
 
 
 ## make the case here for optimally finding out

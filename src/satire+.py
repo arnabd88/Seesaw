@@ -15,7 +15,7 @@ from ASTtypes import *
 
 import helper
 
-
+from AnalyzeNode_Cond import AnalyzeNode_Cond
 
 def parseArguments():
 	parser = argparse.ArgumentParser()
@@ -52,7 +52,11 @@ def parseArguments():
 
 
 def full_analysis(probeList, argList, maxdepth):
-	helper.expression_builder(probeList)
+	#helper.expression_builder(probeList)
+	#for k,v in Globals.predTable.items():
+	#	print(k,v)
+	obj = AnalyzeNode_Cond(probeList, argList, maxdepth)
+	obj.start()
 	
 
 def ErrorAnalysis(argList):
@@ -60,6 +64,7 @@ def ErrorAnalysis(argList):
 	probeList = helper.getProbeList()
 	maxdepth = max([max([n[0].depth for n in nodeList])  for nodeList in probeList])
 	print("maxdepth = ", maxdepth)
+	probeList = [nodeList[0][0] for nodeList in probeList]
 
 	full_analysis(probeList, argList, maxdepth)
 

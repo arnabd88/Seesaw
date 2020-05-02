@@ -11,6 +11,33 @@ def getProbeList():
 	return [Globals.GS[0]._symTab[outVar] for outVar in Globals.outVars]
 
 
+#def dfs_expression_builder(node, reachable, parent_dict, cond):
+#
+#	for child in node.children:
+#		if not reachable[node.depth].__contains__(child):
+#			dfs_expression_builder(child, reachable, parent_dict, cond=Globals.__T__)
+#
+#		parent_dict[child].append(node)
+#
+#	#print(type(node).__name__, node.token)
+#	fexpr = node.eval(node)
+#	print(node.depth, type(node).__name__, node.cond)
+#	print(fexpr,"\n")
+#	node.set_expression(fexpr)
+#
+#
+#
+#def expression_builder(probeList):
+#
+#	parent_dict = defaultdict(list)
+#	reachable = defaultdict(set)
+#
+#	for nodeList in probeList:
+#		assert(len(nodeList)==1)
+#		[node,cond] = nodeList[0]
+#		if not reachable[node.depth].__contains__(node):
+#			dfs_expression_builder(node, reachable, parent_dict, cond)
+	
 def dfs_expression_builder(node, reachable, parent_dict, cond):
 
 	for child in node.children:
@@ -21,7 +48,8 @@ def dfs_expression_builder(node, reachable, parent_dict, cond):
 
 	#print(type(node).__name__, node.token)
 	fexpr = node.eval(node)
-	print(node.depth, fexpr)
+	print(node.depth, type(node).__name__, node.cond)
+	print(fexpr,"\n")
 	node.set_expression(fexpr)
 
 
@@ -31,12 +59,13 @@ def expression_builder(probeList):
 	parent_dict = defaultdict(list)
 	reachable = defaultdict(set)
 
-	for nodeList in probeList:
-		assert(len(nodeList)==1)
-		[node,cond] = nodeList[0]
+	for node in probeList:
 		if not reachable[node.depth].__contains__(node):
-			dfs_expression_builder(node, reachable, parent_dict, cond)
+			dfs_expression_builder(node, reachable, parent_dict, cond=Globals.__T__)
+
+	del reachable
 	
+	return parent_dict
 
 def pretraverse(node, reachable):
 	
@@ -76,7 +105,7 @@ def PreProcessAST():
 										if reachable[n[0].depth].__contains__(n[0])) \
 										for nodeCondList,syms in rhstbl.items() }
 	print("Post :", len(Globals.GS[0]._symTab))
-	print(Globals.GS[0]._symTab[seng.var('g')])
+	#print(Globals.GS[0]._symTab[seng.var('g')])
 	prev_numNodes = sum([ len(Globals.depthTable[el]) for el in Globals.depthTable.keys() if el!=0] )
 	Globals.depthTable = reachable
 	curr_numNodes = sum([ len(Globals.depthTable[el]) for el in Globals.depthTable.keys() if el!=0] )

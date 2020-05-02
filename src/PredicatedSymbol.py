@@ -231,8 +231,14 @@ class SymTup(tuple):
 		return SymTup((fl.__and__(condSym) for fl in self))
 
 	
-	def __concat__(self, other):
-		return SymTup(tuple(self) + tuple(other))
+	def __concat__(self, other, trim=False):
+		if trim:
+			t1 = tuple(set(el for el in self if el.exprCond[0]!=0.0 or el.exprCond[1]==Globals.__F__))
+			t2 = tuple(set(el for el in other if el.exprCond[0]!=0.0 or el.exprCond[1]==Globals.__F__))
+			return SymTup(tuple(t1) + tuple(t2))
+		else:
+			return SymTup(tuple(self) + tuple(other))
+
 	
 
 	def __str__(self):

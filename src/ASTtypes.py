@@ -203,7 +203,7 @@ class BinOp(AST):
 
 	@staticmethod
 	def eval(obj):
-		print(obj.token.value, [child.f_expression for child in obj.children])
+		#print(obj.token.value, [child.f_expression for child in obj.children])
 		lexpr = ops._FOPS[obj.token.type]([child.f_expression for child in obj.children])
 
 		return lexpr
@@ -230,6 +230,11 @@ class BinLiteral(AST):
 		left.parents += (self,)
 		right.parents += (self,)
 
+	@staticmethod
+	def eval(obj):
+		lexpr = ops._BOPS[obj.token.type]([obj.children[0].f_expression, obj.children[1].f_expression])
+		return lexpr
+
 
 
 
@@ -253,4 +258,11 @@ class ExprComp(AST):
 		self.condSym = sym.var("ES"+str(Globals.EID))
 		Globals.EID += 1
 		Globals.condTable[self.condSym] = self
+
+
+
+	@staticmethod
+	def eval(obj):
+		lexpr = ops._COPS[obj.token.type]([obj.children[0].f_expression, obj.children[1].f_expression])
+		return lexpr
 
