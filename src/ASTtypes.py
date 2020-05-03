@@ -195,6 +195,7 @@ class TransOp(AST):
 	def eval(obj):
 		lexpr = ops._FOPS[obj.token.type]([obj.children[0].f_expression])
 		obj.depth = obj.children[0].depth +1
+		obj.rnd = obj.children[0].rnd
 
 		return lexpr
 
@@ -226,6 +227,7 @@ class BinOp(AST):
 	def eval(obj):
 		#print(obj.token.value, [child.f_expression for child in obj.children])
 		lexpr = ops._FOPS[obj.token.type]([child.f_expression for child in obj.children])
+		obj.rnd = max([min([child.rnd for child in obj.children]), 1.0])
 
 		return lexpr
 

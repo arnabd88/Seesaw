@@ -50,6 +50,7 @@ class AnalyzeNode_Cond(object):
 
 		
 	def converge_parents(self, node):
+		#print(node.depth)
 		#print(type(node).__name__, node.depth, self.parentTracker[node], len(node.parents) , len(self.parent_dict[node]), node.f_expression)
 		return True if self.parentTracker[node] >= len(self.parent_dict[node]) else False
 
@@ -57,6 +58,7 @@ class AnalyzeNode_Cond(object):
 
 
 	def visit_node_deriv(self, node):
+		st = time.time()
 		outList = self.bwdDeriv[node].keys()
 		if(len(node.children) <= 0):
 			pass
@@ -65,26 +67,35 @@ class AnalyzeNode_Cond(object):
 				opList = [(n[0].f_expression, n[1]) for n in node.nodeList]
 				for i, child_node in enumerate(node.children):
 					for outVar in outList:
+						sti = time.time()
 						self.bwdDeriv[child_node] = self.bwdDeriv.get(child_node, {})
-						self.bwdDeriv[child_node][outVar] = self.bwdDeriv[child_node].get(outVar, SymTup((Sym(0.0, Globals.__T__),))).__concat__( \
+						self.bwdDeriv[child_node][outVar] = self.bwdDeriv[child_node].get(outVar, SymTup((Sym(0.0, Globals.__F__),))).__concat__( \
 							self.bwdDeriv[node][outVar] * \
 							SymTup((Sym(1.0, node.nodeList[i][1]),)),trim=True)
-						self.next_workList.append(child_node)
+						eti = time.time()
+						#print("Lift-op:One bak prop time = ", eti-sti)
+					self.next_workList.append(child_node)
 					self.parentTracker[child_node] += 1						
 			else:
 				DerivFunc = ops._DFOPS[node.token.type]
 				opList = [child.f_expression for child in node.children]
 				for i, child_node in enumerate(node.children):
 					for outVar in outList:
+						sti = time.time()
 						self.bwdDeriv[child_node] = self.bwdDeriv.get(child_node, {})
-						self.bwdDeriv[child_node][outVar] = self.bwdDeriv[child_node].get(outVar, SymTup((Sym(0.0, Globals.__T__),))).__concat__( \
+						self.bwdDeriv[child_node][outVar] = self.bwdDeriv[child_node].get(outVar, SymTup((Sym(0.0, Globals.__F__),))).__concat__( \
 								self.bwdDeriv[node][outVar] * \
-								(SymTup((Sym(0.0, Globals.__T__),)) \
+								(SymTup((Sym(0.0, Globals.__F__),)) \
 								 if utils.isConst(child_node) else \
 								 DerivFunc[i](opList)), trim=True)
-						self.next_workList.append(child_node)
+						eti = time.time()
+						#print("One bak prop time = ", eti-sti)
+					self.next_workList.append(child_node)
 					self.parentTracker[child_node] += 1
 		self.completed[node.depth].add(node)
+		et = time.time()
+		#print("@node",node.depth, node.f_expression)
+		print("Time taken =", et-st,"\n\n")
 
 
 
@@ -117,7 +128,13 @@ class AnalyzeNode_Cond(object):
 							((self.bwdDeriv[node][outVar]) * \
 							(node.get_noise(node)) * node.get_rounding())\
 							).__abs__()
-			acc = self.Accumulator.get(outVar, SymTup((Sym(0.0, Globals.__T__),)))
+			#print("prop", node.f_expression, id(node))
+			#if(type(node).__name__ == "FreeVar"):
+			#	#node.get_noise(node)==0.0):
+			#	print("Zero rounding")
+			#print(expr_solve,"\n\n")
+			print("New expr solve = ", expr_solve.__countops__())
+			acc = self.Accumulator.get(outVar, SymTup((Sym(0.0, Globals.__F__),)))
 			#print("\n------------------------")
 			#print(expr_solve)
 			#print(node.get_noise(node))
@@ -145,9 +162,10 @@ class AnalyzeNode_Cond(object):
 		
 		#for k,v in ld.items():
 		#	print("//-- Cond =", k)
-		#	print(v,"\n")
+		#	#print(v,"\n")
+		#print("Size,", len(tupleList))
 
-		return reduce(lambda x,y : x.__concat__(y), [v for k,v in ld.items()])
+		return reduce(lambda x,y : x.__concat__(y), [v for k,v in ld.items()], SymTup((Sym(0.0,Globals.__T__),)))
 
 	def first_order_error(self):
 
@@ -164,6 +182,7 @@ class AnalyzeNode_Cond(object):
 			errList = []
 			for els in tupleList:
 				expr, cond = els.exprCond
+				print("Query: ", seng.count_ops(expr))
 				errIntv = utils.generate_signature(expr)
 				err = max([abs(i) for i in errIntv])
 				errList.append(err)
@@ -177,6 +196,12 @@ class AnalyzeNode_Cond(object):
 		print("Begin building derivatives\n")
 		self.traverse_ast()
 		print("Finish building derivatives\n")
+
+		out = self.trimList[0]
+		#for k in self.bwdDeriv.keys():
+		#	print(type(k).__name__, k.f_expression, self.bwdDeriv[k][out], "\n\n")
+		#	print(k.get_noise(k))
+			
 		#outVar = self.probeList[0]
 		#print(Globals.GS[0]._symTab.keys())
 		#y1 = Globals.GS[0]._symTab[seng.var('y1')][0][0]
@@ -188,5 +213,6 @@ class AnalyzeNode_Cond(object):
 
 		## clear the reusable data structures
 		self.completed.clear()
+		print("//----------------------------//")
 		self.first_order_error()
 		

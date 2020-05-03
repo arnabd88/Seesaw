@@ -92,7 +92,7 @@ class Sparser(object):
 		if token.type in (INTEGER, FLOAT):
 			self.consume(token.type)
 			return Num(token)
-		elif token.type in (SQRT, SIN, COS):
+		elif token.type in (SQRT, SIN, COS, ASIN, TAN):
 			self.consume(token.type)
 			node = TransOp(self.arith_factor(), token)
 			self.addDepthInfo(node)
@@ -157,7 +157,7 @@ class Sparser(object):
 
 		self.consume(LPAREN)
 		node = self.arith_expr()
-		if self.current_token.type in (LT, LEQ, GT, GEQ):
+		if self.current_token.type in (LT, LEQ, GT, GEQ, EQ, NEQ):
 			token = self.current_token
 			self.consume(token.type)
 			node = ExprComp(left=node, token=token, right=self.arith_expr())
@@ -289,8 +289,10 @@ class Sparser(object):
 			nameSym = self.current_token.value
 			nameToken = self.current_token
 			self.consume(ID)
-			rnd = str(self.current_token.value)
-			self.consume(FPTYPE)
+			rnd = 'rnd64'
+			if self.current_token.type == FPTYPE:
+				rnd = str(self.current_token.value)
+				self.consume(FPTYPE)
 			self.consume(ASSIGN)
 			node = self.arith_expr()
 			self.consume(SEMICOLON)

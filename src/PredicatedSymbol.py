@@ -3,8 +3,10 @@ import sympy as sym
 import Globals
 import numbers
 
+import time
 
-opLimit = 8000
+
+opLimit = 0
 
 class PredSymbol(object):
 
@@ -137,23 +139,27 @@ class Sym(object):
 	def __mul__(self, obj):
 		#symexpr = self.exprCond[0] * obj.exprCond[0]
 		return Sym( self.exprCond[0]*obj, self.exprCond[1]) if isinstance(obj, numbers.Number) else \
-		Sym( seng.expand(self.exprCond[0] * obj.exprCond[0]) if seng.count_ops(self.exprCond[0] * obj.exprCond[0]) < 8000 else self.exprCond[0] * obj.exprCond[0]	,\
+		Sym( seng.expand(self.exprCond[0] * obj.exprCond[0]) if seng.count_ops(self.exprCond[0] * obj.exprCond[0]) < opLimit else self.exprCond[0] * obj.exprCond[0]	,\
 				(self.exprCond[1] & obj.exprCond[1]).simplify() )
 
 	def __truediv__(self, obj):
 		symexpr = self.exprCond[0] / obj.exprCond[0]
-		return Sym( seng.expand(symexpr) if seng.count_ops(symexpr) < 8000 else symexpr	,\
+		return Sym( seng.expand(symexpr) if seng.count_ops(symexpr) < opLimit else symexpr	,\
 				(self.exprCond[1] & obj.exprCond[1]).simplify() )
 
 	def __floordiv__(self, obj):
 		symexpr = self.exprCond[0] // obj.exprCond[0]
-		return Sym( seng.expand(symexpr) if seng.count_ops(symexpr) < 8000 else symexpr	,\
+		return Sym( seng.expand(symexpr) if seng.count_ops(symexpr) < opLimit else symexpr	,\
 				(self.exprCond[1] & obj.exprCond[1]).simplify() )
 
 	def __mod__(self, obj):
 		symexpr = self.exprCond[0] % obj.exprCond[0]
-		return Sym( seng.expand(symexpr) if seng.count_ops(symexpr) < 8000 else symexpr	,\
+		return Sym( seng.expand(symexpr) if seng.count_ops(symexpr) < opLimit else symexpr	,\
 				(self.exprCond[1] & obj.exprCond[1]).simplify() )
+
+	def __tan__(self):
+		return Sym( seng.tan(self.exprCond[0])	,\
+				self.exprCond[1]  )
 
 	def __cos__(self):
 		return Sym( seng.cos(self.exprCond[0])	,\
@@ -161,6 +167,10 @@ class Sym(object):
 
 	def __sin__(self):
 		return Sym( seng.sin(self.exprCond[0])	,\
+				self.exprCond[1] )
+
+	def __asin__(self):
+		return Sym( seng.asin(self.exprCond[0])	,\
 				self.exprCond[1] )
 
 	def __exp__(self):
@@ -173,11 +183,20 @@ class Sym(object):
 	def __abs__(self):
 		return Sym( self.exprCond[0].__abs__(), self.exprCond[1] )
 
+	def __sqrt__(self):
+		return Sym( seng.sqrt(self.exprCond[0]), self.exprCond[1] )
+
+	def __pow__(self, n):
+		return Sym( (self.exprCond[0])**n, self.exprCond[1] )
+
 	def __eq__(self, other):
 		return True if(self.exprCond[1]==other.exprCond[1] and \
 			           self.exprCond[0]==other.exprCond[0] \
 			            ) \
 			         else False
+
+	def __countops__(self):
+		return seng.count_ops(self.exprCond[0])
 
 	def __lt__(self, other):
 		assert(self.exprCond[1]==other.exprCond[1])
@@ -208,14 +227,38 @@ class SymTup(tuple):
 
 	def __add__(self, obj):
 		return  SymTup((fl+obj for fl in self)) if isinstance(obj, numbers.Number) else \
-		  SymTup((fl+sl for fl in self for sl in obj))
+		  SymTup((fl+sl for fl in tuple(set(el for el in self if  not (el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan ))) \
+		                for sl in tuple(set(el for el in obj if  not ( el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan )))))
+		  #SymTup((fl+sl for fl in self for sl in obj))
 
 	def __sub__(self, obj):
-		return  SymTup((fl-sl for fl in self for sl in obj))
+		return  SymTup((fl-sl for fl in tuple(set(el for el in self if  not ( el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan))) \
+		                      for sl in tuple(set(el for el in obj if  not (el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan )))))
+
+	#def __mul__(self, obj):
+	#	st1 = time.time()
+	#	s = SymTup((fl*obj for fl in self)) if isinstance(obj, numbers.Number) else \
+	#	 SymTup((fl*sl for fl in tuple(set(el for el in self if  not ( el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan ))) \
+	#	               for sl in tuple(set(el for el in obj if  not ( el.exprCond[1]==Globals.__F__ or el.exprCond[0]==seng.nan )))))
+	#	et1 = time.time()
+	#	print("Multiplication time =", et1-st1, s)
+	#	return s
+
 
 	def __mul__(self, obj):
-		return SymTup((fl*obj for fl in self)) if isinstance(obj, numbers.Number) else \
-		 SymTup((fl*sl for fl in self for sl in obj))
+		st1 = time.time()
+		t1 = tuple(set(el for el in self if  not ( el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan )))
+		if isinstance(obj, numbers.Number):
+			s = SymTup((fl*obj for fl in t1))
+		else:
+			t2 = tuple(set(el for el in obj if  not ( el.exprCond[1]==Globals.__F__ or el.exprCond[0]==seng.nan )))
+			if(len(t2)>=24):
+				print(t2)
+			s = SymTup((fl*sl for fl in t1 for sl in t2))
+			print(len(t1), len(t2), len(self), len(obj))
+		et1 = time.time()
+		print("Multiplication time =", et1-st1, len(s))
+		return s
 
 	def __truediv__(self, obj):
 		return  SymTup((fl/sl for fl in self for sl in obj))
@@ -226,27 +269,53 @@ class SymTup(tuple):
 	def __mod__(self, obj):
 		return  SymTup((fl%sl for fl in self for sl in obj))
 
+	def __tan__(self):
+		t1 = tuple(set(el for el in self if  not (el.exprCond[1]==Globals.__F__ or  el.exprCond[1]==False or el.exprCond[0]==seng.nan)))
+		return  SymTup((fl.__tan__() for fl in t1))
+
 	def __cos__(self):
-		return  SymTup((fl.__cos__() for fl in self))
+		t1 = tuple(set(el for el in self if  not (el.exprCond[1]==Globals.__F__ or  el.exprCond[1]==False or el.exprCond[0]==seng.nan )))
+		return  SymTup((fl.__cos__() for fl in t1))
 
 	def __sin__(self):
-		return  SymTup((fl.__sin__() for fl in self))
+		t1 = tuple(set(el for el in self if  not (el.exprCond[1]==Globals.__F__ or  el.exprCond[1]==False or el.exprCond[0]==seng.nan )))
+		return  SymTup((fl.__sin__() for fl in t1))
+
+	def __asin__(self):
+		return  SymTup((fl.__asin__() for fl in self))
 
 	def __exp__(self):
 		return  SymTup((fl.__exp__() for fl in self))
 
 	def __and__(self, condSym):
-		return SymTup((fl.__and__(condSym) for fl in self))
+		t1 = tuple(set(el for el in self if  not ( el.exprCond[1]==Globals.__F__ or  el.exprCond[1]==False or el.exprCond[0]==seng.nan )))
+		return SymTup((fl.__and__(condSym) for fl in t1))
 
 	def __abs__(self):
 		return SymTup((fl.__abs__() for fl in self))
 
+	def __sqrt__(self):
+		t1 = tuple(set(el for el in self if  not ( el.exprCond[1]==Globals.__F__ or  el.exprCond[1]==False or el.exprCond[0]==seng.nan )))
+		return SymTup((fl.__sqrt__() for fl in t1))
+
+	def __pow__(self, n):
+		t1 = tuple(set(el for el in self if  not ( el.exprCond[1]==Globals.__F__ or  el.exprCond[1]==False or el.exprCond[0]==seng.nan )))
+		return SymTup((fl.__pow__(n) for fl in t1))
+
+	def __countops__(self):
+		return max([fl.__countops__() for fl in self]+[0])
+
 	
 	def __concat__(self, other, trim=False):
 		if trim:
-			t1 = tuple(set(el for el in self if el.exprCond[0]!=0.0 or el.exprCond[1]==Globals.__F__))
-			t2 = tuple(set(el for el in other if el.exprCond[0]!=0.0 or el.exprCond[1]==Globals.__F__))
-			return SymTup(tuple(t1) + tuple(t2))
+			st1 = time.time()
+			t1 = tuple(set(el for el in self if  not (el.exprCond[0]==0.0 or el.exprCond[0]==seng.nan or el.exprCond[1]==Globals.__F__ or  el.exprCond[1]==False)))
+			t2 = tuple(set(el for el in other if  not (el.exprCond[0]==0.0 or el.exprCond[0]==seng.nan or el.exprCond[1]==Globals.__F__ or  el.exprCond[1]==False)))
+			et1 = time.time()
+			s = SymTup(tuple(set(tuple(t1) + tuple(t2))))
+			et2 = time.time()
+			#print("Trim time = ", et1-st1, et2-et1, len(t1), len(t2))
+			return s
 		else:
 			return SymTup(tuple(self) + tuple(other))
 

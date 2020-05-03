@@ -8,8 +8,9 @@ class Slex(Lexer):
 	tokens = { INPUTS, OUTPUTS, EXPRS, 		\
 				INTEGER, FLOAT, PLUS,  		\
 				MINUS, MUL, DIV, SQRT, 		\
-				SIN, COS, TAN, COT, COSH, 	\
+				SIN, ASIN, COS, TAN, COT, COSH, 	\
 				SINH, LOG, EXP, IDEN, 		\
+				EQ, NEQ, \
 				ASSIGN, LPAREN, RPAREN, 	\
 				SLPAREN, SRPAREN, COLON,	\
 				SEMICOLON, COMMA, ID, FPTYPE, \
@@ -24,6 +25,8 @@ class Slex(Lexer):
 	PLUS		=	r'\+'	
 	MUL			=	r'\*'	
 	DIV			=	r'\/'	
+	EQ			=	r'\=='	
+	NEQ			=	r'\!='	
 	ASSIGN		=	r'\='	
 	LPAREN		=	r'\('	
 	RPAREN		=	r'\)'	
@@ -46,6 +49,7 @@ class Slex(Lexer):
 	ID['EXPRS']		=	EXPRS
 	ID['sqrt']		=	SQRT
 	ID['sin']		= 	SIN
+	ID['asin']		= 	SIN
 	ID['cos']		= 	COS
 	ID['log']		= 	LOG
 	ID['exp']		= 	EXP

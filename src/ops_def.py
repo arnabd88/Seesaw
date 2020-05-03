@@ -30,8 +30,11 @@ _FOPS = {	PLUS	:	lambda L 	:	L[0] + L[1]	,	\
 			MINUS	:	lambda L	:	L[0] - L[1] ,	\
 			MUL		:	lambda L	:	L[0] * L[1] ,	\
 			DIV		:	lambda L	:	L[0] / L[1] ,	\
+			SQRT	:	lambda L	:	L[0].__sqrt__() ,	\
 			SIN		:	lambda L	:	L[0].__sin__()	,	\
+			ASIN	:	lambda L	:	L[0].__asin__()	,	\
 			COS		:	lambda L	:	L[0].__cos__()	,	\
+			TAN		:	lambda L	: 	L[0].__tan__()	,	\
 			EXP		:	lambda L	:	L[0].__exp__()	\
 }
 
@@ -56,7 +59,13 @@ _DFOPS = { \
 			             lambda L : SymTup((Sym(-1.0,Globals.__T__),))],\
 			MUL		:	[lambda L : L[1], lambda L : L[0]]	,\
 			DIV		:	[lambda L : SymTup((Sym(1.0, Globals.__T__),))/L[1], \
-						 lambda L : (SymTup((Sym(-1.0, Globals.__T__),))*L[0])/(L[1]*L[1])] \
+						 lambda L : (SymTup((Sym(-1.0, Globals.__T__),))*L[0])/(L[1].__pow__(2))], \
+			SQRT	:	[lambda L : SymTup((Sym(-0.5, Globals.__T__),))/(L[0].__sqrt__())], \
+			SIN		:	[lambda L : L[0].__cos__()], \
+			ASIN	:	[lambda L : SymTup((Sym(1.0,Globals.__T__),)) / \
+									(SymTup((Sym(1.0,Globals.__T__),)) - (L[0].__pow__(2))).__sqrt__()], \
+			COS		:	[lambda L : (L[0].__sin__())*(-1.0)], \
+			TAN		:	[lambda L : L[0].__cos__()/L[0].__sin__()] \
 }
 
 
