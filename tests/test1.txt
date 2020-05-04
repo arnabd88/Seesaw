@@ -23,6 +23,8 @@ EXPRS {
 		else
 			y1 rnd64 = g ;
 		endif
+	else
+		y1 rnd64 = h ;
 	endif
 
 	y rnd64 = y1 + x1 ;

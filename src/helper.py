@@ -12,33 +12,22 @@ def getProbeList():
 	return [Globals.GS[0]._symTab[outVar] for outVar in Globals.outVars]
 
 
-#def dfs_expression_builder(node, reachable, parent_dict, cond):
-#
-#	for child in node.children:
-#		if not reachable[node.depth].__contains__(child):
-#			dfs_expression_builder(child, reachable, parent_dict, cond=Globals.__T__)
-#
-#		parent_dict[child].append(node)
-#
-#	#print(type(node).__name__, node.token)
-#	fexpr = node.eval(node)
-#	print(node.depth, type(node).__name__, node.cond)
-#	print(fexpr,"\n")
-#	node.set_expression(fexpr)
-#
-#
-#
-#def expression_builder(probeList):
-#
-#	parent_dict = defaultdict(list)
-#	reachable = defaultdict(set)
-#
-#	for nodeList in probeList:
-#		assert(len(nodeList)==1)
-#		[node,cond] = nodeList[0]
-#		if not reachable[node.depth].__contains__(node):
-#			dfs_expression_builder(node, reachable, parent_dict, cond)
-	
+def parse_cond(cond):
+	tcond = cond
+	if tcond not in (True,False):
+		free_syms = tcond.free_symbols
+		for fsym in free_syms:
+			symNode = Globals.predTable[fsym]
+			#print(fsym," |-> ", symNode.rec_eval(symNode))
+			subcond =  Globals.condExprBank.get(fsym, symNode.rec_eval(symNode))
+			Globals.condExprBank[fsym] = subcond
+		#tcond = tcond.subs({fsym:subcond})
+		tcond = tcond.subs({fsym: Globals.condExprBank[fsym] for fsym in free_syms})
+		print("Cond, :-> ", tcond)
+		return tcond
+	return tcond
+
+
 def dfs_expression_builder(node, reachable, parent_dict, cond):
 
 	for child in node.children:
@@ -160,4 +149,58 @@ def parallel_merge(symTab1, symTab2, scope):
 	return newtab
 
 
+def filterCandidate(bdmin, bdmax, dmax):
+	#workList =  [[v[0] for v in nodeList if v[0].depth!=0]\
+	#            for k,nodeList in Globals.GS[0]._symTab.items()]
+	workList =  [[v for v in nodeList if v.depth!=0]\
+	            for k,nodeList in Globals.depthTable.items()]
 	
+	workList = list(set(reduce(lambda x,y : x+y, workList, [])))
+	print("workList=",len(workList), [v.depth for v in workList])
+	print(bdmin, bdmax)
+
+
+	return list(filter( lambda x:x.depth >= bdmin and x.depth <= bdmax ,\
+								workList))
+							   #[[v for v in nodeList if v.depth!=0] for k,nodeList in Globals.GS[0]._symTab.items()]
+	                           #[v for k,v in Globals.GS[0]._symTab.items() if v.depth!=0]\
+							 #))
+
+
+def selectCandidateNodes(maxdepth, bound_mindepth, bound_maxdepth):
+	
+	PreCandidateList = filterCandidate(bound_mindepth, bound_maxdepth, maxdepth)
+
+	loc_bdmax = bound_maxdepth
+	while( len(PreCandidateList) <= 0 and loc_bdmax <= maxdepth):
+		loc_bdmax += 5
+		PreCandidateList = filterCandidate(bound_mindepth, loc_bdmax, maxdepth)
+
+	print(PreCandidateList)
+	if(len(PreCandidateList) <= 0):
+		return []
+	else:
+		f = lambda x : float(x.depth)/(loc_bdmax) + 0.1
+		g = lambda x, y : (-1)*y*math.log(y,2)*(len(x.parents)+ \
+		                       (len(x.children) if type(x).__name__ == "LiftOp" else 0))
+
+		cost_list = list(map( lambda x : [x.depth, g(x, f(x))], \
+		                 PreCandidateList \
+						))
+
+		sum_depth_cost = [(depth, sum(list(map(lambda x:x[1] if x[0]==depth\
+		                     else 0, cost_list)))) \
+							 for depth in range(bound_mindepth, loc_bdmax)]
+		print(sum_depth_cost)
+		sum_depth_cost.sort(key=lambda x:(-x[1], x[0]))
+		abs_depth = sum_depth_cost[0][0]
+
+
+		## Obtain all candidate list at this level
+		CandidateList = Globals.depthTable[abs_depth]
+
+		print("CURRENT AST_DEPTH = : {ast_depth}".format(ast_depth=maxdepth))
+		print("ABSTRACTION_DEPTH : {abs_depth}".format(abs_depth=abs_depth))
+
+		return [abs_depth, CandidateList]
+

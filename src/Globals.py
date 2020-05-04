@@ -22,6 +22,7 @@ freeConds = []
 # Mapping from identifier to expressions
 predTable = dict()
 condTable = dict()
+condExprBank = dict()
 
 
 

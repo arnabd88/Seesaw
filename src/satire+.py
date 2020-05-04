@@ -27,7 +27,7 @@ def parseArguments():
 													  of abstraction. By default enabled to level-1. \
 													  To disable pass 0', default=False, action='store_true')
 	parser.add_argument('--mindepth', help='Min depth for abstraction. Default is 10',\
-									  default=20, type=int)
+									  default=10, type=int)
 	parser.add_argument('--maxdepth', help='Max depth for abstraction. Limiting to 40', \
 									  default=40, type=int)
 	#parser.add_argument('--fixdepth', help='Fix the abstraction depth. Default is -1(disabled)', \
@@ -51,32 +51,95 @@ def parseArguments():
 	return result
 
 
+def simplify_with_abstraction(sel_candidate_list, argList, maxdepth, final=False):
+
+
+	obj = AnalyzeNode_Cond(sel_candidate_list, argList, maxdepth)
+	results = obj.start()
+	#if "flag" in results.keys():
+	#	print("Returned w/o execution-->need to modify bound")
+	#	return results
+
+	#del obj
+	#if final:
+	#	for k,v in results.items():
+	#		print(k.f_expression)
+	#	return results
+
+	#abstractNodes(results)
+	#rebuildAST()
+	return dict()
+
+
+
+
+
 def full_analysis(probeList, argList, maxdepth):
 	#helper.expression_builder(probeList)
 	#for k,v in Globals.predTable.items():
 	#	print(k,v)
-	obj = AnalyzeNode_Cond(probeList, argList, maxdepth)
-	obj.start()
+	#obj = AnalyzeNode_Cond(probeList, argList, maxdepth)
+	#obj.start()
+	return simplify_with_abstraction(probeList, argList, maxdepth,final=True)
+	
+
+#def ErrorAnalysis(argList):
+#
+#	probeList = helper.getProbeList()
+#	maxdepth = max([max([n[0].depth for n in nodeList])  for nodeList in probeList])
+#	print("maxdepth = ", maxdepth)
+#	probeList = [nodeList[0][0] for nodeList in probeList]
+#
+#	## Check on the conditonal nodes----------
+#	## ---------------------------------------
+#	#for k,v in Globals.predTable.items():
+#	#	print(k, v.rec_eval(v), type(v).__name__)
+#
+#	#for k,v in Globals.condTable.items():
+#	#	print(k, v.rec_eval(v))
+#
+#
+#
+#	full_analysis(probeList, argList, maxdepth)
+
+def mod_probe_list(probeNodeList):
+	probeList = helper.getProbeList()
+	probeList = [nodeList[0][0] for nodeList in probeList]
+	return probeList
 	
 
 def ErrorAnalysis(argList):
 
+	absCount = 1
 	probeList = helper.getProbeList()
 	maxdepth = max([max([n[0].depth for n in nodeList])  for nodeList in probeList])
 	print("maxdepth = ", maxdepth)
 	probeList = [nodeList[0][0] for nodeList in probeList]
-
-	## Check on the conditonal nodes----------
-	## ---------------------------------------
-	#for k,v in Globals.predTable.items():
-	#	print(k, v.rec_eval(v), type(v).__name__)
-
-	#for k,v in Globals.condTable.items():
-	#	print(k, v.rec_eval(v))
+	bound_mindepth, bound_maxdepth = argList.mindepth, argList.maxdepth
 
 
+	if ( argList.enable_abstraction ) :
+		printf("Abstraction Enabled... \n")
+		while ( maxdepth >= bound_maxdepth and maxdepth >= bound_mindepth ):
+			[abs_depth, sel_candidate_list] = helper.selectCandidateNodes(maxdepth, bound_mindepth, bound_maxdepth)
+			print("Candidate List Length:", len(sel_candidate_list))
+			if ( len(sel_candidate_list) > 0):
+				absCount += 1
+				results = simplify_with_abstraction(sel_candidate_list, argList, maxdepth)
+				probeList = mod_probe_list()
+				maxdepth = max([n.depth for n in probeList])
+				if (maxopCount > 1000 and maxdepth > 8 and bound_mindepth > 5):
+					bound_maxdepth = maxdepth if bound_maxdepth > maxdepth else bound_maxdepth - 2 if bound_maxdepth - bound_mindepth > 4 else bound_maxdepth
+					bound_mindepth = bound_mindepth - 2 if bound_maxdepth - bound_mindepth > 4 else bound_mindepth
+				elif maxdepth <= bound_maxdepth and maxdepth > bound_mindepth:
+					bound_maxdepth = maxdepth
+					assert(bound_maxdepth >= bound_mindepth)
+			else:
+				break
+		return full_analysis(probeList, argList, maxdepth)
+	else:
+		return full_analysis(probeList, argList, maxdepth)
 
-	full_analysis(probeList, argList, maxdepth)
 
 
 

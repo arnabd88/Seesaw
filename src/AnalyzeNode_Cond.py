@@ -95,7 +95,7 @@ class AnalyzeNode_Cond(object):
 		self.completed[node.depth].add(node)
 		et = time.time()
 		#print("@node",node.depth, node.f_expression)
-		print("Time taken =", et-st,"\n\n")
+		#print("Time taken =", et-st,"\n\n")
 
 
 
@@ -128,12 +128,6 @@ class AnalyzeNode_Cond(object):
 							((self.bwdDeriv[node][outVar]) * \
 							(node.get_noise(node)) * node.get_rounding())\
 							).__abs__()
-			#print("prop", node.f_expression, id(node))
-			#if(type(node).__name__ == "FreeVar"):
-			#	#node.get_noise(node)==0.0):
-			#	print("Zero rounding")
-			#print(expr_solve,"\n\n")
-			#print("New expr solve = ", expr_solve.__countops__())
 			acc = self.Accumulator.get(outVar, SymTup((Sym(0.0, Globals.__F__),)))
 			#print("\n------------------------")
 			#print(expr_solve)
@@ -169,18 +163,6 @@ class AnalyzeNode_Cond(object):
 
 
 
-	def parse_cond(self, cond):
-		tcond = cond
-		if tcond not in (True,False):
-			free_syms = tcond.free_symbols
-			for fsym in free_syms:
-				symNode = Globals.predTable[fsym]
-				#print(fsym," |-> ", symNode.rec_eval(symNode))
-				subcond =  symNode.rec_eval(symNode)
-				tcond = tcond.subs({fsym:subcond})
-			print("Cond, :-> ", tcond)
-			return tcond
-		return tcond
 
 	def first_order_error(self):
 
@@ -198,7 +180,7 @@ class AnalyzeNode_Cond(object):
 			for els in tupleList:
 				expr, cond = els.exprCond
 				print("Query: ", seng.count_ops(expr), cond)
-				cond_expr = self.parse_cond(cond)
+				cond_expr = helper.parse_cond(cond)
 				errIntv = utils.generate_signature(expr)
 				err = max([abs(i) for i in errIntv])
 				errList.append(err)
