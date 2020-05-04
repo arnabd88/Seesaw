@@ -8,6 +8,7 @@ from SymbolTable import *
 
 
 def getProbeList():
+	print(Globals.GS[0]._symTab.keys())
 	return [Globals.GS[0]._symTab[outVar] for outVar in Globals.outVars]
 
 
@@ -85,26 +86,32 @@ def PreProcessAST():
 	probeList = getProbeList()
 	reachable = defaultdict(set)
 
-	rhstbl = {}
+	#rhstbl = {}
 	#print("\n\n", Globals.GS[0]._symTab[seng.var('g')])
 	#glift = Globals.GS[0]._symTab[seng.var('g')][0][0]
 	#for child in glift.children:
 	#	print(child)
 
 
-	for k,v in Globals.GS[0]._symTab.items():
-		rhstbl[v] = k
+	#for k,v in Globals.GS[0]._symTab.items():
+	#	rhstbl[v] = k
+		#if(k == seng.var('radius') or k==seng.var('newRadius')):
+		#	nodeout = v[0][0]
+		#	print(k, nodeout, nodeout.depth, nodeout.f_expression)
 
 	for nodeList in probeList:
 		assert(len(nodeList)==1)
 		[node,cond] = nodeList[0]
 		if not reachable[node.depth].__contains__(node):
 			pretraverse(node, reachable)
+			#assert(node==nodeout)
+			#assert(reachable[node.depth].__contains__(node))
 
 	print("Pre :", len(Globals.GS[0]._symTab.keys()))
+	#print([(nodeCondList, syms) for nodeCondList,syms in rhstbl.items()])
 	Globals.GS[0]._symTab = {syms: tuple(set(n for n in nodeCondList \
 										if reachable[n[0].depth].__contains__(n[0]))) \
-										for nodeCondList,syms in rhstbl.items() }
+										for syms,nodeCondList in Globals.GS[0]._symTab.items() }
 	print("Post :", len(Globals.GS[0]._symTab.keys()))
 	#print(Globals.GS[0]._symTab[seng.var('g')])
 	prev_numNodes = sum([ len(Globals.depthTable[el]) for el in Globals.depthTable.keys() if el!=0] )

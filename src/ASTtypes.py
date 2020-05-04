@@ -167,6 +167,15 @@ class LiftOp(AST):
 		#return SymTup( n[0].f_expression.__and__(n[1])  for n in obj.nodeList  )
 
 	@staticmethod
+	def rec_eval(obj):
+		
+		obj.depth = max([n[0].depth for n in obj.nodeList]) +1
+		clist = [n[0].rec_eval(n[0]).__and__(n[1])  for n in obj.nodeList]
+		f = lambda x, y: SymConcat(x,y)
+		return reduce(f, clist)
+
+
+	@staticmethod
 	def get_noise(obj):
 		return 0.0
 
@@ -199,6 +208,14 @@ class TransOp(AST):
 
 		return lexpr
 
+	@staticmethod
+	def rec_eval(obj):
+		lexpr = ops._FOPS[obj.token.type]([obj.children[0].rec_eval(obj.children[0])])
+		obj.depth = obj.children[0].depth +1
+		obj.rnd = obj.children[0].rnd
+		return lexpr
+
+
 
 	def get_rounding(self):
 		return self.rnd * ops._ALLOC_ULP[self.token.type]
@@ -227,10 +244,20 @@ class BinOp(AST):
 	def eval(obj):
 		#print(obj.token.value, [child.f_expression for child in obj.children])
 		lexpr = ops._FOPS[obj.token.type]([child.f_expression for child in obj.children])
+		obj.depth = max([child.depth for child in obj.children])+1
 		obj.rnd = max([min([child.rnd for child in obj.children]), 1.0])
 
 		return lexpr
 
+
+	@staticmethod
+	def rec_eval(obj):
+		lexpr = ops._FOPS[obj.token.type]([child.rec_eval(child) for child in obj.children])
+		obj.depth = max([child.depth for child in obj.children])+1
+		obj.rnd = max([min([child.rnd for child in obj.children]), 1.0])
+
+		return lexpr
+		
 
 	def get_rounding(self):
 		return self.rnd * ops._ALLOC_ULP[self.token.type]
@@ -256,10 +283,44 @@ class BinLiteral(AST):
 		left.parents += (self,)
 		right.parents += (self,)
 
+		#self.f_expression = self.eval(self)
+
+#	@staticmethod
+#	def eval(obj):
+#		lexpr = ops._BOPS[obj.token.type]([obj.children[0].f_expression, obj.children[1].f_expression])
+#		obj.depth = max([child.depth for child in obj.children])+1
+#		return lexpr
+#
+#
+#	@staticmethod
+#	def rec_eval(obj):
+#		lexpr = ops._BOPS[obj.token.type]([obj.children[0].rec_eval(obj.children[0]), obj.children[1].rec_eval(obj.children[1])])
+#		obj.depth = max([child.depth for child in obj.children])+1
+#		return lexpr
+
+
 	@staticmethod
 	def eval(obj):
-		lexpr = ops._BOPS[obj.token.type]([obj.children[0].f_expression, obj.children[1].f_expression])
-		return lexpr
+		obj.depth = max([child.depth for child in obj.children])+1
+		lstr = obj.children[0].f_expression
+		rstr = obj.children[1].f_expression
+
+		litexpr = ops._BOPS[obj.token.type]([lstr,rstr])
+
+		return litexpr
+
+
+
+	@staticmethod
+	def rec_eval(obj):
+		obj.depth = max([child.depth for child in obj.children])+1
+		lstr = obj.children[0].rec_eval(obj.children[0])
+		rstr = obj.children[1].rec_eval(obj.children[1])
+
+		litexpr = ops._BOPS[obj.token.type]([lstr,rstr])
+
+		return litexpr
+		
 
 
 
@@ -285,10 +346,50 @@ class ExprComp(AST):
 		Globals.EID += 1
 		Globals.condTable[self.condSym] = self
 
+		## have the f_expressions evaluted early for conds
+		#self.f_expression = self.eval(self)
+
 
 
 	@staticmethod
 	def eval(obj):
-		lexpr = ops._COPS[obj.token.type]([obj.children[0].f_expression, obj.children[1].f_expression])
-		return lexpr
+		obj.depth = max([child.depth for child in obj.children])+1
+		lstrTup = obj.children[0].f_expression
+		rstrTup = obj.children[1].f_expression
+
+		cexpr = tuple(set(ops._COPS[obj.token.type]([fl.exprCond[0],\
+											 sl.exprCond[0]]) \
+											 for fl in lstrTup \
+										     for sl in rstrTup))
+
+		return "|".join(cexpr)
+
+	@staticmethod
+	def rec_eval(obj):
+		obj.depth = max([child.depth for child in obj.children])+1
+		lstrTup = obj.children[0].rec_eval(obj.children[0])
+		rstrTup = obj.children[1].rec_eval(obj.children[1])
+
+		print(lstrTup, rstrTup)
+
+		cexpr = tuple(set(ops._COPS[obj.token.type]([fl.exprCond[0],\
+											 sl.exprCond[0]]) \
+											 for fl in lstrTup \
+										     for sl in rstrTup))
+
+		return "|".join(cexpr)
+
+
+	#@staticmethod
+	#def eval(obj):
+	#	lexpr = ops._COPS[obj.token.type]([obj.children[0].f_expression, obj.children[1].f_expression])
+	#	obj.depth = max([child.depth for child in obj.children])+1
+	#	return lexpr
+
+	#@staticmethod
+	#def rec_eval(obj):
+	#	lexpr = ops._COPS[obj.token.type]([obj.children[0].rec_eval(obj.children[0]), obj.children[1].rec_eval(obj.children[1])])
+	#	obj.depth = max([child.depth for child in obj.children])+1
+	#	return lexpr
+
 

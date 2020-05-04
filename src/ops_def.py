@@ -8,6 +8,7 @@ import utils
 from gtokens import *
 from PredicatedSymbol import Sym, SymTup, SymConcat
 import Globals
+import numbers
 
 #_FOPS = { PLUS : lambda L : L[0]+L[1]	,\
 #		  MINUS : lambda L : L[0]-L[1]	,\
@@ -25,6 +26,17 @@ import Globals
 #		  SINH : lambda L : sinh(L[0]), \
 #		 }
 
+def bothNotConst(a,b):
+	try:
+		d1 = float(a)
+		d2 = float(b)
+		return False
+	except:
+		pass
+	return True
+	#print(a, type(a), isinstance(a, numbers.Number), b, type(b), isinstance(b, numbers.Number))
+	#return False if isinstance(a, numbers.Number) and isinstance(b, numbers.Number) else True
+
 
 _FOPS = {	PLUS	:	lambda L 	:	L[0] + L[1]	,	\
 			MINUS	:	lambda L	:	L[0] - L[1] ,	\
@@ -39,16 +51,26 @@ _FOPS = {	PLUS	:	lambda L 	:	L[0] + L[1]	,	\
 }
 
 _COPS = {	\
-			LT		:	lambda L	:	L[0] < L[1]	,	\
-			LEQ		:	lambda L	:	L[0] <= L[1],	\
-			GT		:	lambda L	:	L[0] > L[1], \
-			GEQ		:	lambda L	:	L[0] >= L[1] \
+			LT		:	lambda L	:	str("(") + str(L[0]) +" <"+ str(L[1]) + str(")") if bothNotConst(L[0],L[1])	else\
+										str("(") + str(L[0] < L[1])+ str(")")	,	\
+			LEQ		:	lambda L	:	str("(") + str(L[0]) +"<="+ str(L[1]) + str(")") if bothNotConst(L[0],L[1]) else\
+										str("(") + str(L[0] <= L[1]) + str(")")	,	\
+			GT		:	lambda L	:	str("(") + str(L[0]) +"> "+ str(L[1]) + str(")") if bothNotConst(L[0],L[1]) else\
+										str("(") + str(L[0] > L[1])+ str(")")	, \
+			GEQ		:	lambda L	:	str("(") + str(L[0]) +">="+ str(L[1]) + str(")") if bothNotConst(L[0],L[1]) else\
+										str("(") + str(L[0] >= L[1]) + str(")")	, \
+			EQ		:	lambda L	:	str("(") + str(L[0]) +"=="+ str(L[1]) + str(")") if bothNotConst(L[0],L[1]) else\
+										str("(") + str(L[0] == L[1]) + str(")")	, \
+			NEQ		:	lambda L	:	str("(") + str(L[0]) +"!="+ str(L[1]) + str(")") if bothNotConst(L[0],L[1]) else\
+										str("(") + str(L[0] != L[1]) + str(")")	\
 }
 
 _BOPS = { \
-			AND		:	lambda L	:	((L[0]) & (L[1])), \
-			OR		:	lambda L	:	((L[0]) | (L[1])), \
-			NOT		:	lambda L	:	(~(L[0]))	\
+			AND		:	lambda L	:	str("(") + L[0] +"&"+ L[1] + str(")"), \
+			OR		:	lambda L	:	str("(") + L[0] +"|"+ L[1] + str(")"), \
+			NOT		:	lambda L	:	str("(~(") + L[0] + str("))") \
+			#OR		:	lambda L	:	L[0] +"|"+ L[1], \
+			#NOT		:	lambda L	:	(~(L[0]))	\
 }
 
 

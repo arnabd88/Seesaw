@@ -133,7 +133,7 @@ class AnalyzeNode_Cond(object):
 			#	#node.get_noise(node)==0.0):
 			#	print("Zero rounding")
 			#print(expr_solve,"\n\n")
-			print("New expr solve = ", expr_solve.__countops__())
+			#print("New expr solve = ", expr_solve.__countops__())
 			acc = self.Accumulator.get(outVar, SymTup((Sym(0.0, Globals.__F__),)))
 			#print("\n------------------------")
 			#print(expr_solve)
@@ -167,6 +167,21 @@ class AnalyzeNode_Cond(object):
 
 		return reduce(lambda x,y : x.__concat__(y), [v for k,v in ld.items()], SymTup((Sym(0.0,Globals.__T__),)))
 
+
+
+	def parse_cond(self, cond):
+		tcond = cond
+		if tcond not in (True,False):
+			free_syms = tcond.free_symbols
+			for fsym in free_syms:
+				symNode = Globals.predTable[fsym]
+				#print(fsym," |-> ", symNode.rec_eval(symNode))
+				subcond =  symNode.rec_eval(symNode)
+				tcond = tcond.subs({fsym:subcond})
+			print("Cond, :-> ", tcond)
+			return tcond
+		return tcond
+
 	def first_order_error(self):
 
 		for node in self.trimList:
@@ -182,7 +197,8 @@ class AnalyzeNode_Cond(object):
 			errList = []
 			for els in tupleList:
 				expr, cond = els.exprCond
-				print("Query: ", seng.count_ops(expr))
+				print("Query: ", seng.count_ops(expr), cond)
+				cond_expr = self.parse_cond(cond)
 				errIntv = utils.generate_signature(expr)
 				err = max([abs(i) for i in errIntv])
 				errList.append(err)

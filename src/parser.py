@@ -414,7 +414,7 @@ class Sparser(object):
 		self.lexer.create_token_generator(text)
 		self.current_token = self.lexer.get_next_token()#current_token()
 		self.program()
-		#print(self.current_symtab._symTab)
+		#print(self.current_symtab._symTab.keys())
 		#print(self.current_symtab._scope)
 		#print(self.current_symtab._scopeCond)
 

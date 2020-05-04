@@ -255,9 +255,9 @@ class SymTup(tuple):
 			if(len(t2)>=24):
 				print(t2)
 			s = SymTup((fl*sl for fl in t1 for sl in t2))
-			print(len(t1), len(t2), len(self), len(obj))
+			#print(len(t1), len(t2), len(self), len(obj))
 		et1 = time.time()
-		print("Multiplication time =", et1-st1, len(s))
+		#print("Multiplication time =", et1-st1, len(s))
 		return s
 
 	def __truediv__(self, obj):

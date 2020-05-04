@@ -66,6 +66,16 @@ def ErrorAnalysis(argList):
 	print("maxdepth = ", maxdepth)
 	probeList = [nodeList[0][0] for nodeList in probeList]
 
+	## Check on the conditonal nodes----------
+	## ---------------------------------------
+	#for k,v in Globals.predTable.items():
+	#	print(k, v.rec_eval(v), type(v).__name__)
+
+	#for k,v in Globals.condTable.items():
+	#	print(k, v.rec_eval(v))
+
+
+
 	full_analysis(probeList, argList, maxdepth)
 
 
@@ -89,7 +99,9 @@ if __name__ == "__main__":
 	end_parse_time = time.time()
 	parse_time = end_parse_time - start_parse_time
 
+	print("Before:", Globals.GS[0]._symTab.keys())
 	helper.PreProcessAST()
+	print("\nAfter:", Globals.GS[0]._symTab.keys(),"\n\n")
 
 	ErrorAnalysis(argList)
 
