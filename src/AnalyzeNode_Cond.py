@@ -177,6 +177,7 @@ class AnalyzeNode_Cond(object):
 		## Placeholder for gelpia invocation
 		for node, tupleList in self.Accumulator.items():
 			errList = []
+			funcList = []
 			for els in tupleList:
 				expr, cond = els.exprCond
 				print("Query: ", seng.count_ops(expr), cond)
@@ -184,7 +185,22 @@ class AnalyzeNode_Cond(object):
 				errIntv = utils.generate_signature(expr)
 				err = max([abs(i) for i in errIntv])
 				errList.append(err)
+
+			ret_intv = None
+			for exprTup in node.f_expression:
+				expr, cond = exprTup.exprCond
+				print("Query: ", seng.count_ops(expr), cond)
+				cond_expr = helper.parse_cond(cond)
+				fintv = utils.generate_signature(expr)
+				fintv = fintv if ret_intv is None else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
+			self.results[node] = {"ERR" : max(errList), \
+								  "SERR" : 0.0, \
+								  "INTV" : fintv \
+								  }
+
 			print("MaxError:", max(errList)*pow(2,-53))
+
+		return self.results
 
 
 	def start(self):
@@ -212,5 +228,5 @@ class AnalyzeNode_Cond(object):
 		## clear the reusable data structures
 		self.completed.clear()
 		print("//----------------------------//")
-		self.first_order_error()
+		return self.first_order_error()
 		

@@ -87,7 +87,8 @@ _DFOPS = { \
 			ASIN	:	[lambda L : SymTup((Sym(1.0,Globals.__T__),)) / \
 									(SymTup((Sym(1.0,Globals.__T__),)) - (L[0].__pow__(2))).__sqrt__()], \
 			COS		:	[lambda L : (L[0].__sin__())*(-1.0)], \
-			TAN		:	[lambda L : L[0].__cos__()/L[0].__sin__()] \
+			#TAN		:	[lambda L : L[0].__cos__()/L[0].__sin__()] \
+			TAN		:	[lambda L : SymTup((Sym(1.0,Globals.__T__),))/L[0].__tan__()] \
 }
 
 

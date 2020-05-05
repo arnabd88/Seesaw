@@ -56,18 +56,20 @@ def simplify_with_abstraction(sel_candidate_list, argList, maxdepth, final=False
 
 	obj = AnalyzeNode_Cond(sel_candidate_list, argList, maxdepth)
 	results = obj.start()
-	#if "flag" in results.keys():
-	#	print("Returned w/o execution-->need to modify bound")
-	#	return results
 
-	#del obj
-	#if final:
-	#	for k,v in results.items():
-	#		print(k.f_expression)
-	#	return results
+	if "flag" in results.keys():
+		print("Returned w/o execution-->need to modify bound")
+		return results
 
-	#abstractNodes(results)
-	#rebuildAST()
+	del obj
+	if final:
+		for k,v in results.items():
+			print(k.f_expression)
+		return results
+
+	
+
+
 	return dict()
 
 
