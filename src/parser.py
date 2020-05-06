@@ -14,6 +14,8 @@ import helper
 import Globals
 import time
 
+import copy
+
 
 class Sparser(object):
 
@@ -82,7 +84,7 @@ class Sparser(object):
 		elif (len(lval) >= 2):
 			print(lval)
 			#lval = lval+[[node,Globals.__T__]]
-			newNode = LiftOp(lval, IF)
+			newNode = LiftOp(lval, lval[0][0].token)
 			self.addDepthInfo(newNode)
 			self.current_symtab._symTab[token.value] = ((newNode,Globals.__T__),)
 			return newNode
@@ -92,7 +94,7 @@ class Sparser(object):
 		if token.type in (INTEGER, FLOAT):
 			self.consume(token.type)
 			return Num(token)
-		elif token.type in (SQRT, SIN, COS, ASIN, TAN):
+		elif token.type in (SQRT, SIN, COS, ASIN, TAN, EXP):
 			self.consume(token.type)
 			node = TransOp(self.arith_factor(), token)
 			self.addDepthInfo(node)
@@ -188,7 +190,7 @@ class Sparser(object):
 		## lift only if more than 1 possibilites
 		for k,v in newtab._symTab.items():
 			if k != '_caller_' and len(v) > 1 :
-				node = LiftOp(v, IF)
+				node = LiftOp(v, v[0][0].token)
 				self.addDepthInfo(node)
 				cond = reduce(lambda x,y: x|y, [x[1] for x in v])
 				newtab._symTab[k] = ((node, cond),)
@@ -341,7 +343,7 @@ class Sparser(object):
 			if len(v) > 1 :
 				#print(k)
 				#assert(k in Globals.outVars)
-				node = LiftOp(v, IF)
+				node = LiftOp(v, v[0][0].token)
 				self.addDepthInfo(node)
 				cond = reduce(lambda x,y: x|y, [x[1] for x in v])
 				self.current_symtab._symTab[k] = ((node, cond),)

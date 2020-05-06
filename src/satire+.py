@@ -51,6 +51,56 @@ def parseArguments():
 	return result
 
 
+def rebuildASTNode(node, completed):
+	
+	for child in node.children:
+		if not completed.__contains__(child):
+			rebuildASTNode(child, completed)
+
+	node.depth = 0 if len(node.children)==0 or type(node).__name__ == "FreeVar" \
+				   else max([child.depth for child in node.children]) +1
+	completed[node] = node.depth
+
+
+def rebuildAST():
+	print("\n********* Rebuilding AST post abstracttion ********\n")
+	print("Synthesizing expression with fresh FreeVars .... ")
+	probeList = mod_probe_list(helper.getProbeList())
+
+	completed = defaultdict(int)
+
+	for node in probeList:
+		if not completed.__contains__(node):
+			rebuildASTNode(node, completed)
+
+	maxdepth = max([node.depth for node in probeList])
+	print("**New maxdepth = ", maxdepth)
+	beforetotalNodes = sum([len(v) for k,v in Globals.depthTable.items()])
+	Globals.depthTable = {depth : set([node for node in completed.keys() if node.depth==depth]) for depth in range(maxdepth+1)}
+
+	aftertotalNodes = sum([len(v) for k,v in Globals.depthTable.items()])
+
+	print("\n\n**** Rebuild AST", beforetotalNodes, aftertotalNodes, "\n\n")
+
+
+def abstractNodes(results):
+
+	
+	
+	for node, res in results.items():
+		Globals.FID += 1
+		name = seng.var("_F"+str(Globals.FID))
+		node.__class__ = FreeVar
+		node.children = ()
+		node.depth = 0
+
+		node.set_noise(node, (res["ERR"], res["SERR"]))
+		node.mutate_to_abstract(name, ID)
+
+		Globals.inputVars[name] = {"INTV" : res["INTV"]}
+		Globals.GS[0]._symTab[name] = ((node,Globals.__T__),)
+	
+
 def simplify_with_abstraction(sel_candidate_list, argList, maxdepth, final=False):
 
 
@@ -64,8 +114,11 @@ def simplify_with_abstraction(sel_candidate_list, argList, maxdepth, final=False
 	del obj
 	if final:
 		for k,v in results.items():
-			print(k.f_expression)
+			print(v["ERR"]*pow(2,-53), v["INTV"])
 		return results
+
+	abstractNodes(results)
+	rebuildAST()
 
 	
 
@@ -121,14 +174,15 @@ def ErrorAnalysis(argList):
 
 
 	if ( argList.enable_abstraction ) :
-		printf("Abstraction Enabled... \n")
+		print("Abstraction Enabled... \n")
 		while ( maxdepth >= bound_maxdepth and maxdepth >= bound_mindepth ):
 			[abs_depth, sel_candidate_list] = helper.selectCandidateNodes(maxdepth, bound_mindepth, bound_maxdepth)
 			print("Candidate List Length:", len(sel_candidate_list))
 			if ( len(sel_candidate_list) > 0):
 				absCount += 1
 				results = simplify_with_abstraction(sel_candidate_list, argList, maxdepth)
-				probeList = mod_probe_list()
+				maxopCount = results.get("maxOpCount", 1000)
+				probeList = mod_probe_list(helper.getProbeList())
 				maxdepth = max([n.depth for n in probeList])
 				if (maxopCount > 1000 and maxdepth > 8 and bound_mindepth > 5):
 					bound_maxdepth = maxdepth if bound_maxdepth > maxdepth else bound_maxdepth - 2 if bound_maxdepth - bound_mindepth > 4 else bound_maxdepth
@@ -164,9 +218,9 @@ if __name__ == "__main__":
 	end_parse_time = time.time()
 	parse_time = end_parse_time - start_parse_time
 
-	print("Before:", Globals.GS[0]._symTab.keys())
+	#print("Before:", Globals.GS[0]._symTab.keys())
 	helper.PreProcessAST()
-	print("\nAfter:", Globals.GS[0]._symTab.keys(),"\n\n")
+	#print("\nAfter:", Globals.GS[0]._symTab.keys(),"\n\n")
 
 	ErrorAnalysis(argList)
 

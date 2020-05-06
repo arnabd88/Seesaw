@@ -125,15 +125,26 @@ class Sym(object):
 	def __init__(self, expr='', cond=Globals.__T__):
 		self.exprCond = (expr, cond)
 
+	#def __add__(self, obj):
+	#	#symexpr = self.exprCond[0] + obj.exprCond[0]
+	#	return Sym( self.exprCond[0]+obj, self.exprCond[1]) if isinstance(obj, numbers.Number) else \
+	#	Sym( seng.expand(self.exprCond[0] + obj.exprCond[0]) if seng.count_ops(self.exprCond[0] + obj.exprCond[0]) < 0 else self.exprCond[0] + obj.exprCond[0]	,\
+	#			(self.exprCond[1] & obj.exprCond[1]).simplify() )
+
 	def __add__(self, obj):
-		#symexpr = self.exprCond[0] + obj.exprCond[0]
-		return Sym( self.exprCond[0]+obj, self.exprCond[1]) if isinstance(obj, numbers.Number) else \
-		Sym( seng.expand(self.exprCond[0] + obj.exprCond[0]) if seng.count_ops(self.exprCond[0] + obj.exprCond[0]) < 8000 else self.exprCond[0] + obj.exprCond[0]	,\
-				(self.exprCond[1] & obj.exprCond[1]).simplify() )
+		if isinstance(obj, numbers.Number) :
+			return Sym( self.exprCond[0]+obj, self.exprCond[1])
+		else:
+			expr1 = (self.exprCond[0] + obj.exprCond[0])
+			expr2 = seng.expand(expr1)
+			cond = (self.exprCond[1] & obj.exprCond[1]).simplify() 
+			op1 = seng.count_ops(expr1)
+			op2 = seng.count_ops(expr2)
+			return Sym(expr1, cond) if op1 < op2 else Sym(expr2, cond) ;
 
 	def __sub__(self, obj):
 		symexpr = self.exprCond[0] - obj.exprCond[0]
-		return Sym( seng.expand(symexpr) if seng.count_ops(symexpr) < 8000 else symexpr ,\
+		return Sym( seng.expand(symexpr) if seng.count_ops(symexpr) < 0 else symexpr ,\
 				(self.exprCond[1] & obj.exprCond[1]).simplify() )
 
 	def __mul__(self, obj):
@@ -252,8 +263,8 @@ class SymTup(tuple):
 			s = SymTup((fl*obj for fl in t1))
 		else:
 			t2 = tuple(set(el for el in obj if  not ( el.exprCond[1]==Globals.__F__ or el.exprCond[0]==seng.nan )))
-			if(len(t2)>=24):
-				print(t2)
+			#if(len(t2)>=24):
+			#	print(t2)
 			s = SymTup((fl*sl for fl in t1 for sl in t2))
 			#print(len(t1), len(t2), len(self), len(obj))
 		et1 = time.time()

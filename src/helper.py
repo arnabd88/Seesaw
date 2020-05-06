@@ -8,7 +8,7 @@ from SymbolTable import *
 
 
 def getProbeList():
-	print(Globals.GS[0]._symTab.keys())
+	#print(Globals.GS[0]._symTab.keys())
 	return [Globals.GS[0]._symTab[outVar] for outVar in Globals.outVars]
 
 
@@ -23,7 +23,7 @@ def parse_cond(cond):
 			Globals.condExprBank[fsym] = subcond
 		#tcond = tcond.subs({fsym:subcond})
 		tcond = tcond.subs({fsym: Globals.condExprBank[fsym] for fsym in free_syms})
-		print("Cond, :-> ", tcond)
+		#print("Cond, :-> ", tcond)
 		return tcond
 	return tcond
 
@@ -156,8 +156,8 @@ def filterCandidate(bdmin, bdmax, dmax):
 	            for k,nodeList in Globals.depthTable.items()]
 	
 	workList = list(set(reduce(lambda x,y : x+y, workList, [])))
-	print("workList=",len(workList), [v.depth for v in workList])
-	print(bdmin, bdmax)
+	#print("workList=",len(workList), [v.depth for v in workList])
+	#print(bdmin, bdmax)
 
 
 	return list(filter( lambda x:x.depth >= bdmin and x.depth <= bdmax ,\
@@ -176,7 +176,7 @@ def selectCandidateNodes(maxdepth, bound_mindepth, bound_maxdepth):
 		loc_bdmax += 5
 		PreCandidateList = filterCandidate(bound_mindepth, loc_bdmax, maxdepth)
 
-	print(PreCandidateList)
+	#print(PreCandidateList)
 	if(len(PreCandidateList) <= 0):
 		return []
 	else:
@@ -191,7 +191,7 @@ def selectCandidateNodes(maxdepth, bound_mindepth, bound_maxdepth):
 		sum_depth_cost = [(depth, sum(list(map(lambda x:x[1] if x[0]==depth\
 		                     else 0, cost_list)))) \
 							 for depth in range(bound_mindepth, loc_bdmax)]
-		print(sum_depth_cost)
+		#print(sum_depth_cost)
 		sum_depth_cost.sort(key=lambda x:(-x[1], x[0]))
 		abs_depth = sum_depth_cost[0][0]
 

@@ -4,14 +4,29 @@ import sympy as sym
 import symengine as seng
 import ops_def as ops
 
+from gtokens import *
+
 from functools import reduce
 from PredicatedSymbol import Sym, SymTup, SymConcat
+
+
+class CToken(object):
+	'''
+	Representation of a single token.
+	'''
+	__slots__ = ('type', 'value', 'lineno', 'index')
+	def __init__(self, tp, value):
+		self.type = tp
+		self.value = value
+		self.lineno = None
+		self.index = None
+
 
 ##-- Base AST class
 class AST(object):
 
 	__slots__ = ['depth', 'f_expression', 'children', \
-	             'parents', 'noise', 'rnd', 'cond']
+	             'parents', 'noise', 'rnd', 'cond', 'nodeList']
 
 	def __init__(self, cond=Globals.__T__):
 		self.depth = 0
@@ -21,6 +36,7 @@ class AST(object):
 		self.noise = (0,0)
 		self.rnd = 1.0
 		self.cond = cond
+		self.nodeList = []
 
 	def set_expression(self, fexpr):
 		self.f_expression = fexpr
@@ -100,12 +116,22 @@ class FreeVar(AST):
 			return SymTup((Sym(obj.token.value, Globals.__T__),))
 
 	
+	#@staticmethod
+	#def get_noise(obj):
+	#	return 0.0
+
+	@staticmethod
+	def set_noise(obj, value):
+		obj.noise = value
+
 	@staticmethod
 	def get_noise(obj):
-		return 0.0
+		return abs(obj.noise[0])
 
 
-
+	def mutate_to_abstract(self, tvalue, tid):
+		self.token.value = tvalue #SymTup((Sym(tvalue, Globals.__T__), ))
+		self.token.type = tid ;
 
 
 
@@ -145,10 +171,11 @@ class Var(AST):
 
 ##-- Creates a lifted node taking a list of (node, conds)
 class LiftOp(AST):
-	__slots__ = ['token', 'nodeList']
+	__slots__ = ['token']
 	def __init__(self, nodeList, token, cond=Globals.__T__):
 		super().__init__()
-		self.token = token
+		self.token = CToken('IF', value=None)
+#		self.token.type = IF
 		self.depth = max([n[0].depth for n in nodeList]) +1
 		self.nodeList = nodeList
 		self.children = [n[0] for n in nodeList]
@@ -370,7 +397,7 @@ class ExprComp(AST):
 		lstrTup = obj.children[0].rec_eval(obj.children[0])
 		rstrTup = obj.children[1].rec_eval(obj.children[1])
 
-		print(lstrTup, rstrTup)
+		#print(lstrTup, rstrTup)
 
 		cexpr = tuple(set(ops._COPS[obj.token.type]([fl.exprCond[0],\
 											 sl.exprCond[0]]) \

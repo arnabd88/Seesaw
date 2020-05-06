@@ -45,7 +45,7 @@ gelpia_update = 0
 gelpia_max_iters = 0
 gelpia_seed = 0
 
-timeout = 10
+timeout = 10000
 
 
 def hashSig( inSig, alg ):
@@ -296,9 +296,9 @@ def invoke_gelpia(symExpr, inputStr, label="Func-> Dur:"):
 	str_expr = inputStr + str_expr
 	Globals.gelpiaID += 1
 	#print("Begining New gelpia query->ID:", Globals.gelpiaID)
-	#fout = open("gelpia_"+str(Globals.gelpiaID)+".txt", "w")
-	#fout.write(str_expr)
-	#fout.close()
+	fout = open("gelpia_"+str(Globals.gelpiaID)+".txt", "w")
+	fout.write(str_expr)
+	fout.close()
 
 	#print(str_expr)
 	start_time = time.time()
@@ -429,7 +429,11 @@ def genSig(sym_expr):
 
 	regex = re.compile("(%s)" % "|".join(map(re.escape, d.keys())))
 
-	strSig = regex.sub(lambda mo: d[mo.string[mo.start():mo.end()]], str(sym_expr))
+	try:
+		strSig = regex.sub(lambda mo: d[mo.string[mo.start():mo.end()]], str(sym_expr))
+	except:
+		print("Here:", sym_expr)
+		sys.exit()
 
 	return hashSig(strSig, "md5")
 
@@ -470,9 +474,9 @@ def generate_signature(sym_expr):
 		g1 = time.time()
 		Globals.hashBank[sig] = invoke_gelpia(sym_expr, inputStr)
 		g2 = time.time()
-		print("Gelpia solve = ", g2 - g1, "opCount =", seng.count_ops(sym_expr))
+		#print("Gelpia solve = ", g2 - g1, "opCount =", seng.count_ops(sym_expr))
 	else:
-		print("MATCH FOUND")
+		#print("MATCH FOUND")
 		#Globals.hashBank[sig] = check
 		pass
 
