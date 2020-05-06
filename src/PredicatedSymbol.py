@@ -271,8 +271,17 @@ class SymTup(tuple):
 		#print("Multiplication time =", et1-st1, len(s))
 		return s
 
+	#def __truediv__(self, obj):
+	#	return  SymTup((fl/sl for fl in self for sl in obj))
+
 	def __truediv__(self, obj):
-		return  SymTup((fl/sl for fl in self for sl in obj))
+		t1 = tuple(set(el for el in self if  not ( el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan )))
+		if isinstance(obj, numbers.Number):
+			s = SymTup((fl/obj for fl in t1))
+		else:
+			t2 = tuple(set(el for el in obj if  not ( el.exprCond[1]==Globals.__F__ or el.exprCond[0]==0.0 or el.exprCond[0]==0 or el.exprCond[0]==seng.nan )))
+			s = SymTup((fl/sl for fl in t1 for sl in t2))
+		return s
 
 	def __floordiv__(self, obj):
 		return  SymTup((fl//sl for fl in self for sl in obj))
@@ -326,6 +335,7 @@ class SymTup(tuple):
 			s = SymTup(tuple(set(tuple(t1) + tuple(t2))))
 			et2 = time.time()
 			#print("Trim time = ", et1-st1, et2-et1, len(t1), len(t2))
+			#print("Conc:", s)
 			return s
 		else:
 			return SymTup(tuple(self) + tuple(other))

@@ -69,7 +69,7 @@ class AnalyzeNode_Cond(object):
 					for outVar in outList:
 						sti = time.time()
 						self.bwdDeriv[child_node] = self.bwdDeriv.get(child_node, {})
-						self.bwdDeriv[child_node][outVar] = self.bwdDeriv[child_node].get(outVar, SymTup((Sym(0.0, Globals.__T__),))).__concat__( \
+						self.bwdDeriv[child_node][outVar] = self.bwdDeriv[child_node].get(outVar, SymTup((Sym(0.0, Globals.__F__),))).__concat__( \
 							self.bwdDeriv[node][outVar] * \
 							SymTup((Sym(1.0, node.nodeList[i][1]),)),trim=True)
 						eti = time.time()
@@ -182,6 +182,7 @@ class AnalyzeNode_Cond(object):
 				expr, cond = els.exprCond
 				#print("Query: ", seng.count_ops(expr), cond)
 				cond_expr = helper.parse_cond(cond)
+				#print("eexpr", expr)
 				errIntv = utils.generate_signature(expr)
 				err = max([abs(i) for i in errIntv])
 				errList.append(err)
@@ -190,6 +191,7 @@ class AnalyzeNode_Cond(object):
 			for exprTup in node.f_expression:
 				expr, cond = exprTup.exprCond
 				#print("Query: ", seng.count_ops(expr), cond)
+				#print("f_expr", expr)
 				cond_expr = helper.parse_cond(cond)
 				fintv = utils.generate_signature(expr)
 				fintv = fintv if ret_intv is None else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
