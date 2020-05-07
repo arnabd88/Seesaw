@@ -39,9 +39,9 @@ def dfs_expression_builder(node, reachable, parent_dict, cond):
 	#print(type(node).__name__, node.token)
 	fexpr = node.eval(node)
 	#print(node.depth, type(node).__name__, node.cond)
-	print(type(node).__name__, fexpr)
-	print(node.token)
-	print([(type(child).__name__, child.f_expression) for child in node.children], "\n\n")
+	#print("main:", type(node).__name__, fexpr)
+	#print(node.token)
+	#print([(type(child).__name__, child.f_expression) for child in node.children], "\n\n")
 	node.set_expression(fexpr)
 	reachable[node.depth].add(node)
 

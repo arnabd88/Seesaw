@@ -33,16 +33,16 @@ logging.set_log_filename(None)
 gelpia.setup_requirements(gelpia.GIT_DIR)
 gelpia_rust_executable = gelpia.setup_rust_env(gelpia.GIT_DIR, False)
 
-gelpia_input_epsilon = 1e-6
-gelpia_output_epsilon = 1e-6
-gelpia_output_epsilon_relative = 1e-6
+gelpia_input_epsilon = 1e-2
+gelpia_output_epsilon = 1e-2
+gelpia_output_epsilon_relative = 1e-2
 gelpia_epsilons = (gelpia_input_epsilon,
                    gelpia_output_epsilon,
                    gelpia_output_epsilon_relative)
 gelpia_timeout = 10
 gelpia_grace = 0
 gelpia_update = 0
-gelpia_max_iters = 1000
+gelpia_max_iters = 100
 gelpia_seed = 0
 
 timeout = 10000
@@ -287,7 +287,7 @@ def invoke_gelpia(symExpr, inputStr, label="Func-> Dur:"):
 	#    pass
 	
 	#print("In gelpia", seng.count_ops(symExpr))
-	#print(symExpr)
+	#print(seng.count_ops(symExpr))
 	str_expr = re.sub(r'\*\*', "^", str(symExpr))
 	str_expr = re.sub(r'Abs', "abs", str_expr)
 	str_expr = re.sub(r're\b', "", str_expr)
@@ -475,7 +475,7 @@ def generate_signature(sym_expr):
 		g1 = time.time()
 		Globals.hashBank[sig] = invoke_gelpia(sym_expr, inputStr)
 		g2 = time.time()
-		#print("Gelpia solve = ", g2 - g1, "opCount =", seng.count_ops(sym_expr))
+		print("Gelpia solve = ", g2 - g1, "opCount =", seng.count_ops(sym_expr))
 	else:
 		#print("MATCH FOUND")
 		#Globals.hashBank[sig] = check

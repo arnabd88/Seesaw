@@ -83,11 +83,11 @@ class AnalyzeNode_Cond(object):
 					for outVar in outList:
 						sti = time.time()
 						self.bwdDeriv[child_node] = self.bwdDeriv.get(child_node, {})
-						self.bwdDeriv[child_node][outVar] = self.bwdDeriv[child_node].get(outVar, SymTup((Sym(0.0, Globals.__F__),))).__concat__( \
+						self.bwdDeriv[child_node][outVar] = self.condmerge(self.bwdDeriv[child_node].get(outVar, SymTup((Sym(0.0, Globals.__F__),))).__concat__( \
 								self.bwdDeriv[node][outVar] * \
 								(SymTup((Sym(0.0, Globals.__T__),)) \
 								 if utils.isConst(child_node) else \
-								 DerivFunc[i](opList)), trim=True)
+								 DerivFunc[i](opList)), trim=True))
 						eti = time.time()
 						#print("One bak prop time = ", eti-sti)
 					self.next_workList.append(child_node)
@@ -120,21 +120,70 @@ class AnalyzeNode_Cond(object):
 				self.workList = list(set(currIter))
 				self.next_workList = list(set(nextIter))
 
+	## merge the error terms 
+	def merge_discontinuities(self, acc):
+		racc = acc
+		constCond = Globals.__T__
+		constAcc = [0.0]
+		temp_racc = []
+		temp_dict = {}
+		lim = 100 if (len(racc) > 20) else 1000 
+		for els in racc:
+			(expr, cond) = els.exprCond
+			if seng.count_ops(expr)==0:
+				constCond = constCond | cond
+				constAcc.append(abs(expr))
+			elif seng.count_ops(expr) > lim:
+				#print("lim:", seng.count_ops(expr), lim, len(racc), racc)
+				errIntv = utils.generate_signature(expr)
+				err = max([abs(i) for i in errIntv])
+				temp_racc.append(Sym(err, cond))
+			else:
+				temp_racc.append(els)
+		#print(constAcc)
+		#temp_racc.append(Sym(max(constAcc), constCond))
+		s = SymTup(els for els in temp_racc).__concat__(SymTup((Sym(max(constAcc), constCond),)),trim=True)
+		#print("****Merge difference\n")
+		#print("MaxConst = ", max(constAcc))
+		#print(racc==s, len(racc), len(s))
+		#print([ac for ac in acc])
+		#print([rc for rc in racc])
+		#print([si for si in s])
+		#print("\n")
+		return s ;
+				
+	
+		
 
 
 	def propagate_symbolic(self, node):
 		for outVar in self.bwdDeriv[node].keys():
+			#print(node.depth)
 			expr_solve = (\
 							((self.bwdDeriv[node][outVar]) * \
 							(node.get_noise(node)) * node.get_rounding())\
 							).__abs__()
 			acc = self.Accumulator.get(outVar, SymTup((Sym(0.0, Globals.__T__),)))
+			#print("ACC:", len(acc), acc.__countops__())
+			#if(len(acc) > 10):
+			acc = self.merge_discontinuities(self.condmerge(acc))
+			#else:
+			#acc = self.merge_discontinuities(acc)
+			#print("RACC:", len(acc), acc.__countops__())
 			#print("\n------------------------")
 			#print(expr_solve)
 			#print(node.get_noise(node))
 			#print((self.bwdDeriv[node][outVar]))
 			#print("------------------------\n")
-			self.Accumulator[outVar] = acc.__concat__(expr_solve, trim=True)
+			val = acc.__concat__(self.condmerge(expr_solve), trim=True)
+			#print("==========================")
+			#print("expr_solve:", expr_solve)
+			#print("val:", val)
+			#print("Merge:", self.condmerge(val))
+			#print("\n==========================\n\n")
+
+			self.Accumulator[outVar] = val
+
 
 
 
@@ -156,10 +205,10 @@ class AnalyzeNode_Cond(object):
 		
 		#for k,v in ld.items():
 		#	print("//-- Cond =", k)
-		#	#print(v,"\n")
+		#	print(v,"\n")
 		#print("Size,", len(tupleList))
 
-		return reduce(lambda x,y : x.__concat__(y), [v for k,v in ld.items()], SymTup((Sym(0.0,Globals.__T__),)))
+		return reduce(lambda x,y : x.__concat__(y,trim=True), [v for k,v in ld.items()], SymTup((Sym(0.0,Globals.__T__),)))
 
 
 
@@ -195,6 +244,7 @@ class AnalyzeNode_Cond(object):
 				cond_expr = helper.parse_cond(cond)
 				fintv = utils.generate_signature(expr)
 				fintv = fintv if ret_intv is None else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
+			#print(node.f_expression)
 			self.results[node] = {"ERR" : max(errList), \
 								  "SERR" : 0.0, \
 								  "INTV" : fintv \
