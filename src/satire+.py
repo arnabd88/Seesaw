@@ -14,8 +14,9 @@ from collections import defaultdict
 from ASTtypes import *
 
 import helper
-
 from AnalyzeNode_Cond import AnalyzeNode_Cond
+
+import logging
 
 def parseArguments():
 	parser = argparse.ArgumentParser()
@@ -200,7 +201,7 @@ def ErrorAnalysis(argList):
 
 
 if __name__ == "__main__":
-	start_exec_time = time.time()
+	start_exec_time	= time.time()
 	argList = parseArguments()
 	sys.setrecursionlimit(10**6)
 	print(argList)
@@ -208,7 +209,15 @@ if __name__ == "__main__":
 	fout = open(argList.outfile, 'w')
 
 
+	#--------- Setup Logger ------------------------------------
+	logging.basicConfig(filename=argList.logfile,
+					level = logging.INFO,
+					filemode = 'w')
+	logger = logging.getLogger()
 
+
+
+	#--------- Lexing and Parsing ------------------------------
 	start_parse_time = time.time()
 	lexer = Slex()
 	parser = Sparser(lexer)
@@ -217,13 +226,42 @@ if __name__ == "__main__":
 	del lexer
 	end_parse_time = time.time()
 	parse_time = end_parse_time - start_parse_time
+	logger.info("Parsing time : {parse_time} secs".format(parse_time = parse_time))
+
+
 
 	#print("Before:", Globals.GS[0]._symTab.keys())
+	#------ PreProcess to eliminate all redundant nodes ---------
+	pr1 = time.time()
 	helper.PreProcessAST()
+	pr2 = time.time()
 	#print("\nAfter:", Globals.GS[0]._symTab.keys(),"\n\n")
 
-	ErrorAnalysis(argList)
 
+
+	#------ Main Analysis ----------------------------------------
+	ea1 = time.time()
+	results = ErrorAnalysis(argList)
+	ea2 = time.time()
+
+	
+	#------ Write to File -----------------------------------------
+	helper.writeToFile(results, fout, argList)
+	fout.close()
 
 	end_exec_time = time.time()
-	print("Full time : {full_time}".format(full_time = end_exec_time - start_exec_time))
+	full_time = end_exec_time - start_exec_time 
+
+	logger.info("Optimizer calls : {num_calls}\n".format(num_calls = Globals.gelpiaID))
+	logger.info("Parsing time : {parsing_time}\n".format(parsing_time = parse_time))
+	logger.info("PreProcessing time : {preprocess_time}\n".format(preprocess_time = pr2-pr1))
+	logger.info("Analysis time : {analysis_time}\n".format(analysis_time = ea2-ea1))
+	logger.info("Full time : {full_time}\n".format(full_time = full_time))
+
+	print("Optimizer calls : {num_calls}".format(num_calls = Globals.gelpiaID))
+	print("Parsing time : {parsing_time}".format(parsing_time = parse_time))
+	print("PreProcessing time : {preprocess_time}".format(preprocess_time = pr2-pr1))
+	print("Analysis time : {analysis_time}".format(analysis_time = ea2-ea1))
+	print("Full time : {full_time}".format(full_time = full_time))
+	
+

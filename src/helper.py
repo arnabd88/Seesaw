@@ -206,3 +206,47 @@ def selectCandidateNodes(maxdepth, bound_mindepth, bound_maxdepth):
 
 		return [abs_depth, CandidateList]
 
+
+def writeToFile(results, fout, argList):
+
+	inpfile = argList.file
+	stdflag = argList.std
+	sound = argList.sound
+
+	fout.write("INPUT_FILE : "+inpfile+"\n")
+	dumpStr = ''
+	for outVar in Globals.outVars:
+		#errIntv = results[Globals.lhstbl[outVar]]["ERR"]
+		num_ulp_maxError = results[Globals.GS[0]._symTab[outVar][0][0]]["ERR"]
+		num_ulp_SecondmaxError = results[Globals.GS[0]._symTab[outVar][0][0]]["SERR"]
+		funcIntv = results[Globals.GS[0]._symTab[outVar][0][0]]["INTV"]
+		#num_ulp_maxError = max([abs(i) for i in errIntv])
+		maxError = num_ulp_maxError*pow(2, -53)
+		SecondmaxError = num_ulp_SecondmaxError*pow(2, -53)
+		outIntv = [funcIntv[0]-maxError-SecondmaxError, funcIntv[1]+maxError+SecondmaxError]
+		abserror = 2*(maxError + SecondmaxError)
+
+		#print("//-------------------------------------")
+		#print("Ouput Variable -> ", outVar)
+		#print("Real Interval  -> ", funcIntv)
+		#print("FP Interval    -> ", outIntv)
+		#print("Absolute Error -> ", abserror)
+		##print("Estimated bits preserved -> ", 52 - math.log(num_ulp_maxError,2))
+		#print("//-------------------------------------\n\n")
+		#print("Var:", outVar, "=>", results[Globals.lhstbl[outVar]])
+		#print(k.f_expression, v)
+		dumpStr += "\n//-------------------------------------\n"
+		dumpStr += "VAR : "+ str(outVar) + "\n"
+		dumpStr += "ABSOLUTE_ERROR : "+str(abserror)+"\n"
+		dumpStr += "First-order Error : "+str(2*maxError)+"\n"
+		if sound:
+			dumpStr += "Higher-order Error : "+str(2*SecondmaxError)+"\n"
+		dumpStr += "REAL_INTERVAL : "+str(funcIntv)+"\n"
+		dumpStr += "FP_INTERVAL : "+str(outIntv)+"\n"
+		dumpStr += "//-------------------------------------\n"
+
+	fout.write(dumpStr+"\n")
+	if stdflag:
+		print(dumpStr)
+
+

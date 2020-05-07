@@ -121,20 +121,21 @@ class AnalyzeNode_Cond(object):
 				self.next_workList = list(set(nextIter))
 
 	## merge the error terms 
-	def merge_discontinuities(self, acc):
+	def merge_discontinuities(self, acc, opLimit):
 		racc = acc
 		constCond = Globals.__T__
 		constAcc = [0.0]
 		temp_racc = []
 		temp_dict = {}
-		lim = 100 if (len(racc) > 20) else 1000 
+		lim = 100 if (len(racc) > 20) else opLimit 
 		for els in racc:
 			(expr, cond) = els.exprCond
+			#print("lim:", seng.count_ops(expr), lim, len(racc))
 			if seng.count_ops(expr)==0:
 				constCond = constCond | cond
 				constAcc.append(abs(expr))
 			elif seng.count_ops(expr) > lim:
-				#print("lim:", seng.count_ops(expr), lim, len(racc), racc)
+				#print("lim:", seng.count_ops(expr), lim, len(racc))
 				errIntv = utils.generate_signature(expr)
 				err = max([abs(i) for i in errIntv])
 				temp_racc.append(Sym(err, cond))
@@ -166,7 +167,8 @@ class AnalyzeNode_Cond(object):
 			acc = self.Accumulator.get(outVar, SymTup((Sym(0.0, Globals.__T__),)))
 			#print("ACC:", len(acc), acc.__countops__())
 			#if(len(acc) > 10):
-			acc = self.merge_discontinuities(self.condmerge(acc))
+			acc = self.merge_discontinuities(self.condmerge(acc), 4000)
+			expr_solve = self.merge_discontinuities(self.condmerge(expr_solve), 1000)
 			#else:
 			#acc = self.merge_discontinuities(acc)
 			#print("RACC:", len(acc), acc.__countops__())
@@ -250,7 +252,7 @@ class AnalyzeNode_Cond(object):
 								  "INTV" : fintv \
 								  }
 
-			print("MaxError:", max(errList)*pow(2,-53))
+			#print("MaxError:", max(errList)*pow(2,-53))
 
 		return self.results
 
