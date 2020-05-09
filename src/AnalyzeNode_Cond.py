@@ -15,6 +15,10 @@ import helper
 from functools import reduce
 from PredicatedSymbol import Sym, SymTup, SymConcat
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class AnalyzeNode_Cond(object):
 
@@ -50,7 +54,7 @@ class AnalyzeNode_Cond(object):
 
 		
 	def converge_parents(self, node):
-		#print(node.depth)
+		#print(node.depth, len(node.f_expression))
 		#print(type(node).__name__, node.depth, self.parentTracker[node], len(node.parents) , len(self.parent_dict[node]), node.f_expression)
 		return True if self.parentTracker[node] >= len(self.parent_dict[node]) else False
 
@@ -69,9 +73,9 @@ class AnalyzeNode_Cond(object):
 					for outVar in outList:
 						sti = time.time()
 						self.bwdDeriv[child_node] = self.bwdDeriv.get(child_node, {})
-						self.bwdDeriv[child_node][outVar] = self.bwdDeriv[child_node].get(outVar, SymTup((Sym(0.0, Globals.__F__),))).__concat__( \
+						self.bwdDeriv[child_node][outVar] = self.condmerge(self.bwdDeriv[child_node].get(outVar, SymTup((Sym(0.0, Globals.__F__),))).__concat__( \
 							self.bwdDeriv[node][outVar] * \
-							SymTup((Sym(1.0, node.nodeList[i][1]),)),trim=True)
+							SymTup((Sym(1.0, node.nodeList[i][1]),)),trim=True))
 						eti = time.time()
 						#print("Lift-op:One bak prop time = ", eti-sti)
 					self.next_workList.append(child_node)
@@ -135,7 +139,7 @@ class AnalyzeNode_Cond(object):
 				constCond = constCond | cond
 				constAcc.append(abs(expr))
 			elif seng.count_ops(expr) > lim:
-				#print("lim:", seng.count_ops(expr), lim, len(racc))
+				#print("lim:", expr, lim, len(racc))
 				errIntv = utils.generate_signature(expr)
 				err = max([abs(i) for i in errIntv])
 				temp_racc.append(Sym(err, cond))
@@ -166,8 +170,8 @@ class AnalyzeNode_Cond(object):
 							).__abs__()
 			acc = self.Accumulator.get(outVar, SymTup((Sym(0.0, Globals.__T__),)))
 			#print("ACC:", len(acc), acc.__countops__())
-			#if(len(acc) > 10):
-			acc = self.merge_discontinuities(self.condmerge(acc), 4000)
+			if(len(acc) > 10):
+				acc = self.merge_discontinuities(self.condmerge(acc), 4000)
 			expr_solve = self.merge_discontinuities(self.condmerge(expr_solve), 1000)
 			#else:
 			#acc = self.merge_discontinuities(acc)
@@ -177,7 +181,7 @@ class AnalyzeNode_Cond(object):
 			#print(node.get_noise(node))
 			#print((self.bwdDeriv[node][outVar]))
 			#print("------------------------\n")
-			val = acc.__concat__(self.condmerge(expr_solve), trim=True)
+			val = acc.__concat__(expr_solve, trim=True)
 			#print("==========================")
 			#print("expr_solve:", expr_solve)
 			#print("val:", val)
@@ -191,6 +195,7 @@ class AnalyzeNode_Cond(object):
 
 	def visit_node_ferror(self, node):
 
+		#print(node.depth, type(node).__name__, "Out of there\n")
 		for child in node.children:
 			if not self.completed[child.depth].__contains__(child):
 				self.visit_node_ferror(child)
@@ -213,6 +218,26 @@ class AnalyzeNode_Cond(object):
 		return reduce(lambda x,y : x.__concat__(y,trim=True), [v for k,v in ld.items()], SymTup((Sym(0.0,Globals.__T__),)))
 
 
+	def parse_cond(self, cond):
+		tcond = cond
+		print("\n Parsing Conditional = {pcond}".format(pcond=tcond))
+		logger.info("\n Parsing Conditional = {pcond}".format(pcond=tcond))
+		if tcond not in (True,False):
+			free_syms = tcond.free_symbols
+			for fsym in free_syms:
+				symNode = Globals.predTable[fsym]
+				print("Handling Condtional {symID}".format(symID=fsym))
+				logger.info("Handling Condtional {symID}".format(symID=fsym))
+				subcond =  Globals.condExprBank.get(fsym) if fsym in Globals.condExprBank.keys() else helper.handleConditionals(symNode)
+				print("SubCond: {symID} : {SubCond}\n\n".format(symID=fsym, SubCond=subcond))
+				logger.info("SubCond:{symID} : {SubCond}\n\n".format(symID=fsym, SubCond=subcond))
+				Globals.condExprBank[fsym] = subcond
+			tcond = tcond.subs({fsym: Globals.condExprBank[fsym] for fsym in free_syms})
+			print({fsym: Globals.condExprBank[fsym] for fsym in free_syms})
+			print("Finished parsing -> {cond} : {cexpr}".format(cond=cond, cexpr=tcond))
+			logger.info("Finished parsing -> {cond} : {cexpr}".format(cond=cond, cexpr=tcond))
+			return tcond
+		return tcond
 
 
 	def first_order_error(self):
@@ -220,10 +245,7 @@ class AnalyzeNode_Cond(object):
 		for node in self.trimList:
 			if not self.completed[node.depth].__contains__(node):
 				self.visit_node_ferror(node)
-
 		self.Accumulator = {k : self.condmerge(v) for k,v in self.Accumulator.items()}
-		#for k,v in self.Accumulator.items():
-		#	print(v)
 
 		## Placeholder for gelpia invocation
 		for node, tupleList in self.Accumulator.items():
@@ -232,8 +254,8 @@ class AnalyzeNode_Cond(object):
 			for els in tupleList:
 				expr, cond = els.exprCond
 				#print("Query: ", seng.count_ops(expr), cond)
-				cond_expr = helper.parse_cond(cond)
-				#print("eexpr", expr)
+				cond_expr = self.parse_cond(cond)
+				#print("cond_expr", cond_expr)
 				errIntv = utils.generate_signature(expr)
 				err = max([abs(i) for i in errIntv])
 				errList.append(err)
@@ -243,16 +265,18 @@ class AnalyzeNode_Cond(object):
 				expr, cond = exprTup.exprCond
 				#print("Query: ", seng.count_ops(expr), cond)
 				#print("f_expr", expr)
-				cond_expr = helper.parse_cond(cond)
+				cond_expr = self.parse_cond(cond)
 				fintv = utils.generate_signature(expr)
-				fintv = fintv if ret_intv is None else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
+				ret_intv = fintv if ret_intv is None else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
 			#print(node.f_expression)
 			self.results[node] = {"ERR" : max(errList), \
 								  "SERR" : 0.0, \
-								  "INTV" : fintv \
+								  "INTV" : ret_intv \
 								  }
 
-			#print("MaxError:", max(errList)*pow(2,-53))
+			#print("MaxError:", max(errList)*pow(2,-53), fintv)
+			logger.info(" > MaxError:\n {error} ; {fintv}\n".format(error=max(errList)*pow(2,-53), fintv=ret_intv))
+			print(" > MaxError:\n {error} ; {fintv}\n".format(error=max(errList)*pow(2,-53), fintv=ret_intv))
 
 		return self.results
 
@@ -261,27 +285,23 @@ class AnalyzeNode_Cond(object):
 		self.__init_workStack__()
 		self.__setup_outputs__()
 
-		print("Begin building derivatives\n")
+		dt1 = time.time()
+		print(" > Begin building derivatives....")
+		logger.info(" > Begin building derivatives....")
 		self.traverse_ast()
-		print("Finish building derivatives\n")
+		dt2 = time.time()
+		print(" > Finished in {duration} secs\n".format(duration=dt2-dt1))
+		logger.info(" > Finished in {duration} secs\n".format(duration=dt2-dt1))
 
-		#print(self.trimList)
-		#out = self.trimList[0]
-		#for k in self.bwdDeriv.keys():
-		#	print(type(k).__name__, k.f_expression, self.bwdDeriv[k][out], "\n\n")
-		#	print(k.get_noise(k))
-			
-		#outVar = self.probeList[0]
-		#print(Globals.GS[0]._symTab.keys())
-		#y1 = Globals.GS[0]._symTab[seng.var('y1')][0][0]
-		#print(self.bwdDeriv[y1][outVar], y1.f_expression)
-		#for syms, nodeList in Globals.GS[0]._symTab.items():
-		#	if syms in Globals.inputVars.keys():
-		#		inNode = nodeList[0][0]
-		#		print(syms, self.bwdDeriv[inNode][outVar])
-
-		## clear the reusable data structures
 		self.completed.clear()
-		print("//----------------------------//")
-		return self.first_order_error()
+		fe1 = time.time()
+		#print("//----------------------------//")
+		print(" > Analyzing error for the current abstraction block...\n")
+		logger.info("Analyzing error for the current abstraction block...\n")
+		res = self.first_order_error()
+		fe2 = time.time()
+		print(" > Finished in {duration} secs\n".format(duration=fe2-fe1))
+		logger.info("Finished in {duration} secs\n".format(duration=fe2-fe1))
+
+		return res
 		

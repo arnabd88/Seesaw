@@ -65,9 +65,25 @@ _COPS = {	\
 										str("(") + str(L[0] != L[1]) + str(")")	\
 }
 
+_MCOPS = {	\
+			LT		:	lambda L	:	str("(") + str(L[0]-L[3]) +" <"+ str(L[1]+L[2]) + str(")") if bothNotConst(L[0],L[1])	else\
+										str("(") + str(L[0] < L[1])+ str(")")	,	\
+			LEQ		:	lambda L	:	str("(") + str(L[0]-L[3]) +"<="+ str(L[1]+L[2]) + str(")") if bothNotConst(L[0],L[1]) else\
+										str("(") + str(L[0] <= L[1]) + str(")")	,	\
+			GT		:	lambda L	:	str("(") + str(L[0]+L[3]) +"> "+ str(L[1]-L[2]) + str(")") if bothNotConst(L[0],L[1]) else\
+										str("(") + str(L[0] > L[1])+ str(")")	, \
+			GEQ		:	lambda L	:	str("(") + str(L[0]+L[3]) +">="+ str(L[1]-L[2]) + str(")") if bothNotConst(L[0],L[1]) else\
+										str("(") + str(L[0] >= L[1]) + str(")")	, \
+			EQ		:	lambda L	:	str("(") + str(L[0]) +"=="+ str(L[1]) + str(")") if bothNotConst(L[0],L[1]) else\
+										str("(") + str(L[0] == L[1]) + str(")")	, \
+			NEQ		:	lambda L	:	str("(") + str(L[0]) +"!="+ str(L[1]) + str(")") if bothNotConst(L[0],L[1]) else\
+										str("(") + str(L[0] != L[1]) + str(")")	\
+}
+
+
 _BOPS = { \
-			AND		:	lambda L	:	str("(") + L[0] +"&"+ L[1] + str(")"), \
-			OR		:	lambda L	:	str("(") + L[0] +"|"+ L[1] + str(")"), \
+			AND		:	lambda L	:	"False" if ("False" in L[0] or "False" in L[1]) else "True" if "True" in L[1] and "True" in L[0] else L[0] if "True" in L[1] else L[1] if "True" in L[0] else   str("(") + L[0] +"&"+ L[1] + str(")"), \
+			OR		:	lambda L	:	"True" if ("True" in L[0] or "True" in L[1]) else "False" if "False" in L[1] and "False" in L[0] else L[0] if "False" in L[1] else L[1] if "False" in L[0] else str("(") + L[0] +"|"+ L[1] + str(")"), \
 			NOT		:	lambda L	:	str("(~(") + L[0] + str("))") \
 			#OR		:	lambda L	:	L[0] +"|"+ L[1], \
 			#NOT		:	lambda L	:	(~(L[0]))	\
@@ -93,7 +109,18 @@ _DFOPS = { \
 }
 
 
-
+_Priority = { \
+				SIN		:	0,	\
+				ASIN	:	0,	\
+				COS		:	0,	\
+				TAN		:	0,	\
+				PLUS	:	0,	\
+				MUL		:	0,	\
+				MINUS	:	0,	\
+				DIV		:	0,	\
+				SQRT	:	0,	\
+				EXP		:	0	\
+}
 
 
 #_DFOPS = { PLUS  : [lambda L : 1, lambda L : 1],\

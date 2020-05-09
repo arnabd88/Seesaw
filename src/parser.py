@@ -82,7 +82,7 @@ class Sparser(object):
 		elif (len(lval)==1):
 			return lval[0][0]
 		elif (len(lval) >= 2):
-			print(lval)
+			#print(lval)
 			#lval = lval+[[node,Globals.__T__]]
 			newNode = LiftOp(lval, lval[0][0].token)
 			self.addDepthInfo(newNode)

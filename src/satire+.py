@@ -64,7 +64,9 @@ def rebuildASTNode(node, completed):
 
 
 def rebuildAST():
-	print("\n********* Rebuilding AST post abstracttion ********\n")
+	rb1 = time.time()
+	print("\n  ********* Rebuilding AST post abstracttion ********\n")
+	logger.info("\n  ********* Rebuilding AST post abstracttion ********\n")
 	print("Synthesizing expression with fresh FreeVars .... ")
 	probeList = mod_probe_list(helper.getProbeList())
 
@@ -75,13 +77,19 @@ def rebuildAST():
 			rebuildASTNode(node, completed)
 
 	maxdepth = max([node.depth for node in probeList])
-	print("**New maxdepth = ", maxdepth)
+	#print("**New maxdepth = ", maxdepth)
 	beforetotalNodes = sum([len(v) for k,v in Globals.depthTable.items()])
 	Globals.depthTable = {depth : set([node for node in completed.keys() if node.depth==depth]) for depth in range(maxdepth+1)}
 
 	aftertotalNodes = sum([len(v) for k,v in Globals.depthTable.items()])
 
-	print("\n\n**** Rebuild AST", beforetotalNodes, aftertotalNodes, "\n\n")
+	print(" >  Rebuilt AST Nodes = {new_num_nodes} ({old_num_nodes})".format(old_num_nodes=beforetotalNodes, new_num_nodes=aftertotalNodes))
+	print(" >  Rebuilt AST Depth = {ast_depth}".format(ast_depth=maxdepth))
+	logger.info(" >  Rebuilt AST Nodes = {new_num_nodes} ({old_num_nodes})".format(old_num_nodes=beforetotalNodes, new_num_nodes=aftertotalNodes))
+	logger.info(" >  Rebuilt AST Depth = {ast_depth}".format(ast_depth=maxdepth))
+	rb2 = time.time()
+	print("  **********Rebuilt AST in {duration} secs********\n".format(duration=rb2-rb1))
+	logger.info("  **********Rebuilt AST in {duration} secs********\n".format(duration=rb2-rb1))
 
 
 def abstractNodes(results):
@@ -114,8 +122,8 @@ def simplify_with_abstraction(sel_candidate_list, argList, maxdepth, final=False
 
 	del obj
 	if final:
-		for k,v in results.items():
-			print(v["ERR"]*pow(2,-53), v["INTV"])
+		#for k,v in results.items():
+		#	print(v["ERR"]*pow(2,-53), v["INTV"])
 		return results
 
 	abstractNodes(results)
@@ -136,7 +144,11 @@ def full_analysis(probeList, argList, maxdepth):
 	#	print(k,v)
 	#obj = AnalyzeNode_Cond(probeList, argList, maxdepth)
 	#obj.start()
-	return simplify_with_abstraction(probeList, argList, maxdepth,final=True)
+	print("\n-----------------------------------")
+	print("Full Analysis Block:\n")
+	res = simplify_with_abstraction(probeList, argList, maxdepth,final=True)
+	print("-----------------------------------\n")
+	return res
 	
 
 #def ErrorAnalysis(argList):
@@ -170,16 +182,22 @@ def ErrorAnalysis(argList):
 	probeList = helper.getProbeList()
 	maxdepth = max([max([n[0].depth for n in nodeList])  for nodeList in probeList])
 	print("maxdepth = ", maxdepth)
+	logger.info("Full AST_DEPTH : {ast_depth}".format(ast_depth=maxdepth))
 	probeList = [nodeList[0][0] for nodeList in probeList]
 	bound_mindepth, bound_maxdepth = argList.mindepth, argList.maxdepth
 
 
 	if ( argList.enable_abstraction ) :
-		print("Abstraction Enabled... \n")
+		print("\nAbstraction Enabled... \n")
+		logger.info("\nAbstraction Enabled... \n")
 		while ( maxdepth >= bound_maxdepth and maxdepth >= bound_mindepth ):
 			[abs_depth, sel_candidate_list] = helper.selectCandidateNodes(maxdepth, bound_mindepth, bound_maxdepth)
 			print("Candidate List Length:", len(sel_candidate_list))
 			if ( len(sel_candidate_list) > 0):
+				print("-----------------------------------")
+				print("ABSTRACTION LEVEL = {abs_level}".format(abs_level=absCount))
+				logger.info("-----------------------------------")
+				logger.info("ABSTRACTION LEVEL = {abs_level}".format(abs_level=absCount))
 				absCount += 1
 				results = simplify_with_abstraction(sel_candidate_list, argList, maxdepth)
 				maxopCount = results.get("maxOpCount", 1000)
@@ -191,6 +209,8 @@ def ErrorAnalysis(argList):
 				elif maxdepth <= bound_maxdepth and maxdepth > bound_mindepth:
 					bound_maxdepth = maxdepth
 					assert(bound_maxdepth >= bound_mindepth)
+				print("-----------------------------------\n")
+				logger.info("-----------------------------------\n")
 			else:
 				break
 		return full_analysis(probeList, argList, maxdepth)

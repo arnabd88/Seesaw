@@ -6,6 +6,10 @@ import symengine as seng
 from collections import defaultdict
 from SymbolTable import *
 
+import logging 
+
+logger = logging.getLogger(__name__)
+from AnalyzeNode_Cond import AnalyzeNode_Cond as ANC
 
 def getProbeList():
 	#print(Globals.GS[0]._symTab.keys())
@@ -36,14 +40,26 @@ def dfs_expression_builder(node, reachable, parent_dict, cond):
 
 		parent_dict[child].append(node)
 
-	#print(type(node).__name__, node.token)
-	fexpr = node.eval(node)
+	if type(node).__name__ == "ExprComp":
+		res0 = ANC([node.children[0]], [], node.children[0].depth).start()
+		res1 = ANC([node.children[1]], [], node.children[1].depth).start()
+		## an exprComp node as a modified evaluation ops to include extra error terms
+		fexpr = node.mod_eval(node, res0[node.children[0]]["ERR"]*pow(2,-53), \
+								   res1[node.children[1]]["ERR"]*pow(2,-53) )
+	else:
+		fexpr = node.eval(node)
+
+	node.set_expression(fexpr)
+	reachable[node.depth].add(node)
+
+
 	#print(node.depth, type(node).__name__, node.cond)
 	#print("main:", type(node).__name__, fexpr)
 	#print(node.token)
 	#print([(type(child).__name__, child.f_expression) for child in node.children], "\n\n")
-	node.set_expression(fexpr)
-	reachable[node.depth].add(node)
+	#fexpr = node.eval(node)
+	#node.set_expression(fexpr)
+	#reachable[node.depth].add(node)
 
 
 
@@ -56,9 +72,19 @@ def expression_builder(probeList):
 		if not reachable[node.depth].__contains__(node):
 			dfs_expression_builder(node, reachable, parent_dict, cond=Globals.__T__)
 
+		#print(type(node).__name__, node.token.type, node.depth, node.f_expression)
+		#print([(type(child).__name__, child.token.type, child.depth, child.f_expression) for child in node.children])
+
 	del reachable
 	
 	return parent_dict
+
+
+def handleConditionals(probeNode):
+	print("Building conditional expressions...\n")
+	logger.info("Building conditional expressions...\n")
+	expression_builder([probeNode])
+	return probeNode.f_expression
 
 def pretraverse(node, reachable):
 	
@@ -73,6 +99,9 @@ def pretraverse(node, reachable):
 
 
 def PreProcessAST():
+	
+	print("\n------------------------------")
+	print("PreProcessing Block:")
 
 	probeList = getProbeList()
 	reachable = defaultdict(set)
@@ -98,19 +127,22 @@ def PreProcessAST():
 			#assert(node==nodeout)
 			#assert(reachable[node.depth].__contains__(node))
 
-	print("Pre :", len(Globals.GS[0]._symTab.keys()))
+	print("Symbol count Pre Processing :", len(Globals.GS[0]._symTab.keys()))
 	#print([(nodeCondList, syms) for nodeCondList,syms in rhstbl.items()])
 	Globals.GS[0]._symTab = {syms: tuple(set(n for n in nodeCondList \
 										if reachable[n[0].depth].__contains__(n[0]))) \
 										for syms,nodeCondList in Globals.GS[0]._symTab.items() }
-	print("Post :", len(Globals.GS[0]._symTab.keys()))
+	print("Symbol count Post Processing :", len(Globals.GS[0]._symTab.keys()))
 	#print(Globals.GS[0]._symTab[seng.var('g')])
 	prev_numNodes = sum([ len(Globals.depthTable[el]) for el in Globals.depthTable.keys() if el!=0] )
 	Globals.depthTable = reachable
 	curr_numNodes = sum([ len(Globals.depthTable[el]) for el in Globals.depthTable.keys() if el!=0] )
+	logger.info("Total number of nodes pre-processing: {prev}".format(prev=prev_numNodes))
+	logger.info("Total number of nodes post-processing: {curr}".format(curr=curr_numNodes))
 	print("Total number of nodes pre-processing: {prev}".format(prev=prev_numNodes))
 	print("Total number of nodes post-processing: {curr}".format(curr=curr_numNodes))
 	
+	print("------------------------------\n")
 
 
 def	parallelConcat(t1, t2):
@@ -182,14 +214,14 @@ def selectCandidateNodes(maxdepth, bound_mindepth, bound_maxdepth):
 	if(len(PreCandidateList) <= 0):
 		return []
 	else:
-		f = lambda x : float(x.depth)/(loc_bdmax) + 0.1
+		f = lambda x : float(x.depth)/(loc_bdmax) + 0.01
 		g = lambda x, y : (-1)*y*math.log(y,2)*(len(x.parents)+ \
 		                       (len(x.children) if type(x).__name__ == "LiftOp" else 0))
 
 		cost_list = list(map( lambda x : [x.depth, g(x, f(x))], \
 		                 PreCandidateList \
 						))
-
+		#print("bdmax:", loc_bdmax)
 		sum_depth_cost = [(depth, sum(list(map(lambda x:x[1] if x[0]==depth\
 		                     else 0, cost_list)))) \
 							 for depth in range(bound_mindepth, loc_bdmax)]

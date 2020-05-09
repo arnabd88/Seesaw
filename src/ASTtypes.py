@@ -376,7 +376,24 @@ class ExprComp(AST):
 		## have the f_expressions evaluted early for conds
 		#self.f_expression = self.eval(self)
 
+	@staticmethod
+	def mod_eval(obj, err0, err1):
+		obj.depth = max([child.depth for child in obj.children])+1
+		lstrTup = obj.children[0].f_expression
+		rstrTup = obj.children[1].f_expression
 
+		cexpr = tuple(set(ops._MCOPS[obj.token.type]([fl.exprCond[0],\
+											 sl.exprCond[0], err0, err1]) \
+											 for fl in lstrTup \
+										     for sl in rstrTup))
+		if ("(True)" in cexpr):
+			return "(True)"
+		else:
+			l1 = list(filter(lambda x: x!="(False)", cexpr))
+			return "(False)" if len(l1)==0 else "({comp_expr})".format( comp_expr = "|".join(l1))
+
+
+		return "|".join(cexpr)
 
 	@staticmethod
 	def eval(obj):

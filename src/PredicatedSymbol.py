@@ -5,6 +5,8 @@ import numbers
 
 import time
 
+from functools import reduce
+
 
 opLimit = 0
 
@@ -245,37 +247,52 @@ class Sym(object):
 	def __repr__(self):
 		return self.__str__()
 
+def condmerge(tupleList):
+		ld = {}
+		for els in tupleList:
+			(expr,cond) = els.exprCond
+			ld[cond] = ld.get(cond, SymTup((Sym(0.0,Globals.__T__),))) + SymTup((els,))
+		
+		#for k,v in ld.items():
+		#	print("//-- Cond =", k)
+		#	print(v,"\n")
+		#print("Size,", len(tupleList))
+
+		return reduce(lambda x,y : x.__concat__(y,trim=True), [v for k,v in ld.items()], SymTup((Sym(0.0,Globals.__T__),)))
+
 class SymTup(tuple):
 	def __new__(self, tup):
 		return tuple.__new__(SymTup, tup)
 
 	def __add__(self, obj):
-		return  SymTup((fl+obj for fl in self)) if isinstance(obj, numbers.Number) else \
+		s =  SymTup((fl+obj for fl in self)) if isinstance(obj, numbers.Number) else \
 		  SymTup(sel for sel in (fl+sl for fl in tuple(set(el for el in self if  not (el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan ))) \
 		                         for sl in tuple(set(el for el in obj if  not ( el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan )))) \
 								 if  not ( sel.exprCond[1]==Globals.__F__  or sel.exprCond[0]==seng.nan))
+
+		return (s)
 		  #SymTup((fl+sl for fl in self for sl in obj))
 
 	def __sub__(self, obj):
-		return  SymTup((fl-sl for fl in tuple(set(el for el in self if  not ( el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan))) \
-		                      for sl in tuple(set(el for el in obj if  not (el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan )))))
+		s =  SymTup(sel for sel in (fl-sl for fl in tuple(set(el for el in self if  not ( el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan))) \
+		                      for sl in tuple(set(el for el in obj if  not (el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan )))) \
+							  if  not ( sel.exprCond[1]==Globals.__F__  or sel.exprCond[0]==seng.nan))
+		return s
 
 
 
 	def __mul__(self, obj):
 		st1 = time.time()
-		t1 = tuple(set(el for el in self if  not ( el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan )))
+		#t1 = tuple(set(el for el in self if  not ( el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan )))
+		t1 = tuple(set(filter(lambda x: not (x.exprCond[1]==Globals.__F__  or x.exprCond[0]==seng.nan), self)))
 		if isinstance(obj, numbers.Number):
 			s = SymTup((fl*obj for fl in t1))
 		else:
-			t2 = tuple(set(el for el in obj if  not ( el.exprCond[1]==Globals.__F__ or el.exprCond[0]==seng.nan )))
-			#if(len(t2)>=24):
-			#	print(t2)
+			#t2 = tuple(set(el for el in obj if  not ( el.exprCond[1]==Globals.__F__ or el.exprCond[0]==seng.nan )))
+			t2 = tuple(set(filter(lambda x: not (x.exprCond[1]==Globals.__F__  or x.exprCond[0]==seng.nan), obj)))
 			s = SymTup(sel for sel in (fl*sl for fl in t1 for sl in t2) if not ( sel.exprCond[1]==Globals.__F__ or sel.exprCond[0]==seng.nan))
-			#print(len(t1), len(t2), len(self), len(obj))
 		et1 = time.time()
-		#print("Multiplication time =", et1-st1, len(s))
-		return s
+		return condmerge(s)
 
 	#def __truediv__(self, obj):
 	#	return  SymTup((fl/sl for fl in self for sl in obj))
@@ -335,18 +352,15 @@ class SymTup(tuple):
 	def __concat__(self, other, trim=False):
 		if trim:
 			st1 = time.time()
-			t1 = tuple(set(el for el in self if  not (el.exprCond[0]==0 or el.exprCond[0]==seng.nan or el.exprCond[1]==Globals.__F__ or  el.exprCond[1]==False)))
-			t2 = tuple(set(el for el in other if  not (el.exprCond[0]==0 or el.exprCond[0]==seng.nan or el.exprCond[1]==Globals.__F__ or  el.exprCond[1]==False)))
-			#print(t1)
-			#print(t2)
-			et1 = time.time()
-			s = SymTup(tuple(set(tuple(t1) + tuple(t2))))
-			et2 = time.time()
-			#print("Trim time = ", et1-st1, et2-et1, len(t1), len(t2))
-			#print("Conc:", s)
-			return self if len(t2)==0 else other if len(t1)==0 else s
+			#t1 = tuple(set(el for el in self if  not (el.exprCond[0]==0 or el.exprCond[0]==seng.nan or el.exprCond[1]==Globals.__F__ or  el.exprCond[1]==False)))
+			#t2 = tuple(set(el for el in other if  not (el.exprCond[0]==0 or el.exprCond[0]==seng.nan or el.exprCond[1]==Globals.__F__ or  el.exprCond[1]==False)))
+			t1 = tuple(set(filter(lambda x: not (x.exprCond[0]==0 or x.exprCond[0]==seng.nan or x.exprCond[1]==Globals.__F__ or  x.exprCond[1]==False), self)))
+			t2 = tuple(set(filter(lambda x: not (x.exprCond[0]==0 or x.exprCond[0]==seng.nan or x.exprCond[1]==Globals.__F__ or  x.exprCond[1]==False), other)))
+			#s = SymTup(tuple(set(tuple(t1) + tuple(t2))))
+			s = (SymTup(sel for sel in tuple(set(tuple(t1) + tuple(t2))) if  not (sel.exprCond[0]==0 or sel.exprCond[0]==seng.nan or sel.exprCond[1]==Globals.__F__ or  sel.exprCond[1]==False)))
+			return (s)
 		else:
-			return SymTup(tuple(self) + tuple(other))
+			return (SymTup(tuple(self) + tuple(other)))
 
 	
 
