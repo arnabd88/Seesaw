@@ -140,7 +140,8 @@ class AnalyzeNode_Cond(object):
 				constAcc.append(abs(expr))
 			elif seng.count_ops(expr) > lim:
 				#print("lim:", expr, lim, len(racc))
-				errIntv = utils.generate_signature(expr)
+				(cond_expr,free_symbols) = self.parse_cond(cond)
+				errIntv = utils.generate_signature(expr,cond_expr, free_symbols)
 				err = max([abs(i) for i in errIntv])
 				temp_racc.append(Sym(err, cond))
 			else:
@@ -222,22 +223,24 @@ class AnalyzeNode_Cond(object):
 		tcond = cond
 		print("\n Parsing Conditional = {pcond}".format(pcond=tcond))
 		logger.info("\n Parsing Conditional = {pcond}".format(pcond=tcond))
+		set_free_symbols = set()
 		if tcond not in (True,False):
 			free_syms = tcond.free_symbols
 			for fsym in free_syms:
 				symNode = Globals.predTable[fsym]
 				print("Handling Condtional {symID}".format(symID=fsym))
 				logger.info("Handling Condtional {symID}".format(symID=fsym))
-				subcond =  Globals.condExprBank.get(fsym) if fsym in Globals.condExprBank.keys() else helper.handleConditionals(symNode)
+				(subcond,free_symbols) =  Globals.condExprBank.get(fsym) if fsym in Globals.condExprBank.keys()\
+																		 else helper.handleConditionals(symNode)
 				print("SubCond: {symID} : {SubCond}\n\n".format(symID=fsym, SubCond=subcond))
 				logger.info("SubCond:{symID} : {SubCond}\n\n".format(symID=fsym, SubCond=subcond))
-				Globals.condExprBank[fsym] = subcond
-			tcond = tcond.subs({fsym: Globals.condExprBank[fsym] for fsym in free_syms})
-			print({fsym: Globals.condExprBank[fsym] for fsym in free_syms})
+				Globals.condExprBank[fsym] = (subcond,free_symbols)
+				set_free_symbols.union(free_symbols)
+			tcond = tcond.subs({fsym: Globals.condExprBank[fsym][0] for fsym in free_syms})
 			print("Finished parsing -> {cond} : {cexpr}".format(cond=cond, cexpr=tcond))
 			logger.info("Finished parsing -> {cond} : {cexpr}".format(cond=cond, cexpr=tcond))
-			return tcond
-		return tcond
+			return (tcond, set_free_symbols)
+		return (tcond, set_free_symbols)
 
 
 	def first_order_error(self):
@@ -254,9 +257,9 @@ class AnalyzeNode_Cond(object):
 			for els in tupleList:
 				expr, cond = els.exprCond
 				#print("Query: ", seng.count_ops(expr), cond)
-				cond_expr = self.parse_cond(cond)
+				(cond_expr,free_symbols) = self.parse_cond(cond)
 				#print("cond_expr", cond_expr)
-				errIntv = utils.generate_signature(expr)
+				errIntv = utils.generate_signature(expr,cond_expr, free_symbols)
 				err = max([abs(i) for i in errIntv])
 				errList.append(err)
 
@@ -265,8 +268,8 @@ class AnalyzeNode_Cond(object):
 				expr, cond = exprTup.exprCond
 				#print("Query: ", seng.count_ops(expr), cond)
 				#print("f_expr", expr)
-				cond_expr = self.parse_cond(cond)
-				fintv = utils.generate_signature(expr)
+				(cond_expr,free_symbols) = self.parse_cond(cond)
+				fintv = utils.generate_signature(expr,cond_expr, free_symbols)
 				ret_intv = fintv if ret_intv is None else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
 			#print(node.f_expression)
 			self.results[node] = {"ERR" : max(errList), \

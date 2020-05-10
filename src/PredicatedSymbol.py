@@ -224,6 +224,13 @@ class Sym(object):
 	def __countops__(self):
 		return seng.count_ops(self.exprCond[0])
 
+
+	def __freeSyms__(self):
+		try:
+			return self.exprCond[0].free_symbols
+		except:
+			return set()
+
 	def __lt__(self, other):
 		assert(self.exprCond[1]==other.exprCond[1])
 		return (self.exprCond[0] < other.exprCond[0]) 
@@ -361,6 +368,9 @@ class SymTup(tuple):
 			return (s)
 		else:
 			return (SymTup(tuple(self) + tuple(other)))
+
+	def __freeSyms__(self):
+		return reduce(lambda x,y: x.union(y), [sl.__freeSyms__() for sl in self], set())
 
 	
 

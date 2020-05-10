@@ -279,7 +279,7 @@ def invoke_gelpia_bak(symExpr, inputStr):
 
 
 import symengine as seng
-def invoke_gelpia(symExpr, inputStr, label="Func-> Dur:"):
+def invoke_gelpia(symExpr, cond_expr, inputStr, label="Func-> Dur:"):
 	#try:
 	#    const_intv = float(str(symExpr))
 	#    return [const_intv, const_intv]
@@ -292,18 +292,25 @@ def invoke_gelpia(symExpr, inputStr, label="Func-> Dur:"):
 	str_expr = re.sub(r'Abs', "abs", str_expr)
 	str_expr = re.sub(r're\b', "", str_expr)
 	str_expr = re.sub(r'im\b', "0.0*", str_expr)
+	str_cond_expr = re.sub(r'\&', "&&", str(cond_expr))
+	str_cond_expr = re.sub(r'\|', "||", str_cond_expr)
+	str_cond_expr = re.sub(r'\*\*', "^", str_cond_expr)
+	str_cond_expr = re.sub(r'Abs', "abs", str_cond_expr)
+	str_cond_expr = re.sub(r're\b', "", str_cond_expr)
+	str_cond_expr = re.sub(r'im\b', "0.0*", str_cond_expr)
 	#print("Pass conversion gelpia")
-	str_expr = inputStr + str_expr
+	gstr_expr = inputStr + str_expr
 	Globals.gelpiaID += 1
 	#print("Begining New gelpia query->ID:", Globals.gelpiaID)
-	#fout = open("gelpia_"+str(Globals.gelpiaID)+".txt", "w")
-	#fout.write("# --input-epsilon {ieps}\n".format(ieps=str(gelpia_input_epsilon)))
-	#fout.write("# --output-epsilon {oeps}\n".format(oeps=str(gelpia_output_epsilon)))
-	#fout.write("# --output-epsilon-relative {oreps}\n".format(oreps=str(gelpia_output_epsilon_relative)))
-	#fout.write("# --timeout {tout}\n".format(tout=str(gelpia_timeout)))
-	#fout.write("# --max-iters {miters}\n".format(miters=str(gelpia_max_iters)))
+	fout = open("gelpia_"+str(Globals.gelpiaID)+".txt", "w")
+	fout.write("# --input-epsilon {ieps}\n".format(ieps=str(gelpia_input_epsilon)))
+	fout.write("# --output-epsilon {oeps}\n".format(oeps=str(gelpia_output_epsilon)))
+	fout.write("# --output-epsilon-relative {oreps}\n".format(oreps=str(gelpia_output_epsilon_relative)))
+	fout.write("# --timeout {tout}\n".format(tout=str(gelpia_timeout)))
+	fout.write("# --max-iters {miters}\n".format(miters=str(gelpia_max_iters)))
+	fout.write(inputStr + str_cond_expr+"; " + str_expr)
 	#fout.write(str_expr)
-	#fout.close()
+	fout.close()
 
 	#print(str_expr)
 	start_time = time.time()
@@ -311,7 +318,7 @@ def invoke_gelpia(symExpr, inputStr, label="Func-> Dur:"):
 	max_lower = Value("d", float("nan"))
 	max_upper = Value("d", float("nan"))
 	#print("ID:",Globals.gelpiaID, "\t Finding max, min\n")
-	p = Process(target=gelpia.find_max, args=(str_expr,
+	p = Process(target=gelpia.find_max, args=(gstr_expr,
 	                                          gelpia_epsilons,
 	                                          gelpia_timeout,
 	                                          gelpia_grace,
@@ -324,7 +331,7 @@ def invoke_gelpia(symExpr, inputStr, label="Func-> Dur:"):
 	                                          max_lower,
 	                                          max_upper))
 	p.start()
-	min_lower, min_upper = gelpia.find_min(str_expr,
+	min_lower, min_upper = gelpia.find_min(gstr_expr,
 	                                       gelpia_epsilons,
 	                                       gelpia_timeout,
 	                                       gelpia_grace,
@@ -443,7 +450,7 @@ def genSig(sym_expr):
 
 	return hashSig(strSig, "md5")
 
-def generate_signature(sym_expr):
+def generate_signature(sym_expr, cond_expr, cond_free_symbols):
 	try:
 		if(seng.count_ops(sym_expr)==0):
 			const_intv = float(str(sym_expr))
@@ -475,10 +482,10 @@ def generate_signature(sym_expr):
 	sig = genSig(sym_expr)
 	check = Globals.hashBank.get(sig, None)
 	if check is None:
-		inputStr = extract_input_dep(list(sym_expr.free_symbols))
+		inputStr = extract_input_dep(list(sym_expr.free_symbols.union(cond_free_symbols)))
 		#print("Gelpia input expr ops ->", seng.count_ops(sym_expr))
 		g1 = time.time()
-		Globals.hashBank[sig] = invoke_gelpia(sym_expr, inputStr)
+		Globals.hashBank[sig] = invoke_gelpia(sym_expr, cond_expr, inputStr)
 		g2 = time.time()
 		print("Gelpia solve = ", g2 - g1, "opCount =", seng.count_ops(sym_expr))
 	else:

@@ -32,11 +32,11 @@ def parse_cond(cond):
 	return tcond
 
 
-def dfs_expression_builder(node, reachable, parent_dict, cond):
+def dfs_expression_builder(node, reachable, parent_dict, free_syms, cond, ctype):
 
 	for child in node.children:
 		if not reachable[child.depth].__contains__(child):
-			dfs_expression_builder(child, reachable, parent_dict, cond=Globals.__T__)
+			dfs_expression_builder(child, reachable, parent_dict, free_syms, cond, ctype)
 
 		parent_dict[child].append(node)
 
@@ -44,8 +44,9 @@ def dfs_expression_builder(node, reachable, parent_dict, cond):
 		res0 = ANC([node.children[0]], [], node.children[0].depth).start()
 		res1 = ANC([node.children[1]], [], node.children[1].depth).start()
 		## an exprComp node as a modified evaluation ops to include extra error terms
-		fexpr = node.mod_eval(node, res0[node.children[0]]["ERR"]*pow(2,-53), \
+		(fexpr,fsyms) = node.mod_eval(node, res0[node.children[0]]["ERR"]*pow(2,-53), \
 								   res1[node.children[1]]["ERR"]*pow(2,-53) )
+		free_syms.union(fsyms)
 	else:
 		fexpr = node.eval(node)
 
@@ -63,28 +64,32 @@ def dfs_expression_builder(node, reachable, parent_dict, cond):
 
 
 
-def expression_builder(probeList):
+def expression_builder(probeList,ctype=False):
 
 	parent_dict = defaultdict(list)
 	reachable = defaultdict(set)
+	free_syms = set()
 
 	for node in probeList:
 		if not reachable[node.depth].__contains__(node):
-			dfs_expression_builder(node, reachable, parent_dict, cond=Globals.__T__)
+			dfs_expression_builder(node, reachable, parent_dict, free_syms,  cond=Globals.__T__,ctype=ctype)
 
 		#print(type(node).__name__, node.token.type, node.depth, node.f_expression)
 		#print([(type(child).__name__, child.token.type, child.depth, child.f_expression) for child in node.children])
 
 	del reachable
 	
-	return parent_dict
+	if ctype:
+		return free_syms
+	else:
+		return parent_dict
 
 
 def handleConditionals(probeNode):
 	print("Building conditional expressions...\n")
 	logger.info("Building conditional expressions...\n")
-	expression_builder([probeNode])
-	return probeNode.f_expression
+	fsyms = expression_builder([probeNode],ctype=True)
+	return (probeNode.f_expression,fsyms)
 
 def pretraverse(node, reachable):
 	

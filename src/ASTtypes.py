@@ -381,16 +381,18 @@ class ExprComp(AST):
 		obj.depth = max([child.depth for child in obj.children])+1
 		lstrTup = obj.children[0].f_expression
 		rstrTup = obj.children[1].f_expression
+		free_syms = lstrTup.__freeSyms__().union(rstrTup.__freeSyms__())
 
 		cexpr = tuple(set(ops._MCOPS[obj.token.type]([fl.exprCond[0],\
 											 sl.exprCond[0], err0, err1]) \
 											 for fl in lstrTup \
 										     for sl in rstrTup))
 		if ("(True)" in cexpr):
-			return "(True)"
+			return ("(True)",0)
 		else:
 			l1 = list(filter(lambda x: x!="(False)", cexpr))
-			return "(False)" if len(l1)==0 else "({comp_expr})".format( comp_expr = "|".join(l1))
+			#free_syms = reduce(lambda x, y: x.union(y), [el.exprCond[0].free_symbols for el in l1 if (seng.count_ops(el.exprCond[0]) > 0)], set())
+			return ("(False)",0) if len(l1)==0 else ("({comp_expr})".format( comp_expr = "|".join(l1)), free_syms)
 
 
 		return "|".join(cexpr)
