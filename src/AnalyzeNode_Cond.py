@@ -63,7 +63,7 @@ class AnalyzeNode_Cond(object):
 
 		
 	def converge_parents(self, node):
-		print(node.depth, len(node.f_expression))
+		#print(node.depth, len(node.f_expression))
 		#print(type(node).__name__, node.depth, self.parentTracker[node], len(node.parents) , len(self.parent_dict[node]), node.f_expression)
 		return True if self.parentTracker[node] >= len(self.parent_dict[node]) else False
 
