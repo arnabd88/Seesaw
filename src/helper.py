@@ -6,6 +6,8 @@ import symengine as seng
 from collections import defaultdict
 from SymbolTable import *
 
+import ops_def as ops
+
 import logging 
 
 logger = logging.getLogger(__name__)
@@ -32,20 +34,23 @@ def parse_cond(cond):
 	return tcond
 
 
-def dfs_expression_builder(node, reachable, parent_dict, free_syms, cond, ctype):
+def dfs_expression_builder(node, reachable, parent_dict, free_syms, cond, etype, ctype):
 
 	for child in node.children:
 		if not reachable[child.depth].__contains__(child):
-			dfs_expression_builder(child, reachable, parent_dict, free_syms, cond, ctype)
+			dfs_expression_builder(child, reachable, parent_dict, free_syms, cond, etype, ctype)
 
 		parent_dict[child].append(node)
 
 	if type(node).__name__ == "ExprComp":
-		res0 = ANC([node.children[0]], [], node.children[0].depth).start()
-		res1 = ANC([node.children[1]], [], node.children[1].depth).start()
+		if etype:
+			res0 = ANC([node.children[0]], [], node.children[0].depth).start()
+			res1 = ANC([node.children[1]], [], node.children[1].depth).start()
 		## an exprComp node as a modified evaluation ops to include extra error terms
-		(fexpr,fsyms) = node.mod_eval(node, res0[node.children[0]]["ERR"]*pow(2,-53), \
+			(fexpr,fsyms) = node.mod_eval(node, res0[node.children[0]]["ERR"]*pow(2,-53), \
 								   res1[node.children[1]]["ERR"]*pow(2,-53) )
+		else:
+			(fexpr,fsyms) = node.mod_eval(node, 0.0, 0.0)
 		free_syms.union(fsyms)
 	else:
 		fexpr = node.eval(node)
@@ -64,7 +69,7 @@ def dfs_expression_builder(node, reachable, parent_dict, free_syms, cond, ctype)
 
 
 
-def expression_builder(probeList,ctype=False):
+def expression_builder(probeList, etype=False, ctype=False):
 
 	parent_dict = defaultdict(list)
 	reachable = defaultdict(set)
@@ -72,7 +77,7 @@ def expression_builder(probeList,ctype=False):
 
 	for node in probeList:
 		if not reachable[node.depth].__contains__(node):
-			dfs_expression_builder(node, reachable, parent_dict, free_syms,  cond=Globals.__T__,ctype=ctype)
+			dfs_expression_builder(node, reachable, parent_dict, free_syms,  cond=Globals.__T__,etype=etype, ctype=ctype)
 
 		#print(type(node).__name__, node.token.type, node.depth, node.f_expression)
 		#print([(type(child).__name__, child.token.type, child.depth, child.f_expression) for child in node.children])
@@ -85,11 +90,11 @@ def expression_builder(probeList,ctype=False):
 		return parent_dict
 
 
-def handleConditionals(probeNode):
+def handleConditionals(probeNodeList, etype=True):
 	print("Building conditional expressions...\n")
 	logger.info("Building conditional expressions...\n")
-	fsyms = expression_builder([probeNode],ctype=True)
-	return (probeNode.f_expression,fsyms)
+	fsyms = expression_builder(probeNodeList, etype, ctype=True)
+	return (" & ".join([str(probeNode.f_expression) for probeNode in probeNodeList]),fsyms)
 
 def pretraverse(node, reachable):
 	
@@ -221,7 +226,8 @@ def selectCandidateNodes(maxdepth, bound_mindepth, bound_maxdepth):
 	else:
 		f = lambda x : float(x.depth)/(loc_bdmax) + 0.01
 		g = lambda x, y : (-1)*y*math.log(y,2)*(len(x.parents)+ \
-		                       (len(x.children) if type(x).__name__ == "LiftOp" else 0))
+		                       (len(x.children) if type(x).__name__ == "LiftOp" else 0) +\
+							   ops._Priority[x.token.type])
 
 		cost_list = list(map( lambda x : [x.depth, g(x, f(x))], \
 		                 PreCandidateList \
@@ -230,7 +236,7 @@ def selectCandidateNodes(maxdepth, bound_mindepth, bound_maxdepth):
 		sum_depth_cost = [(depth, sum(list(map(lambda x:x[1] if x[0]==depth\
 		                     else 0, cost_list)))) \
 							 for depth in range(bound_mindepth, loc_bdmax)]
-		#print(sum_depth_cost)
+		print(sum_depth_cost)
 		sum_depth_cost.sort(key=lambda x:(-x[1], x[0]))
 		abs_depth = sum_depth_cost[0][0]
 

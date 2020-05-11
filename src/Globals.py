@@ -24,6 +24,8 @@ predTable = dict()
 condTable = dict()
 condExprBank = dict()
 
+externPredTable = dict()
+
 
 
 ## ID variables 

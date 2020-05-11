@@ -5,7 +5,7 @@ from sly import Lexer
 
 class Slex(Lexer):
 
-	tokens = { INPUTS, OUTPUTS, EXPRS, 		\
+	tokens = { INPUTS, OUTPUTS, EXPRS, REQUIRES,		\
 				INTEGER, FLOAT, PLUS,  		\
 				MINUS, MUL, DIV, SQRT, 		\
 				SIN, ASIN, COS, TAN, COT, COSH, 	\
@@ -13,7 +13,7 @@ class Slex(Lexer):
 				EQ, NEQ, \
 				ASSIGN, LPAREN, RPAREN, 	\
 				SLPAREN, SRPAREN, COLON,	\
-				SEMICOLON, COMMA, ID, FPTYPE, \
+				SEMICOLON, COMMA, ID, FPTYPE, INTTYPE, \
 				IF, THEN, ELSE, ENDIF, AND, \
 				OR, NOT, LEQ, LT, GEQ, GT	\
 			}
@@ -47,6 +47,7 @@ class Slex(Lexer):
 	ID['INPUTS']	=	INPUTS
 	ID['OUTPUTS']	=	OUTPUTS
 	ID['EXPRS']		=	EXPRS
+	ID['REQUIRES']	=	REQUIRES
 	ID['sqrt']		=	SQRT
 	ID['sin']		= 	SIN
 	ID['asin']		= 	SIN
@@ -63,6 +64,7 @@ class Slex(Lexer):
 	ID['fl16']  	= 	FPTYPE
 	ID['fl32']  	= 	FPTYPE
 	ID['fl64']  	= 	FPTYPE
+	ID['int']		= 	INTTYPE
 	ID['if']		=	IF
 	ID['then']		=	THEN
 	ID['else']		=	ELSE
@@ -74,7 +76,7 @@ class Slex(Lexer):
 
 
 	def ID(self, t):
-		if t.type not in  (INPUTS, OUTPUTS, EXPRS):
+		if t.type not in  (INPUTS, OUTPUTS, EXPRS, REQUIRES):
 			t.value = seng.var(t.value)
 		return t
 
@@ -85,8 +87,8 @@ class Slex(Lexer):
 
 	@_(r'[\-]?\d+')
 	def INTEGER(self, t):
-		t.value = float(t.value)
-		t.type = FLOAT
+		t.value = int(t.value)
+		t.type = INTEGER
 		return t
 
 	MINUS	=	r'\-'

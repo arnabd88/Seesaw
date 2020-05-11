@@ -31,6 +31,8 @@ class AnalyzeNode_Cond(object):
 		self.Accumulator = {} 
 		self.results = {}
 		self.bwdDeriv = {}
+		self.externConstraints = ""
+		self.externFreeSymbols = set()
 
 	def __init__(self, probeNodeList, argList, maxdepth):
 		self.initialize()
@@ -52,9 +54,16 @@ class AnalyzeNode_Cond(object):
 		self.next_workList = list(it1)
 		self.workList = list(it2)
 
+	def __externConstraints__(self):
+		(subcond,free_symbols) = helper.handleConditionals( [v for k,v in Globals.externPredTable.items()], etype=False)
+		self.externConstraints = subcond 
+		self.externFreeSymbols = free_symbols
+		print("Ext Constraints: ", subcond)
+	#	self.externConstraints = "( " + " && ".join(["("+str(n.f_expression)+")" for n in Globals.externPredTable.keys()]) + " )"
+
 		
 	def converge_parents(self, node):
-		#print(node.depth, len(node.f_expression))
+		print(node.depth, len(node.f_expression))
 		#print(type(node).__name__, node.depth, self.parentTracker[node], len(node.parents) , len(self.parent_dict[node]), node.f_expression)
 		return True if self.parentTracker[node] >= len(self.parent_dict[node]) else False
 
@@ -141,7 +150,11 @@ class AnalyzeNode_Cond(object):
 			elif seng.count_ops(expr) > lim:
 				#print("lim:", expr, lim, len(racc))
 				(cond_expr,free_symbols) = self.parse_cond(cond)
-				errIntv = utils.generate_signature(expr,cond_expr, free_symbols)
+				print("Query2: ", seng.count_ops(expr))
+				errIntv = utils.generate_signature(expr,\
+												   cond_expr, \
+												   self.externConstraints, \
+												   free_symbols.union(self.externFreeSymbols))
 				err = max([abs(i) for i in errIntv])
 				temp_racc.append(Sym(err, cond))
 			else:
@@ -231,7 +244,9 @@ class AnalyzeNode_Cond(object):
 				print("Handling Condtional {symID}".format(symID=fsym))
 				logger.info("Handling Condtional {symID}".format(symID=fsym))
 				(subcond,free_symbols) =  Globals.condExprBank.get(fsym) if fsym in Globals.condExprBank.keys()\
-																		 else helper.handleConditionals(symNode)
+																		 else helper.handleConditionals([symNode], etype=True)
+				#subcond = subcondList[0]
+				print("This:", subcond)
 				print("SubCond: {symID} : {SubCond}\n\n".format(symID=fsym, SubCond=subcond))
 				logger.info("SubCond:{symID} : {SubCond}\n\n".format(symID=fsym, SubCond=subcond))
 				Globals.condExprBank[fsym] = (subcond,free_symbols)
@@ -256,10 +271,14 @@ class AnalyzeNode_Cond(object):
 			funcList = []
 			for els in tupleList:
 				expr, cond = els.exprCond
-				#print("Query: ", seng.count_ops(expr), cond)
 				(cond_expr,free_symbols) = self.parse_cond(cond)
+				print("Query1: ", seng.count_ops(expr))
 				#print("cond_expr", cond_expr)
-				errIntv = utils.generate_signature(expr,cond_expr, free_symbols)
+				#errIntv = utils.generate_signature(expr,cond_expr, free_symbols)
+				errIntv = utils.generate_signature(expr,\
+												   cond_expr, \
+												   self.externConstraints, \
+												   free_symbols.union(self.externFreeSymbols))
 				err = max([abs(i) for i in errIntv])
 				errList.append(err)
 
@@ -269,7 +288,11 @@ class AnalyzeNode_Cond(object):
 				#print("Query: ", seng.count_ops(expr), cond)
 				#print("f_expr", expr)
 				(cond_expr,free_symbols) = self.parse_cond(cond)
-				fintv = utils.generate_signature(expr,cond_expr, free_symbols)
+				#fintv = utils.generate_signature(expr,cond_expr, free_symbols)
+				fintv = utils.generate_signature(expr,\
+												   cond_expr, \
+												   self.externConstraints, \
+												   free_symbols.union(self.externFreeSymbols))
 				ret_intv = fintv if ret_intv is None else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
 			#print(node.f_expression)
 			self.results[node] = {"ERR" : max(errList), \
@@ -287,6 +310,7 @@ class AnalyzeNode_Cond(object):
 	def start(self):
 		self.__init_workStack__()
 		self.__setup_outputs__()
+		self.__externConstraints__()
 
 		dt1 = time.time()
 		print(" > Begin building derivatives....")

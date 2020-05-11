@@ -165,7 +165,8 @@ class Sym(object):
 	def __mul__(self, obj):
 		#symexpr = self.exprCond[0] * obj.exprCond[0]
 		return Sym( self.exprCond[0]*obj, self.exprCond[1]) if isinstance(obj, numbers.Number) else \
-		Sym( seng.expand(self.exprCond[0] * obj.exprCond[0]) if seng.count_ops(self.exprCond[0] * obj.exprCond[0]) < opLimit else self.exprCond[0] * obj.exprCond[0]	,\
+		Sym( self.exprCond[0] * obj.exprCond[0]	,\
+		#Sym( seng.expand(self.exprCond[0] * obj.exprCond[0]) if seng.count_ops(self.exprCond[0] * obj.exprCond[0]) < opLimit else self.exprCond[0] * obj.exprCond[0]	,\
 				(self.exprCond[1] & obj.exprCond[1]).simplify() )
 
 	def __truediv__(self, obj):

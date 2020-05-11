@@ -279,7 +279,7 @@ def invoke_gelpia_bak(symExpr, inputStr):
 
 
 import symengine as seng
-def invoke_gelpia(symExpr, cond_expr, inputStr, label="Func-> Dur:"):
+def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func-> Dur:"):
 	#try:
 	#    const_intv = float(str(symExpr))
 	#    return [const_intv, const_intv]
@@ -292,14 +292,23 @@ def invoke_gelpia(symExpr, cond_expr, inputStr, label="Func-> Dur:"):
 	str_expr = re.sub(r'Abs', "abs", str_expr)
 	str_expr = re.sub(r're\b', "", str_expr)
 	str_expr = re.sub(r'im\b', "0.0*", str_expr)
+
 	str_cond_expr = re.sub(r'\&', "&&", str(cond_expr))
 	str_cond_expr = re.sub(r'\|', "||", str_cond_expr)
 	str_cond_expr = re.sub(r'\*\*', "^", str_cond_expr)
 	str_cond_expr = re.sub(r'Abs', "abs", str_cond_expr)
 	str_cond_expr = re.sub(r're\b', "", str_cond_expr)
 	str_cond_expr = re.sub(r'im\b', "0.0*", str_cond_expr)
-	#print("Pass conversion gelpia")
-	gstr_expr = inputStr + str_expr
+
+	#str_extc_expr = str(externConstraints)
+	str_extc_expr = re.sub(r'\&', "&&", str(externConstraints))
+	str_extc_expr = re.sub(r'\|', "||", str_extc_expr)
+	str_extc_expr = re.sub(r'\*\*', "^", str_extc_expr)
+	str_extc_expr = re.sub(r'Abs', "abs", str_extc_expr)
+	str_extc_expr = re.sub(r're\b', "", str_extc_expr)
+	str_extc_expr = re.sub(r'im\b', "0.0*", str_extc_expr)
+	print("Pass conversion gelpia")
+	gstr_expr = inputStr + str_expr  ## without the constraints
 	Globals.gelpiaID += 1
 	#print("Begining New gelpia query->ID:", Globals.gelpiaID)
 	fout = open("gelpia_"+str(Globals.gelpiaID)+".txt", "w")
@@ -308,7 +317,10 @@ def invoke_gelpia(symExpr, cond_expr, inputStr, label="Func-> Dur:"):
 	fout.write("# --output-epsilon-relative {oreps}\n".format(oreps=str(gelpia_output_epsilon_relative)))
 	fout.write("# --timeout {tout}\n".format(tout=str(gelpia_timeout)))
 	fout.write("# --max-iters {miters}\n".format(miters=str(gelpia_max_iters)))
-	fout.write(inputStr + str_cond_expr+"; " + str_expr)
+
+	str_constraint = " && ".join([str_cond_expr,str_extc_expr])
+
+	fout.write(inputStr + str_constraint +"; " + str_expr)
 	#fout.write(str_expr)
 	fout.close()
 
@@ -450,7 +462,7 @@ def genSig(sym_expr):
 
 	return hashSig(strSig, "md5")
 
-def generate_signature(sym_expr, cond_expr, cond_free_symbols):
+def generate_signature(sym_expr, cond_expr, externConstraints, cond_free_symbols):
 	try:
 		if(seng.count_ops(sym_expr)==0):
 			const_intv = float(str(sym_expr))
@@ -485,7 +497,7 @@ def generate_signature(sym_expr, cond_expr, cond_free_symbols):
 		inputStr = extract_input_dep(list(sym_expr.free_symbols.union(cond_free_symbols)))
 		#print("Gelpia input expr ops ->", seng.count_ops(sym_expr))
 		g1 = time.time()
-		Globals.hashBank[sig] = invoke_gelpia(sym_expr, cond_expr, inputStr)
+		Globals.hashBank[sig] = invoke_gelpia(sym_expr, cond_expr, externConstraints, inputStr)
 		g2 = time.time()
 		print("Gelpia solve = ", g2 - g1, "opCount =", seng.count_ops(sym_expr))
 	else:

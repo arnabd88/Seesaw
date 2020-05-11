@@ -110,6 +110,7 @@ _DFOPS = { \
 
 
 _Priority = { \
+				IF		:	0,	\
 				SIN		:	0,	\
 				ASIN	:	0,	\
 				COS		:	0,	\
@@ -117,7 +118,7 @@ _Priority = { \
 				PLUS	:	0,	\
 				MUL		:	0,	\
 				MINUS	:	0,	\
-				DIV		:	0,	\
+				DIV		:	4,	\
 				SQRT	:	0,	\
 				EXP		:	0	\
 }
@@ -172,7 +173,8 @@ _FP_RND = {
 			"fl16"   :  pow(2,-8+53), \
 			"fl32"   :  pow(2,-24+53), \
 			"fl64"   :  1.00, \
-			"const"  :  0.00
+			"const"  :  0.00, \
+			"int"	 :  0.00
 		}
 
 

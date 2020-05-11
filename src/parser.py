@@ -292,11 +292,19 @@ class Sparser(object):
 			nameToken = self.current_token
 			self.consume(ID)
 			rnd = 'rnd64'
+			deriv_token = FLOAT
 			if self.current_token.type == FPTYPE:
 				rnd = str(self.current_token.value)
+				deriv_token = FLOAT
 				self.consume(FPTYPE)
+			elif self.current_token.type == INTTYPE:
+				rnd = str(self.current_token.value)
+				deriv_token = INTEGER
+				self.consume(INTTYPE)
 			self.consume(ASSIGN)
 			node = self.arith_expr()
+			node.set_rounding(rnd)
+			node.derived_token = deriv_token
 			self.consume(SEMICOLON)
 			self.current_symtab._symTab[nameSym] = ((node, Globals.__T__),)
 
@@ -328,7 +336,42 @@ class Sparser(object):
 		##
 		self.parse_input()
 		self.parse_output()
+		self.parse_constraints()
 		self.parse_exec()
+
+	def parse_constraints(self):
+		if self.current_token.type != REQUIRES:
+			pass
+		else:
+			self.consume(REQUIRES)
+			self.consume(SLPAREN)
+			self.constraint_list()
+			self.consume(SRPAREN)
+
+	def constraint_list(self):
+		""" constraint_list : cond_expr | ; | empty """
+		self.assign_constraint_expr()
+
+		while self.current_token.type == SEMICOLON:
+			self.consume(SEMICOLON)
+			self.assign_constraint_expr()
+
+	def assign_constraint_expr(self):
+		""" assign_constraint_expr : ID COLON cond_expr """
+		if self.current_token.type == ID:
+			name = str(self.current_token.value)
+			nameToken = self.current_token
+			self.consume(ID)
+			self.consume(COLON)
+			node = self.cond_expr()
+			print("CONSTRAINTS: ", node.rec_eval(node))
+			node_exists = Globals.externPredTable.get(nameToken.value, None)
+			if node_exists is not None:
+				self.error()
+			Globals.externPredTable[nameToken.value] = node
+		
+		
+
 
 	def parse_exec(self):
 		self.consume(EXPRS)
@@ -387,6 +430,55 @@ class Sparser(object):
 			self.consume(SEMICOLON)
 			self.interval()
 
+	##---------------------------------------------------------------------
+
+	def intv_expr(self):
+		"""
+		expr	:	term ( ( PLUS | MINUS) term )*
+		"""
+
+		node = self.intv_term()
+		while self.current_token.type in (PLUS, MINUS):
+			token = self.current_token
+			self.consume(token.type)
+			node = BinOp(left=node, token=token, right=self.intv_term())
+
+		return node
+
+	def intv_term(self):
+		"""
+		term	:	factor ( ( MUL | DIV) factor)*
+		"""
+
+		node = self.intv_factor()
+		while self.current_token.type in (MUL, DIV):
+			token = self.current_token
+			self.consume(token.type)
+			node = BinOp(left=node, token=token, right=self.intv_factor())
+
+		return node
+
+
+	def intv_factor(self):
+		token = self.current_token
+		if token.type in (INTEGER, FLOAT):
+			self.consume(token.type)
+			return Num(token)
+		elif token.type in (SQRT, SIN, COS, ASIN, TAN, EXP):
+			self.consume(token.type)
+			node = TransOp(self.intv_factor(), token)
+			return node
+		elif token.type == LPAREN:
+			self.consume(LPAREN)
+			node = self.intv_expr()
+			self.consume(RPAREN)
+			return node
+		else :
+			self.error()
+
+
+	##---------------------------------------------------------------------
+
 
 	def interval(self):
 		while self.current_token.type == ID:
@@ -398,19 +490,26 @@ class Sparser(object):
 			self.consume(COLON)
 			self.consume(LPAREN)
 			## check bater later here for expressions
-			left = self.current_token.value
-			self.consume(FLOAT)
-
+			n = self.intv_expr()
+			left = n.rec_eval(n)
+			#left = self.current_token.value
+			#self.consume(FLOAT)
 			self.consume(COMMA)
-			right = self.current_token.value
-			self.consume(FLOAT)
+
+			n = self.intv_expr()
+			right = n.rec_eval(n)
+
+			#self.consume(COMMA)
+			#right = self.current_token.value
+			#self.consume(FLOAT)
 			self.consume(RPAREN)
 
 			symVar = FreeVar(var_token, cond=Globals.__T__)
 			#symVar.set_rounding(fptype)
 			#self.current_symtab.insert(var_token.value, [[symVar,Globals.__T__]])
 			self.current_symtab.insert(var_token.value, ((symVar,Globals.__T__),)   )
-			Globals.inputVars[var_token.value] = {"INTV" : [left, right]}
+			Globals.inputVars[var_token.value] = {"INTV" : [left[0].exprCond[0], \
+															right[0].exprCond[0]]}
 
 	def parse(self, text):
 		self.lexer.create_token_generator(text)
