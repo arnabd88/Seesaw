@@ -9,6 +9,17 @@ OUTPUTS {
 	y ;
 }
 
+## New Addition of required constraints on inputs
+## Precedence &&, ||
+## Separate constraints => &&
+REQUIRES {
+
+	RSC1 : (x1*x3 < x2) || (x2 >= x4) ;
+	RSC2 : (x4 < x3+x1) && (x4+x2 < x3*x3) || (x2 < x4) ;
+
+}
+
+
 EXPRS {
 	h rnd64 = (x2/x1) + x3 ;
 	g rnd64 = x1 + x1*x2 ;
@@ -17,7 +28,7 @@ EXPRS {
 		g rnd64 = 1 + 1/g ;
 		h rnd64 = x3 + x4 ;
 	else
-		if ( x3*x3 > 0.25 ) then
+		if ( (x3*x3) > 0.25 ) && ((x4*h) <= (x1*x1)) then
 			g rnd64 = h + x2*x3 ;
 		endif
 	endif

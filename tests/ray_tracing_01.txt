@@ -27,7 +27,8 @@ OUTPUTS {
 EXPRS {
 
 
-	niter rnd64 = 0 ;
+	#niter rnd64 = 0 ;
+	niter int = 0 ;
 	paraxial rnd64 = 0;
 	axis_slope_angle rnd64 = 0 ;
 
@@ -84,31 +85,31 @@ EXPRS {
 			to_index = to_index + ((SPC_4 - SPC_4)/(SPC_3 - SPC_6)) * ((TC_11 - 1.0) / (TC_12)) ;
 		endif
         #
-		#if (radc != 0) then
-		#	if (object_distance == 0) then
-		#		axis_slope_angle = 0.0 ;
-		#		iang_sin = ray_height / radc ;
-		#	else
-		#		iang_sin = ((object_distance - radc) / radc) * sin(axis_slope_angle) ;
-		#	endif
-        #
-		#	iang = asin(iang_sin);
-		#	rang_sin = (from_index / to_index) * iang_sin ;
-		#	old_axis_slope_angle = axis_slope_angle ;
-		#	axis_slope_angle = axis_slope_angle + iang - asin(rang_sin) ;
-		#	sagitta = sin((old_axis_slope_angle + iang)/2) ;
-		#	sagitta = 2 * radc * sagitta * sagitta ;
-		#	object_distance = ((radc * sin(old_axis_slope_angle + iang)) * (1/tan(axis_slope_angle))) + sagitta ;
-		#else
-		#	rang = -1*asin((from_index/to_index) * sin(axis_slope_angle)) ;
-		#	object_distance = object_distance * ((to_index * cos(-1*rang))/(from_index * cos(axis_slope_angle))) ;
-		#	axis_slope_angle = -1*rang ;
-		#endif
-		#
-		#from_index = to_index ;
-		#if (iter < 4) then
-		#	object_distance = object_distance - TC_13 ;
-		#endif
+		if (radc != 0) then
+			if (object_distance == 0) then
+				axis_slope_angle = 0.0 ;
+				iang_sin = ray_height / radc ;
+			else
+				iang_sin = ((object_distance - radc) / radc) * sin(axis_slope_angle) ;
+			endif
+        
+			iang = asin(iang_sin);
+			rang_sin = (from_index / to_index) * iang_sin ;
+			old_axis_slope_angle = axis_slope_angle ;
+			axis_slope_angle = axis_slope_angle + iang - asin(rang_sin) ;
+			sagitta = sin((old_axis_slope_angle + iang)/2) ;
+			sagitta = 2 * radc * sagitta * sagitta ;
+			object_distance = ((radc * sin(old_axis_slope_angle + iang)) * (1/tan(axis_slope_angle))) + sagitta ;
+		else
+			rang = -1*asin((from_index/to_index) * sin(axis_slope_angle)) ;
+			object_distance = object_distance * ((to_index * cos(-1*rang))/(from_index * cos(axis_slope_angle))) ;
+			axis_slope_angle = -1*rang ;
+		endif
+		
+		from_index = to_index ;
+		if (iter < 4) then
+			object_distance = object_distance - TC_13 ;
+		endif
 
 
 

@@ -18,19 +18,38 @@
 ## 	}
 ## }
 
+#INPUTS {
+#	px0 fl64 : (1.5 - 0.1, 1.5 + 0.1)	;
+#	py0 fl64 : (3.3 - 0.1, 3.3 + 0.1)	;
+#	pz0 fl64 : (5.5 - 0.01, 5.5 + 0.01)	;
+#	px1 fl64 : (2.5 - 0.1, 2.5 + 0.1)	;
+#	py1 fl64 : (3.7 - 0.2, 3.7 + 0.3)	;
+#	pz1 fl64 : (3.3 - 0.1, 3.3 + 0.1)	;
+#	px2 fl64 : (1.8 - 0.01, 1.8 + 0.02)	;
+#	py2 fl64 : (2.5 - 0.001, 2.5 + 0.005)	;
+#	pz2 fl64 : (4.2 - 0.5, 4.2 + 0.6)	;
+#	cx0 fl64 : (5.5, 5.5)	;
+#	cy0 fl64 : (6.5, 6.5)	;
+#	cz0 fl64 : (7.5, 7.5)	;
+#}
+
 INPUTS {
-	px0 fl64 : (0.5, 1.5)	;
-	py0 fl64 : (0.5, 1.5)	;
-	pz0 fl64 : (0.5, 1.5)	;
-	px1 fl64 : (0.5, 1.5)	;
-	py1 fl64 : (0.5, 1.5)	;
-	pz1 fl64 : (0.5, 1.5)	;
-	px2 fl64 : (0.5, 1.5)	;
-	py2 fl64 : (0.5, 1.5)	;
-	pz2 fl64 : (0.5, 1.5)	;
-	cx0 fl64 : (5.5, 6.5)	;
-	cy0 fl64 : (4.5, 6.5)	;
-	cz0 fl64 : (6.5, 7.0)	;
+
+	px0 fl64 : (21.77 - 0.01, 21.77 + 0.01) ;
+	py0 fl64 : (21.77 - 0.01, 21.77 + 0.01) ;
+	pz0 fl64 : (20.0 - 0.001, 20.0 + 0.001) ;
+	px1 fl64 : (22.022 - 0.005, 22.022 + 0.005) ;
+	py1 fl64 : (21.46 - 0.5, 21.46 + 0.5) ;
+	pz1 fl64 : (20.0 - 0.01, 20.0 + 0.01) ;
+	px2 fl64 : (21.04 - 0.1, 21.04 + 0.2) ;
+	py2 fl64 : (21.04 - 0.2, 21.04 + 0.1) ;
+	pz2 fl64 : (22.02 - 0.03, 22.02 + 0.03) ;
+
+
+	cx0 fl64 : (20.0, 20.0) ;
+	cy0 fl64 : (20.0, 20.0) ;
+	cz0 fl64 : (20.0, 20.0) ;
+
 }
 
 OUTPUTS {
@@ -62,19 +81,35 @@ EXPRS {
 		radius = newRadius ;
 	endif
 
-	##
-	#dx = px1 - cx ;
-	#dy = py1 - cy ;
-	#dz = pz1 - cz ;
+	#
+	dx = px1 - cx ;
+	dy = py1 - cy ;
+	dz = pz1 - cz ;
+
+	dist2 = dx*dx + dy*dy + dz*dz ;
+
+	if (dist2 > (radius*radius) ) then
+		dist = sqrt(dist2) ;
+		newRadius = (radius + dist) + 0.5 ;
+		k = (newRadius - radius)/dist ;
+		cx = cx + dx*k ;
+		cy = cy + dy*k ;
+		cz = cz + dz*k ;
+		radius = newRadius ;
+	endif
+
+	#dx = px2 - cx ;
+	#dy = py2 - cy ;
+	#dz = pz2 - cz ;
 
 	#dist2 = dx*dx + dy*dy + dz*dz ;
 
-	#if (dist2 > (radius*radius) ) then
+	#if (dist2 > (radius*radius)) then
 	#	dist = sqrt(dist2) ;
 	#	newRadius = (radius + dist) + 0.5 ;
 	#	k = (newRadius - radius)/dist ;
 	#	cx = cx + dx*k ;
-	#	cy = cy + dy*k ;
+	#	cy = cy + dy*k ; 
 	#	cz = cz + dz*k ;
 	#	radius = newRadius ;
 	#endif
