@@ -35,7 +35,7 @@ class Sparser(object):
 		raise Exception('Invalid syntax while parsing')
 
 	def consume(self, token_type):
-		#print(self.current_token.type, token_type, self.current_token.value)
+		print(self.current_token.type, token_type, self.current_token.value)
 		if self.current_token.type == token_type:
 			self.current_token = self.lexer.get_next_token()
 		else:
@@ -156,14 +156,17 @@ class Sparser(object):
 		"""
 		cond_term : ( expr inequalities expr )
 		"""
-
-		self.consume(LPAREN)
+		if (self.current_token.type == LPAREN):
+			self.consume(LPAREN)
+			node = self.cond_expr()
+			self.consume(RPAREN)
+			return node
 		node = self.arith_expr()
 		if self.current_token.type in (LT, LEQ, GT, GEQ, EQ, NEQ):
 			token = self.current_token
 			self.consume(token.type)
 			node = ExprComp(left=node, token=token, right=self.arith_expr())
-			self.consume(RPAREN)
+			#self.consume(RPAREN)
 			return node
 		else:
 			self.error()

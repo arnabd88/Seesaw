@@ -15,6 +15,8 @@ import subprocess as sb
 from multiprocessing import Process, Value, Manager
 import hashlib
 from collections import OrderedDict
+import symengine as seng
+import sympy
 
 from itertools import tee
 
@@ -39,10 +41,10 @@ gelpia_output_epsilon_relative = 1e-2
 gelpia_epsilons = (gelpia_input_epsilon,
                    gelpia_output_epsilon,
                    gelpia_output_epsilon_relative)
-gelpia_timeout = 100
+gelpia_timeout = 10
 gelpia_grace = 0
 gelpia_update = 0
-gelpia_max_iters = 1000
+gelpia_max_iters = 100
 gelpia_seed = 0
 
 timeout = 10000
@@ -52,31 +54,6 @@ def hashSig( inSig, alg ):
 	hobj = hashlib.md5(str(inSig).encode('utf-8'))
 	return hobj.hexdigest()
 
-#def get_inputString(inputs):
-#	inputStrList=[]
-#	for inp in inputs.keys():
-#		inputStrList.append(inp+":"+str(inputs[inp]["INTV"]))
-#	inputStr = "{"+",".join(inputStrList)+"}"
-#	#print("input length:", len(inputStrList), len(inputStrList[0]))
-#	return inputStr
-
-# rewrite this for returning list of combinatorial intervals
-
-
-## this is for the case where we need to break down the size of
-## string for subprocess call
-## def get_inputString(inputs):
-## 	inputStrList = []
-## 	retList = []
-## 	for inp in inputs.keys():
-## 		inputStrList.append(inp+":"+str(inputs[inp]["INTV"]))
-## 	inputStr = "{"+",".join(inputStrList)+"}"
-## 	inputStrList = inputStr.split(",")
-## 	#num_elems = len(inputStrList)
-## 	#size_elem = len(inputStrList[1])
-## 	#num_blocks = math.floor(num_elems/size_elems)
-## 
-## 	return inputStrList
 	
 def get_inputString(inputs):
     ret_list = list()
@@ -94,191 +71,6 @@ def split_gelpia_format(msg):
 
 
 
-def parse_gelpia(msg):
-	max_upper = re.search("Maximum: ([^\n]*)", msg).group(1)
-	min_lower = re.search("Minimum: ([^\n]*)", msg).group(1)
-	return [float(min_lower), float(max_upper)]
-	#[max_lb, max_ub] = msgList[1].split("{")[0]\
-	#							 .split("]")[0]\
-	#							 .split("[")[-1]\
-	#							 .split(",")
-	# [max_lb, max_ub] = split_gelpia_format(msgList[1])
-	# [min_lb, min_ub] = split_gelpia_format(msgList[2])
-	# return [float(min_lb), float(max_ub)]
-	#return [f_lb, f_ub]
-
-
-def internal_gelpia(exec_list):
-	arg_dict = gelpia.ap.parse_args(exec_list)
-	gelpia.append_to_environ("PATH", gelpia.bin_dir)
-	rust_ld_lib_addition = path.join(gelpia.base_dir, ".compiled")
-	rust_ld_lib_addition += ":" + path.join(gelpia.base_dir, "src/func/target/release/")
-	rust_ld_lib_addition += ":" + path.join(gelpia.base_dir, "target/release/deps")
-	gelpia.append_to_environ("LD_LIBRARY_PATH", rust_ld_lib_addition)
-
-	inputs = arg_dict['inputs'].values()
-	inputs = "|".join(inputs)
-
-	file_id = gelpia.mk_file_hash(arg_dict["rust_function"])
-	function_filename = path.join(gelpia.src_dir,
-					  "func/src/lib_generated_{}.rs".format(file_id))
-	executable = path.join(gelpia.base_dir, 'target/release/cooperative')
-	executable_args = ['-c', arg_dict["constants"],
-			   '-f', arg_dict["interp_function"],
-			   '-i', inputs,
-			   "-x", str(arg_dict["input_epsilon"]),
-			   "-y", str(arg_dict["output_epsilon"]),
-			   "-r", str(arg_dict["rel_output_epsilon"]),
-			   "-S", "generated_"+file_id, # Function file suffix
-			   "-n", ",".join(arg_dict["inputs"]),
-			   "-t", str(arg_dict["timeout"]),
-			   "-u", str(arg_dict["update"]),
-			   "-M", str(arg_dict["iters"]),
-			   "--seed", str(arg_dict["seed"]),]
-
-	with open(function_filename, 'w') as f:
-		f.write(arg_dict["rust_function"])
-
-	start = time.time()
-	term_time = None
-	if arg_dict["timeout"] != 0:
-		if arg_dict["grace"] == 0:
-			term_time = start + arg_dict["timeout"]*2
-		else:
-			term_time = start + arg_dict["grace"]
-	output = ""
-	for line in gelpia.iu.run_async(executable, executable_args, term_time):
-		if not line.startswith("lb:"):
-			output += line.strip()
-
-	os.remove(function_filename)
-	try:
-		os.remove(path.join(gelpia.base_dir, ".compiled/libfunc_generated_"+file_id+".so"))
-	except:
-		pass
-
-	try:
-		p = path.join(gelpia.src_dir, "func/target/release/libfunc_generated_"+file_id+".so")
-		os.remove(p)
-	except:
-		pass
-
-	try:
-		p = path.join(gelpia.src_dir, "func/target/release/func_generated_"+file_id+".d")
-		os.remove(p)
-	except:
-		pass
-
-	if output:
-		try:
-			idx = output.find('[')
-			output = output[idx:]
-			lst = eval(output, {'inf':float('inf')})
-			assert(type(lst[-1]) is dict)
-			for k in list(lst[-1]):
-				if k[0] == "$":
-					del lst[-1][k]
-		except:
-			print("Error unable to parse rust solver's output:",output)
-			iu.log(log_level, lambda: iu.green("Parsing time: ")+str(parsing_end-parsing_start))
-			sys.exit(-1)
-
-		if arg_dict["dreal"]:
-			if type(lst[0]) is list:
-				lst[0] = reversed(lst[0])
-				lst[0] = [-b for b in lst[0]]
-			else:
-				lst[0] = -lst[0]
-
-	gelpia_max = lst[0][1]
-	return gelpia_max
-
-
-
-def invoke_gelpia_bak(symExpr, inputStr):
-	## if the expression is a constant, dont bother to call gelpia
-	expr_const = 1
-	try:
-		const_intv = float(str(symExpr))
-		print("******** CONSTANT *************")
-		return [const_intv, const_intv]
-	except:
-		#return [1.0,2.0]
-		pass
-		#print(str(symExpr), " is not constant")
-
-	## apply this for anymore operator mismatches as necessary
-	str_expr = re.sub(r'\*\*', "^", str(symExpr))
-	str_expr = re.sub(r'-', "- ", str(str_expr))
-	#print("expr to gelpia:", str_expr)
-
-	exec_list = ["gelpia", "-f", str_expr, "-i", inputStr]
-	#print(" ".join(exec_list))
-
-	upper = internal_gelpia(exec_list)
-	lower = internal_gelpia(exec_list + ["--dreal"])
-
-	retval = [float(lower), float(upper)]
-
-	#print("internal_gelpia got ",retval)
-	return retval
-	# print(" ".join(exec_list))
-	# p = sb.Popen(exec_list, stdout=sb.PIPE, stderr=sb.PIPE)
-	# s = p.communicate(timeout=timeout)
-	# msg = s[0].decode("ASCII")
-	# if("error" in msg.lower()):
-	# 	print("Error when using gelpia... debug", msg)
-	# 	sys.exit()
-	# else:
-	# 	#print(msg)
-	# 	retval = parse_gelpia(msg.splitlines())
-	# 	hashed[key] = retval
-	# 	return retval
-	# print("Timeout when solving->", str_expr)
-	# sys.exit()
-
-#@profile
-#def invoke_gelpia(symExpr, inputStr):
-#	try:
-#		const_intv = float(str(symExpr))
-#		#print("***** CONSTANT ******")
-#		return [const_intv, const_intv]
-#	except:
-#		pass
-#	
-#	str_expr = re.sub(r'\*\*', "^", str(symExpr))
-#	str_expr = re.sub(r'^-', "- ", str(str_expr))
-#	#print(len(str_expr), len(inputStr))
-#	
-#	#exec_list = ["echo", "-T", "-f", str_expr, "-i", inputStr]
-#	exec_list = ["gelpia_mm", "-T", "-f", str_expr, "-i"]
-#	exec_list.append(inputStr[0])
-#	for i in range(1, len(inputStr)):
-#		exec_list.append(", ")
-#		exec_list.append(inputStr[i])
-#
-#
-#
-#	print("exec_list:", exec_list)
-#	Globals.gelpiaID += 1
-#	start_time = time.time()
-#	p = sb.Popen(exec_list, stdout=sb.PIPE, stderr=sb.PIPE)
-#	s = p.communicate(timeout=timeout)
-#	msg = s[0].decode("ASCII")
-#	end_time = time.time()
-#	if("error" in msg.lower()):
-#		print("Error when using gelpia... debug", msg)
-#		sys.exit()
-#	else:
-#		#print(msg)
-#		retval = parse_gelpia(msg)
-#		#hashed[key] = retval
-#		return retval
-#	print("Timeout when solving->", str_expr)
-#	sys.exit()
-
-
-import symengine as seng
 def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func-> Dur:"):
 	#try:
 	#    const_intv = float(str(symExpr))
@@ -470,21 +262,6 @@ def generate_signature(sym_expr, cond_expr, externConstraints, cond_free_symbols
 	except ValueError:
 	    pass
 
-	#d = OrderedDict()
-	#freeSyms = [str(i) for i in sym_expr.free_symbols]
-	#freeSyms.sort()
-	#for i in range(0,len(freeSyms)):
-	#	inp = freeSyms[i]
-	#	#print(inp, type(inp), Globals.inptbl[inp])
-	#	d[inp] = str(i)+"_"+"{intv}".format(intv=Globals.inputVars[inp]["INTV"])
-
-	#regex = re.compile("(%s)" % "|".join(map(re.escape, d.keys())))
-
-	#strSig = regex.sub(lambda mo: d[mo.string[mo.start():mo.end()]], str(sym_expr))
-	#sig = hashSig(strSig, "md5")
-	#print("STRSIG->", strSig, sig)
-	#Globals.hashBank[sig] = Globals.hashBank.get(sig, utils.invoke_gelpia(sym_expr, self._inputStr))
-	#s1 = time.time()
 	hbs = len(Globals.hashBank.keys())
 	#s2 = time.time()
 	#print("\nTime for hashing sig = ", s2 - s1)
@@ -506,56 +283,6 @@ def generate_signature(sym_expr, cond_expr, externConstraints, cond_free_symbols
 		pass
 
 	return Globals.hashBank[sig]
-
-
-def wrap_generate_signature( sym_expr, collect_list, index):
-	#print("Par->", os.getpid())
-	valIntv = generate_signature(sym_expr)
-	collect_list[index] = valIntv[1]
-
-def generate_signature1(sym_expr):
-
-	try:
-	    const_intv = float(str(sym_expr))
-	    return [const_intv, const_intv]
-	except ValueError:
-	    pass
-	inputStr = extract_input_dep(list(map(str, sym_expr.free_symbols)))
-	#print("Gelpia input expr ops ->", seng.count_ops(sym_expr))
-	return invoke_gelpia(sym_expr, inputStr)
-
-def generate_signature_herror(sym_expr):
-
-	try:
-	    const_intv = float(str(sym_expr))
-	    return [const_intv, const_intv]
-	except ValueError:
-	    pass
-	inputStr = extract_input_dep(list(map(str, sym_expr.free_symbols)))
-	#print("Gelpia input expr ops ->", seng.count_ops(sym_expr))
-	return invoke_gelpia_herror(sym_expr, inputStr)
-	
-#def extract_partialAST(NodeList_in, duplicate):
-#
-#	NodeList = copy.deepcopy(NodeList_in) if duplicate else NodeList_in
-#
-#	retainList = copy.copy(NodeList)
-#	inspectList = copy.copy(NodeList)
-#	seenList = []
-#
-#	while(len(inspectList) > 0):
-#		node = inspectList.pop(0)
-#		#print(node.name,"child->", [child.name for child in node.children])
-#		#print("retainList:", [n.f_expression for n in retainList])
-#		for child in node.children:
-#			if child in seenList:
-#				pass
-#			else:
-#				seenList.append(child)
-#				retainList.append(child)
-#				child.parents = [parent for parent in child.parents if parent in retainList]
-#				inspectList.append(child)
-#	return NodeList
 
 
 
@@ -610,26 +337,4 @@ def extract_partialAST(NodeList):
 
 	return parent_dict
 			
-########## Extra code for the selective tuner ####################
-### some is redundant, remove later #############
 
-def extract_input_dep(free_syms, inputVars=Globals.inputVars):
-	ret_list = list()
-	for fsyms in free_syms:
-		#print(fsyms)
-		#print(inputVars.keys())
-		#print(inputVars[fsyms])
-		ret_list += [str(fsyms), " = ", str(inputVars[fsyms]["INTV"]), ";"]
-	return "".join(ret_list)
-
-def generate_signature_tuner(sym_expr, inputVars=Globals.inputVars):
-
-	try:
-	    const_intv = float(str(sym_expr))
-	    return [const_intv, const_intv]
-	except ValueError:
-	    pass
-	#inputStr = extract_input_dep(list(map(str, sym_expr.free_symbols)), inputVars)
-	inputStr = extract_input_dep(sym_expr.free_symbols, inputVars)
-	#print("Gelpia input expr ops ->", seng.count_ops(sym_expr))
-	return invoke_gelpia(sym_expr, inputStr)

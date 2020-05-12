@@ -157,10 +157,10 @@ class Var(AST):
 			return SymTup((Sym(obj.token.value, Globals.__T__),))
 		else:
 			child_der_tokens = [n[0].derived_token for n in obj.nodeList]
-			self.derived_token = FLOAT if FLOAT in child_der_tokens else INTEGER
+			obj.derived_token = FLOAT if FLOAT in child_der_tokens else INTEGER
 			clist = [n[0].f_expression.__and__(n[1])  for n in obj.nodeList]
 			f = lambda x, y: SymConcat(x,y)
-			return reduce(f, clist)
+			return reduce(f, clist, SymTup((Sym(0.0,Globals.__T__),)))
 			#return SymTup( n[0].f_expression.__and__(n[1])  for n in nodeList  )
 			
 			

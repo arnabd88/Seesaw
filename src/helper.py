@@ -267,7 +267,7 @@ def writeToFile(results, fout, argList):
 		maxError = num_ulp_maxError*pow(2, -53)
 		SecondmaxError = num_ulp_SecondmaxError*pow(2, -53)
 		outIntv = [funcIntv[0]-maxError-SecondmaxError, funcIntv[1]+maxError+SecondmaxError]
-		abserror = 2*(maxError + SecondmaxError)
+		abserror = (maxError + SecondmaxError)
 
 		#print("//-------------------------------------")
 		#print("Ouput Variable -> ", outVar)
@@ -281,9 +281,9 @@ def writeToFile(results, fout, argList):
 		dumpStr += "\n//-------------------------------------\n"
 		dumpStr += "VAR : "+ str(outVar) + "\n"
 		dumpStr += "ABSOLUTE_ERROR : "+str(abserror)+"\n"
-		dumpStr += "First-order Error : "+str(2*maxError)+"\n"
+		dumpStr += "First-order Error : "+str(maxError)+"\n"
 		if sound:
-			dumpStr += "Higher-order Error : "+str(2*SecondmaxError)+"\n"
+			dumpStr += "Higher-order Error : "+str(SecondmaxError)+"\n"
 		dumpStr += "REAL_INTERVAL : "+str(funcIntv)+"\n"
 		dumpStr += "FP_INTERVAL : "+str(outIntv)+"\n"
 		dumpStr += "//-------------------------------------\n"
