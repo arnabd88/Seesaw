@@ -33,7 +33,7 @@ INPUTS {
 
 
 OUTPUTS {
-	s ;
+	c ;
 }
 
 REQUIRES {
