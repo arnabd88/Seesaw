@@ -35,7 +35,7 @@ class Sparser(object):
 		raise Exception('Invalid syntax while parsing')
 
 	def consume(self, token_type):
-		print(self.current_token.type, token_type, self.current_token.value)
+		#print(self.current_token.type, token_type, self.current_token.value)
 		if self.current_token.type == token_type:
 			self.current_token = self.lexer.get_next_token()
 		else:
@@ -76,6 +76,9 @@ class Sparser(object):
 		#symTable = Globals.GS[scopeID]
 		lval = self.current_symtab.lookup(token.value)
 		if lval is None or len(lval)==0:
+			if token.value not in Globals.inputVars.keys():
+				print(token.value)
+				assert(token.value in Globals.inputVars.keys())
 			self.current_symtab._symTab[token.value] = ((node, Globals.__T__),)
 			#print("Check-tokens:", token, self.current_scope, lval, Globals.GS[0]._symTab.keys())
 			return node
@@ -108,6 +111,8 @@ class Sparser(object):
 		else :
 			node = Var(token)
 			self.consume(ID)
+			if(token.value == seng.var('px4')):
+				print("MASSIVE DEBUG:", self.current_symtab.lookup(token.value))
 			node = self.CheckSymTable(node, token)
 			return node
 
@@ -273,8 +278,9 @@ class Sparser(object):
 			symCond = self.get_new_condSym()   ## the whole predicate identifier
 			self.create_new_scope(adjacency='serial', cond=symCond) ## scope and symTab updated
 			cond_node = self.cond_expr()
-			self.consume(THEN)
 			Globals.predTable[symCond] = cond_node
+			Globals.progTrace[self.current_token.lineno] = cond_node
+			self.consume(THEN)
 			true_node = self.statements()
 
 			if(self.current_token.type==ELSE):
@@ -307,6 +313,7 @@ class Sparser(object):
 			self.consume(ASSIGN)
 			node = self.arith_expr()
 			node.set_rounding(rnd)
+			Globals.progTrace[self.current_token.lineno] = node  # prog Trace for the assign expr
 			node.derived_token = deriv_token
 			self.consume(SEMICOLON)
 			self.current_symtab._symTab[nameSym] = ((node, Globals.__T__),)
@@ -534,3 +541,6 @@ if __name__ == "__main__":
 	parser.parse(text)
 	end_parse_time = time.time()
 	print("Parsing time -> ", end_parse_time - start_parse_time)
+	
+	for k,v in Globals.progTrace.items():
+		print("Line {num} , val = {expr}".format(num=k, expr=v.rec_eval(v)))

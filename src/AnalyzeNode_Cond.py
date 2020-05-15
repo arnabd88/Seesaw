@@ -64,7 +64,7 @@ class AnalyzeNode_Cond(object):
 		
 	def converge_parents(self, node):
 		#print(node.depth, len(node.f_expression))
-		#print(type(node).__name__, node.depth, self.parentTracker[node], len(node.parents) , len(self.parent_dict[node]), node.f_expression)
+		print(type(node).__name__, node.depth, self.parentTracker[node], len(node.parents) , len(self.parent_dict[node]))#, node.f_expression)
 		return True if self.parentTracker[node] >= len(self.parent_dict[node]) else False
 
 
@@ -151,11 +151,15 @@ class AnalyzeNode_Cond(object):
 				#print("lim:", expr, lim, len(racc))
 				(cond_expr,free_symbols) = self.parse_cond(cond)
 				print("Query2: ", seng.count_ops(expr))
+				res_avg_maxres = utils.get_statistics(expr)
 				errIntv = utils.generate_signature(expr,\
 												   cond_expr, \
 												   self.externConstraints, \
 												   free_symbols.union(self.externFreeSymbols))
 				err = max([abs(i) for i in errIntv])
+				print("STAT: SP:{err}, maxres:{maxres}, avg={avg}".format(\
+					err = err, maxres = res_avg_maxres[1], avg = res_avg_maxres[0] \
+				))
 				temp_racc.append(Sym(err, cond))
 			else:
 				temp_racc.append(els)
@@ -273,6 +277,7 @@ class AnalyzeNode_Cond(object):
 				expr, cond = els.exprCond
 				(cond_expr,free_symbols) = self.parse_cond(cond)
 				print("Query1: ", seng.count_ops(expr))
+				res_avg_maxres = utils.get_statistics(expr)				
 				#print("cond_expr", cond_expr)
 				#errIntv = utils.generate_signature(expr,cond_expr, free_symbols)
 				errIntv = utils.generate_signature(expr,\
@@ -280,6 +285,9 @@ class AnalyzeNode_Cond(object):
 												   self.externConstraints, \
 												   free_symbols.union(self.externFreeSymbols))
 				err = max([abs(i) for i in errIntv])
+				print("STAT: SP:{err}, maxres:{maxres}, avg:{avg}".format(\
+					err = err, maxres = res_avg_maxres[1], avg = res_avg_maxres[0] \
+				))
 				errList.append(err)
 
 			ret_intv = None

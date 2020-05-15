@@ -285,6 +285,26 @@ def generate_signature(sym_expr, cond_expr, externConstraints, cond_free_symbols
 	return Globals.hashBank[sig]
 
 
+def statistical_eval( symDict, expr , niters=1000 ):
+
+	res = 0.0
+	maxres = 0.0
+	for t in range(niters):
+		vecDict = {k:random.uniform(v[0],v[1]) for k, v in symDict.items()}
+		val = expr.subs(vecDict) 
+		res = res + val  
+		maxres = max(val,maxres) 
+
+	return (res/niters, maxres)
+
+
+def get_statistics(sym_expr):
+
+	symDict = {fsyms : Globals.inputVars[fsyms]["INTV"] for fsyms in sym_expr.free_symbols}
+	res_avg_maxres = statistical_eval ( symDict, sym_expr)
+	return res_avg_maxres
+
+
 
 def isConst(obj):
 	if type(obj).__name__ == "Num":

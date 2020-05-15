@@ -22,6 +22,8 @@ freeConds = []
 # Mapping from identifier to expressions
 predTable = dict()
 condTable = dict()
+progTrace = dict() # LineNo -> node
+
 condExprBank = dict()
 
 externPredTable = dict()

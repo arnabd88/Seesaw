@@ -190,6 +190,7 @@ def ErrorAnalysis(argList):
 	if ( argList.enable_abstraction ) :
 		print("\nAbstraction Enabled... \n")
 		logger.info("\nAbstraction Enabled... \n")
+		print(bound_maxdepth, bound_mindepth, maxdepth)
 		while ( maxdepth >= bound_maxdepth and maxdepth >= bound_mindepth ):
 			[abs_depth, sel_candidate_list] = helper.selectCandidateNodes(maxdepth, bound_mindepth, bound_maxdepth)
 			print("Candidate List Length:", len(sel_candidate_list))

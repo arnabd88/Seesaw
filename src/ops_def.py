@@ -118,7 +118,7 @@ _Priority = { \
 				PLUS	:	0,	\
 				MUL		:	0,	\
 				MINUS	:	0,	\
-				DIV		:	4,	\
+				DIV		:	0,	\
 				SQRT	:	0,	\
 				EXP		:	0	\
 }
