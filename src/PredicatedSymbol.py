@@ -9,7 +9,7 @@ from functools import reduce
 from collections.abc import Iterable
 
 
-opLimit = 100
+opLimit = 0
 
 class PredSymbol(object):
 

@@ -1,0 +1,42 @@
+
+INPUTS {
+	bx fl64 : (4.0, 5.0);
+	by fl64 : (4.0, 5.0);
+	bz fl64 : (4.0, 5.0);
+	ax fl64 : (0.0, 2.0);
+	ay fl64 : (0.0, 2.0);
+	az fl64 : (0.0, 2.0);
+	cx fl64 : (3.0, 7.0);
+	cy fl64 : (3.0, 7.0);
+	cz fl64 : (3.0, 7.0);
+}
+
+OUTPUTS {
+	t; #Dot_ac_ab; #Dot_ab_ab; #t ;
+}
+
+EXPRS {
+	abx = bx - ax ;
+	aby = by - ay ;
+	abz = bz - az ;
+
+	acx = cx - ax ;
+	acy = cy - ay ;
+	acz = cz - az ;
+
+	Dot_ac_ab = acx * abx + acy * aby + acz * abz ;
+	Dot_ab_ab = abx * abx + aby * aby + abz * abz ;
+
+	t = (Dot_ac_ab)/(Dot_ab_ab) ;
+
+	#if (t < 0.0) then
+	#	t = 0.0;
+	#endif
+	#if(t > 1.0) then
+	#	t = 1.0;
+	#endif
+
+	#dx = ax + t*abx ;
+	#dy = ay + t*aby ;
+	#dz = az + t*abz ;
+}
