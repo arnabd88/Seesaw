@@ -1,0 +1,93 @@
+INPUTS {
+	px0 fl64  :	(1.0, 2.0);
+	py0 fl64  :	(1.0, 2.0);
+	pz0 fl64  :	(1.0, 2.0);
+	px1 fl64  :	(2.5, 3.0);
+	py1 fl64  :	(2.5, 3.0);
+	pz1 fl64  :	(2.5, 3.0);
+	px2 fl64  :	(1.2, 2.0);
+	py2 fl64  :	(1.2, 2.0);
+	pz2 fl64  :	(1.2, 2.0);
+	px3 fl64  :	(3.2, 4.5);
+	py3 fl64  :	(3.2, 4.5);
+	pz3 fl64  :	(3.2, 4.5);
+	px4 fl64  :	(0.1, 0.5);
+	py4 fl64  :	(0.1, 0.5);
+	pz4 fl64  :	(0.1, 0.5);
+}
+
+OUTPUTS {
+cov_0_0 ; cov_1_1; cov_2_2; cov_1_0 ; cov_2_0 ; cov_2_1 ;
+}
+
+EXPRS {
+
+	numPts int = 5;
+	oon = 1.0 / numPts ;
+
+	cx = (px0 + px1 + px2 + px3 + px4)/numPts ;
+	cy = (py0 + py1 + py2 + py3 + py4)/numPts ;
+	cz = (pz0 + pz1 + pz2 + pz3 + pz4)/numPts ;
+
+
+	e00 = 0.0 ; e11 = 0.0 ; e22 = 0.0 ; e01 = 0.0 ; e02 = 0.0 ; e12 = 0.0 ;
+	px = px0 - cx ; py = py0 - cy ; pz = pz0 - cz ;
+	e00 = e00 + px*px ;
+	e11 = e11 + py*py ;
+	e22 = e22 + pz*pz ;
+	e01 = e01 + px*py ;
+	e02 = e02 + px*pz ;
+	e12 = e12 + py*pz ;
+
+	px = px1 - cx ;
+	py = py1 - cy ;
+	pz = pz1 - cz ;
+	e00 = e00 + px*px ;
+	e11 = e11 + py*py ;
+	e22 = e22 + pz*pz ;
+	e01 = e01 + px*py ;
+	e02 = e02 + px*pz ;
+	e12 = e12 + py*pz ;
+
+	px = px2 - cx ;
+	py = py2 - cy ;
+	pz = pz2 - cz ;
+	e00 = e00 + px*px ;
+	e11 = e11 + py*py ;
+	e22 = e22 + pz*pz ;
+	e01 = e01 + px*py ;
+	e02 = e02 + px*pz ;
+	e12 = e12 + py*pz ;
+
+	px = px3 - cx ;
+	py = py3 - cy ;
+	pz = pz3 - cz ;
+	e00 = e00 + px*px ;
+	e11 = e11 + py*py ;
+	e22 = e22 + pz*pz ;
+	e01 = e01 + px*py ;
+	e02 = e02 + px*pz ;
+	e12 = e12 + py*pz ;
+
+	px = px4 - cx ;
+	py = py4 - cy ;
+	pz = pz4 - cz ;
+	e00 = e00 + px*px ;
+	e11 = e11 + py*py ;
+	e22 = e22 + pz*pz ;
+	e01 = e01 + px*py ;
+	e02 = e02 + px*pz ;
+	e12 = e12 + py*pz ;
+
+	## Fill the covariance matrix elements
+	cov_0_0 = e00 / numPts ;
+	cov_1_1 = e11 / numPts ;
+	cov_2_2 = e22 / numPts ;
+	cov_0_1 = e01 / numPts ;
+	cov_1_0 = e01 / numPts ;
+	cov_0_2 = e02 / numPts ;
+	cov_2_0 = e02 / numPts ;
+	cov_1_2 = e12 / numPts ;
+	cov_2_1 = e12 / numPts ;
+
+}

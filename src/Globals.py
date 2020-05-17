@@ -3,6 +3,9 @@ import sympy
 
 from collections import OrderedDict, defaultdict
 
+# Global Flag, disable when expand seems to misbehave
+simplify = True
+
 inputVars = {}
 outVars = []
 

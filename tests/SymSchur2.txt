@@ -39,7 +39,7 @@ OUTPUTS {
 REQUIRES {
 	RCS1 : (p >= 1) ;
 	RSC2 : (q > p)  ;
-	RSC3 : (r <= n) ;
+	#RSC3 : (r <= n) ;
 }
 
 EXPRS {

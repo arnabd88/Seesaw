@@ -72,6 +72,8 @@ def rebuildAST():
 
 	completed = defaultdict(int)
 
+	Globals.simplify=True  ## Enable simplify to begin
+
 	for node in probeList:
 		if not completed.__contains__(node):
 			rebuildASTNode(node, completed)

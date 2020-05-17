@@ -137,40 +137,42 @@ class Sym(object):
 	def __add__(self, obj):
 		if not isinstance(obj, Sym) :
 			return Sym( self.exprCond[0]+obj, self.exprCond[1])
+		elif not Globals.simplify:
+			expr1 = (self.exprCond[0] + obj.exprCond[0])
+			cond = (self.exprCond[1] & obj.exprCond[1]).simplify() 
+			return Sym(expr1, cond)			
 		else:
 			expr1 = (self.exprCond[0] + obj.exprCond[0])
-			#expr2 = (expr1)
 			expr2 = seng.expand(expr1)
 			cond = (self.exprCond[1] & obj.exprCond[1]).simplify() 
 			op1 = seng.count_ops(expr1)
 			op2 = seng.count_ops(expr2)
-			#print("Came here", op1, op2)
+			if (op2 - op1 > 1000):
+				Globals.simplify = False
 			return Sym(expr1, cond) if op1 < op2 else Sym(expr2, cond) ;
 
 	def __sub__(self, obj):
 		#if isinstance(obj, numbers.Number) :
 		if not isinstance(obj, Sym) :
 			return Sym( self.exprCond[0]-obj, self.exprCond[1])
+		elif not Globals.simplify:
+			expr1 = (self.exprCond[0] - obj.exprCond[0])
+			cond = (self.exprCond[1] & obj.exprCond[1]).simplify() 
+			return Sym(expr1, cond)			
 		else:
 			expr1 = (self.exprCond[0] - obj.exprCond[0])
-			#expr2 = (expr1)
-			expr2 = seng.expand(expr1)
 			cond = (self.exprCond[1] & obj.exprCond[1]).simplify() 
+			expr2 = seng.expand(expr1)
 			op1 = seng.count_ops(expr1)
 			op2 = seng.count_ops(expr2)
-			#print("Came here", op1, op2)
+			if (op2 - op1 > 1000):
+				Globals.simplify = False
 			return Sym(expr1, cond) if op1 < op2 else Sym(expr2, cond) ;
 
-	#def __sub__(self, obj):
-	#	symexpr = self.exprCond[0] - obj.exprCond[0]
-	#	return Sym( seng.expand(symexpr) if seng.count_ops(symexpr) < 0 else symexpr ,\
-	#			(self.exprCond[1] & obj.exprCond[1]).simplify() )
 
 	def __mul__(self, obj):
-		#symexpr = self.exprCond[0] * obj.exprCond[0]
 		return Sym( self.exprCond[0]*obj, self.exprCond[1]) if not isinstance(obj, Sym) else \
 		Sym( self.exprCond[0] * obj.exprCond[0]	,\
-		#Sym( seng.expand(self.exprCond[0] * obj.exprCond[0]) if seng.count_ops(self.exprCond[0] * obj.exprCond[0]) < opLimit else self.exprCond[0] * obj.exprCond[0]	,\
 				(self.exprCond[1] & obj.exprCond[1]).simplify() )
 
 	def __truediv__(self, obj):

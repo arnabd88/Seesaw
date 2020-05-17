@@ -110,7 +110,7 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	fout.write("# --timeout {tout}\n".format(tout=str(gelpia_timeout)))
 	fout.write("# --max-iters {miters}\n".format(miters=str(gelpia_max_iters)))
 
-	str_constraint = " && ".join([str_cond_expr,str_extc_expr])
+	str_constraint = " && ".join([str_cond_expr]+([] if str_extc_expr is None or len(str_extc_expr)==0 else [str_extc_expr]))
 
 	fout.write(inputStr + str_constraint +"; " + str_expr)
 	#fout.write(str_expr)

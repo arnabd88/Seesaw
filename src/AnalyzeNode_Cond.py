@@ -151,6 +151,7 @@ class AnalyzeNode_Cond(object):
 				#print("lim:", expr, lim, len(racc))
 				(cond_expr,free_symbols) = self.parse_cond(cond)
 				print("Query2: ", seng.count_ops(expr))
+				#print("COND-EXPR:", cond_expr)
 				res_avg_maxres = utils.get_statistics(expr)
 				errIntv = utils.generate_signature(expr,\
 												   cond_expr, \
@@ -261,6 +262,7 @@ class AnalyzeNode_Cond(object):
 			tcond = tcond.subs({fsym: Globals.condExprBank[fsym][0] for fsym in free_syms})
 			print("Finished parsing -> {cond} : {cexpr}".format(cond=cond, cexpr=tcond))
 			logger.info("Finished parsing -> {cond} : {cexpr}".format(cond=cond, cexpr=tcond))
+			#print("tcond:", tcond)
 			return (tcond, set_free_symbols)
 		return (tcond, set_free_symbols)
 
@@ -280,6 +282,7 @@ class AnalyzeNode_Cond(object):
 				expr, cond = els.exprCond
 				(cond_expr,free_symbols) = self.parse_cond(cond)
 				print("Query1: ", seng.count_ops(expr))
+				#print("COND-EXPR:", cond_expr)
 				res_avg_maxres = utils.get_statistics(expr)				
 				#print("cond_expr", cond_expr)
 				#errIntv = utils.generate_signature(expr,cond_expr, free_symbols)
@@ -302,6 +305,7 @@ class AnalyzeNode_Cond(object):
 				#print("Query: ", seng.count_ops(expr), cond)
 				#print("f_expr", expr)
 				(cond_expr,free_symbols) = self.parse_cond(cond)
+				#print("COND-EXPR:", cond_expr)
 				#fintv = utils.generate_signature(expr,cond_expr, free_symbols)
 				fintv = utils.generate_signature(expr,\
 												   cond_expr, \

@@ -73,7 +73,7 @@ EXPRS {
 
 	if (dist2 > (radius*radius) ) then
 		dist = sqrt(dist2) ;
-		newRadius = (radius + dist) + 0.5 ;
+		newRadius = (radius + dist) * 0.5 ;
 		k = (newRadius - radius)/dist ;
 		cx = cx + dx*k ;
 		cy = cy + dy*k ;
@@ -90,7 +90,7 @@ EXPRS {
 
 	if (dist2 > (radius*radius) ) then
 		dist = sqrt(dist2) ;
-		newRadius = (radius + dist) + 0.5 ;
+		newRadius = (radius + dist) * 0.5 ;
 		k = (newRadius - radius)/dist ;
 		cx = cx + dx*k ;
 		cy = cy + dy*k ;
@@ -98,20 +98,20 @@ EXPRS {
 		radius = newRadius ;
 	endif
 
-	#dx = px2 - cx ;
-	#dy = py2 - cy ;
-	#dz = pz2 - cz ;
+	dx = px2 - cx ;
+	dy = py2 - cy ;
+	dz = pz2 - cz ;
 
-	#dist2 = dx*dx + dy*dy + dz*dz ;
+	dist2 = dx*dx + dy*dy + dz*dz ;
 
-	#if (dist2 > (radius*radius)) then
-	#	dist = sqrt(dist2) ;
-	#	newRadius = (radius + dist) + 0.5 ;
-	#	k = (newRadius - radius)/dist ;
-	#	cx = cx + dx*k ;
-	#	cy = cy + dy*k ; 
-	#	cz = cz + dz*k ;
-	#	radius = newRadius ;
-	#endif
+	if (dist2 > (radius*radius)) then
+		dist = sqrt(dist2) ;
+		newRadius = (radius + dist) * 0.5 ;
+		k = (newRadius - radius)/dist ;
+		cx = cx + dx*k ;
+		cy = cy + dy*k ; 
+		cz = cz + dz*k ;
+		radius = newRadius ;
+	endif
 
 }

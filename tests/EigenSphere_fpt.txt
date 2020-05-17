@@ -1,0 +1,112 @@
+Variables
+	float64 px0 in [1.0, 2.0],
+	float64 py0 in [1.0, 2.0],
+	float64 pz0 in [1.0, 2.0],
+	float64 px1 in [2.5, 3.0],
+	float64 py1 in [2.5, 3.0],
+	float64 pz1 in [2.5, 3.0],
+	float64 px2 in [1.2, 2.0],
+	float64 py2 in [1.2, 2.0],
+	float64 pz2 in [1.2, 2.0],
+	float64 px3 in [3.2, 4.5],
+	float64 py3 in [3.2, 4.5],
+	float64 pz3 in [3.2, 4.5],
+	float64 px4 in [0.1, 0.5],
+	float64 py4 in [0.1, 0.5],
+	float64 pz4 in [0.1, 0.5];
+
+
+
+
+
+Definitions
+	
+	numPts = 5 ;
+
+		cx = (px0 + px1 + px2 + px3 + px4)/numPts ;
+		cy = (py0 + py1 + py2 + py3 + py4)/numPts ;
+		cz = (pz0 + pz1 + pz2 + pz3 + pz4)/numPts ;
+
+
+		e00 = 0.0 ; e11 = 0.0 ; e22 = 0.0 ; e01 = 0.0 ; e02 = 0.0 ; e12 = 0.0 ;
+
+		px_0 = px0 - cx ;
+		py_0 = py0 - cy ;
+		pz_0 = pz0 - cz ;
+		e00_0 = e00 + px_0*px_0 ;
+		e11_0 = e11 + py_0*py_0 ;
+		e22_0 = e22 + pz_0*pz_0 ;
+		e01_0 = e01 + px_0*py_0 ;
+		e02_0 = e02 + px_0*pz_0 ;
+		e12_0 = e12 + py_0*pz_0 ;
+
+		px_1 = px1 - cx ;
+		py_1 = py1 - cy ;
+		pz_1 = pz1 - cz ;
+		e00_1 = e00_0 + px_1*px_1 ;
+		e11_1 = e11_0 + py_1*py_1 ;
+		e22_1 = e22_0 + pz_1*pz_1 ;
+		e01_1 = e01_0 + px_1*py_1 ;
+		e02_1 = e02_0 + px_1*pz_1 ;
+		e12_1 = e12_0 + py_1*pz_1 ;
+
+		px_2 = px2 - cx ;
+		py_2 = py2 - cy ;
+		pz_2 = pz2 - cz ;
+		e00_2 = e00_1 + px_2*px_2 ;
+		e11_2 = e11_1 + py_2*py_2 ;
+		e22_2 = e22_1 + pz_2*pz_2 ;
+		e01_2 = e01_1 + px_2*py_2 ;
+		e02_2 = e02_1 + px_2*pz_2 ;
+		e12_2 = e12_1 + py_2*pz_2 ;
+
+		px_3 = px3 - cx ;
+		py_3 = py3 - cy ;
+		pz_3 = pz3 - cz ;
+		e00_3 = e00_2 + px_3*px_3 ;
+		e11_3 = e11_2 + py_3*py_3 ;
+		e22_3 = e22_2 + pz_3*pz_3 ;
+		e01_3 = e01_2 + px_3*py_3 ;
+		e02_3 = e02_2 + px_3*pz_3 ;
+		e12_3 = e12_2 + py_3*pz_3 ;
+
+		px_4 = px4 - cx ;
+		py_4 = py4 - cy ;
+		pz_4 = pz4 - cz ;
+		e00_4 = e00_3 + px_4*px_4 ;
+		e11_4 = e11_3 + py_4*py_4 ;
+		e22_4 = e22_3 + pz_4*pz_4 ;
+		e01_4 = e01_3 + px_4*py_4 ;
+		e02_4 = e02_3 + px_4*pz_4 ;
+		e12_4 = e12_3 + py_4*pz_4 ;
+
+		m_0_0 = e00_4 / numPts ;
+		m_1_1 = e11_4 / numPts ;
+		m_2_2 = e22_4 / numPts ;
+		m_0_1 = e01_4 / numPts ;
+		m_1_0 = e01_4 / numPts ;
+		m_0_2 = e02_4 / numPts ;
+		m_2_0 = e02_4 / numPts ;
+		m_1_2 = e12_4 / numPts ;
+		m_2_1 = e12_4 / numPts ;
+
+	
+
+		v_0_0 = 1.0;
+		v_0_1 = 0.0;
+		v_0_2 = 0.0;
+		v_1_0 = 0.0;
+		v_1_1 = 1.0;
+		v_1_2 = 0.0;
+		v_2_0 = 0.0;
+		v_2_1 = 0.0;
+		v_2_2 = 1.0;
+
+		r = (m_2_2 - m_1_1) / (2.0 * m_1_2) ;
+		t = 1.0 / ( r + sqrt(1.0 + r*r));
+		c = 1.0 / (sqrt(1.0 + t*t)) ;
+		s = t * c ;
+
+
+Expressions
+	t;  
