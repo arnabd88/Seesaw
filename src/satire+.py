@@ -176,6 +176,13 @@ def mod_probe_list(probeNodeList):
 	return probeList
 	
 
+	#opList = helper.get_opList(DIV)
+	#D = helper.find_common_dependence(opList, 5, 40)
+	#for k,v in D.items():
+	#	print(v)
+	#	for dep in v:
+	#		print(k.depth, dep.depth, dep.rec_eval(dep))
+	#print("From here:", [op.rec_eval(op) for op in opList])
 def ErrorAnalysis(argList):
 
 	absCount = 1
@@ -256,7 +263,14 @@ if __name__ == "__main__":
 	pr1 = time.time()
 	helper.PreProcessAST()
 	pr2 = time.time()
-	#print("\nAfter:", Globals.GS[0]._symTab.keys(),"\n\n")
+	print("\nAfter:", Globals.GS[0]._symTab.keys(),"\n\n")
+	#opList = helper.get_opList(DIV)
+	#D = helper.find_common_dependence(opList, 5, 40)
+	#for k,v in D.items():
+	#	print(v)
+	#	for dep in v:
+	#		print(k.depth, dep.depth, dep.rec_eval(dep))
+	#print("From here:", [op.rec_eval(op) for op in opList])
 
 
 

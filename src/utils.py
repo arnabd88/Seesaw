@@ -300,6 +300,13 @@ def statistical_eval( symDict, expr , niters=1000 ):
 
 def get_statistics(sym_expr):
 
+	try:
+		if(seng.count_ops(sym_expr)==0):
+			const_val = float(str(sym_expr))
+			return (const_val, const_val)
+	except ValueError:
+		pass
+
 	symDict = {fsyms : Globals.inputVars[fsyms]["INTV"] for fsyms in sym_expr.free_symbols}
 	res_avg_maxres = statistical_eval ( symDict, sym_expr)
 	return res_avg_maxres

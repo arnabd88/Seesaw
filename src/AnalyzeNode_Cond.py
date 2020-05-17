@@ -1,4 +1,4 @@
-
+import numpy as np
 
 import sys
 import time
@@ -64,7 +64,7 @@ class AnalyzeNode_Cond(object):
 		
 	def converge_parents(self, node):
 		#print(node.depth, len(node.f_expression))
-		print(type(node).__name__, node.depth, self.parentTracker[node], len(node.parents) , len(self.parent_dict[node]))#, node.f_expression)
+		#print(type(node).__name__, node.depth, self.parentTracker[node], len(node.parents) , len(self.parent_dict[node]))#, node.f_expression)
 		return True if self.parentTracker[node] >= len(self.parent_dict[node]) else False
 
 
@@ -160,6 +160,9 @@ class AnalyzeNode_Cond(object):
 				print("STAT: SP:{err}, maxres:{maxres}, avg={avg}".format(\
 					err = err, maxres = res_avg_maxres[1], avg = res_avg_maxres[0] \
 				))
+				print(type(err), res_avg_maxres[1]*pow(2,-53))
+				if(err == np.inf):
+					err = res_avg_maxres[1]
 				temp_racc.append(Sym(err, cond))
 			else:
 				temp_racc.append(els)
@@ -288,6 +291,9 @@ class AnalyzeNode_Cond(object):
 				print("STAT: SP:{err}, maxres:{maxres}, avg:{avg}".format(\
 					err = err, maxres = res_avg_maxres[1], avg = res_avg_maxres[0] \
 				))
+				print(type(err), res_avg_maxres[1]*pow(2,-53))
+				if(err == np.inf):
+					err = res_avg_maxres[1]
 				errList.append(err)
 
 			ret_intv = None

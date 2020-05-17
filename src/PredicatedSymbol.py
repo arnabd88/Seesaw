@@ -6,9 +6,10 @@ import numbers
 import time
 
 from functools import reduce
+from collections.abc import Iterable
 
 
-opLimit = 0
+opLimit = 100
 
 class PredSymbol(object):
 
@@ -134,10 +135,11 @@ class Sym(object):
 	#			(self.exprCond[1] & obj.exprCond[1]).simplify() )
 
 	def __add__(self, obj):
-		if isinstance(obj, numbers.Number) :
+		if not isinstance(obj, Sym) :
 			return Sym( self.exprCond[0]+obj, self.exprCond[1])
 		else:
 			expr1 = (self.exprCond[0] + obj.exprCond[0])
+			#expr2 = (expr1)
 			expr2 = seng.expand(expr1)
 			cond = (self.exprCond[1] & obj.exprCond[1]).simplify() 
 			op1 = seng.count_ops(expr1)
@@ -146,10 +148,12 @@ class Sym(object):
 			return Sym(expr1, cond) if op1 < op2 else Sym(expr2, cond) ;
 
 	def __sub__(self, obj):
-		if isinstance(obj, numbers.Number) :
+		#if isinstance(obj, numbers.Number) :
+		if not isinstance(obj, Sym) :
 			return Sym( self.exprCond[0]-obj, self.exprCond[1])
 		else:
 			expr1 = (self.exprCond[0] - obj.exprCond[0])
+			#expr2 = (expr1)
 			expr2 = seng.expand(expr1)
 			cond = (self.exprCond[1] & obj.exprCond[1]).simplify() 
 			op1 = seng.count_ops(expr1)
@@ -164,7 +168,7 @@ class Sym(object):
 
 	def __mul__(self, obj):
 		#symexpr = self.exprCond[0] * obj.exprCond[0]
-		return Sym( self.exprCond[0]*obj, self.exprCond[1]) if isinstance(obj, numbers.Number) else \
+		return Sym( self.exprCond[0]*obj, self.exprCond[1]) if not isinstance(obj, Sym) else \
 		Sym( self.exprCond[0] * obj.exprCond[0]	,\
 		#Sym( seng.expand(self.exprCond[0] * obj.exprCond[0]) if seng.count_ops(self.exprCond[0] * obj.exprCond[0]) < opLimit else self.exprCond[0] * obj.exprCond[0]	,\
 				(self.exprCond[1] & obj.exprCond[1]).simplify() )
@@ -294,10 +298,11 @@ class SymTup(tuple):
 		st1 = time.time()
 		#t1 = tuple(set(el for el in self if  not ( el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan )))
 		t1 = tuple(set(filter(lambda x: not (x.exprCond[1]==Globals.__F__  or x.exprCond[0]==seng.nan), self)))
-		if isinstance(obj, numbers.Number):
+		#if isinstance(obj, numbers.Number):
+		if not isinstance(obj, Iterable):
 			s = SymTup((fl*obj for fl in t1))
 		else:
-			#t2 = tuple(set(el for el in obj if  not ( el.exprCond[1]==Globals.__F__ or el.exprCond[0]==seng.nan )))
+			#print(type(obj))
 			t2 = tuple(set(filter(lambda x: not (x.exprCond[1]==Globals.__F__  or x.exprCond[0]==seng.nan), obj)))
 			s = SymTup(sel for sel in (fl*sl for fl in t1 for sl in t2) if not ( sel.exprCond[1]==Globals.__F__ or sel.exprCond[0]==seng.nan))
 		et1 = time.time()
@@ -309,7 +314,8 @@ class SymTup(tuple):
 
 	def __truediv__(self, obj):
 		t1 = tuple(set(el for el in self if  not ( el.exprCond[1]==Globals.__F__  or el.exprCond[0]==seng.nan )))
-		if isinstance(obj, numbers.Number):
+		#if isinstance(obj, numbers.Number):
+		if not isinstance(obj, Iterable):
 			s = SymTup((fl/obj for fl in t1))
 		else:
 			t2 = tuple(set(el for el in obj if  not ( el.exprCond[1]==Globals.__F__ or el.exprCond[0]==0.0 or el.exprCond[0]==0 or el.exprCond[0]==seng.nan )))

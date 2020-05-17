@@ -6,6 +6,8 @@ import symengine as seng
 from collections import defaultdict
 from SymbolTable import *
 
+from gtokens import *
+
 import ops_def as ops
 
 import logging 
@@ -107,6 +109,10 @@ def pretraverse(node, reachable):
 
 	reachable[node.depth].add(node)
 
+	## debug-check for node is dov and line no
+	if node.token.type == DIV:
+		print("DIV :-->", node.token.lineno)
+
 
 def PreProcessAST():
 	
@@ -116,34 +122,18 @@ def PreProcessAST():
 	probeList = getProbeList()
 	reachable = defaultdict(set)
 
-	#rhstbl = {}
-	#print("\n\n", Globals.GS[0]._symTab[seng.var('g')])
-	#glift = Globals.GS[0]._symTab[seng.var('g')][0][0]
-	#for child in glift.children:
-	#	print(child)
-
-
-	#for k,v in Globals.GS[0]._symTab.items():
-	#	rhstbl[v] = k
-		#if(k == seng.var('radius') or k==seng.var('newRadius')):
-		#	nodeout = v[0][0]
-		#	print(k, nodeout, nodeout.depth, nodeout.f_expression)
 
 	for nodeList in probeList:
 		assert(len(nodeList)==1)
 		[node,cond] = nodeList[0]
 		if not reachable[node.depth].__contains__(node):
 			pretraverse(node, reachable)
-			#assert(node==nodeout)
-			#assert(reachable[node.depth].__contains__(node))
 
 	print("Symbol count Pre Processing :", len(Globals.GS[0]._symTab.keys()))
-	#print([(nodeCondList, syms) for nodeCondList,syms in rhstbl.items()])
 	Globals.GS[0]._symTab = {syms: tuple(set(n for n in nodeCondList \
 										if reachable[n[0].depth].__contains__(n[0]))) \
 										for syms,nodeCondList in Globals.GS[0]._symTab.items() }
 	print("Symbol count Post Processing :", len(Globals.GS[0]._symTab.keys()))
-	#print(Globals.GS[0]._symTab[seng.var('g')])
 	prev_numNodes = sum([ len(Globals.depthTable[el]) for el in Globals.depthTable.keys() if el!=0] )
 	Globals.depthTable = reachable
 	curr_numNodes = sum([ len(Globals.depthTable[el]) for el in Globals.depthTable.keys() if el!=0] )
@@ -153,6 +143,50 @@ def PreProcessAST():
 	print("Total number of nodes post-processing: {curr}".format(curr=curr_numNodes))
 	
 	print("------------------------------\n")
+
+
+def get_child_dependence(node, mind, maxd):
+	
+	dependence = set()
+	if len(node.children) > 0 and node.depth > mind and node.depth <= maxd:
+		find_all_dependence = [get_child_dependence(child, mind, maxd) for child in node.children]
+		dependence = dependence.union(reduce(lambda x,y: x.union(y), find_all_dependence, set()))
+		dependence.add(node)
+
+	#return dependence.difference(common_dependence(node, mind, maxd))
+	return dependence
+
+
+def common_dependence(node, mind, maxd):
+	find_all_dependence = [get_child_dependence(child, mind, maxd) for child in node.children]
+	#print(type(node), [child.rec_eval(child) for child in node.children])
+	#print([child for child in node.children])
+	#print(find_all_dependence)
+	if(len(find_all_dependence)!=0):
+		common_subset = reduce(lambda x,y: x.intersection(y), find_all_dependence, find_all_dependence[0] )
+	else:
+		common_subset = set()
+	return common_subset
+
+
+def find_common_dependence( nodeList, mind, maxd ):
+	
+	common_subset = dict()
+
+	for node in nodeList:
+		preList = common_dependence(node, mind, maxd)
+		redundant_list = reduce(lambda x,y: x.union(y), [common_dependence(n, mind, maxd) for n in preList], set())
+		dep_set = preList.difference(redundant_list)
+		common_subset[node] = set([node]) if len(dep_set)==0 else dep_set
+#		common_subset[node] = common_dependence(node, mind, maxd)
+
+	return common_subset
+
+
+def get_opList(optype, maxd):
+	allNodes = reduce(lambda x,y: x.union(y), [set(nodesList) for k,nodesList in Globals.depthTable.items() if k!=0 and k <= maxd], set())
+	opList = set(filter(lambda x: x.token.type==optype, allNodes))
+	return opList
 
 
 def	parallelConcat(t1, t2):
@@ -196,19 +230,42 @@ def parallel_merge(symTab1, symTab2, scope):
 def filterCandidate(bdmin, bdmax, dmax):
 	#workList =  [[v[0] for v in nodeList if v[0].depth!=0]\
 	#            for k,nodeList in Globals.GS[0]._symTab.items()]
-	workList =  [[v for v in nodeList if v.depth!=0]\
+	#workList =  [[v for v in nodeList if v.depth!=0]\
+	workList =  [[v for v in nodeList if v.depth!=0 and v.depth>=bdmin and v.depth<=bdmax]\
 	            for k,nodeList in Globals.depthTable.items()]
 	
 	workList = list(set(reduce(lambda x,y : x+y, workList, [])))
 	#print("workList=",len(workList), [v.depth for v in workList])
 	#print(bdmin, bdmax)
+	
+	return workList
 
-
-	return list(filter( lambda x:x.depth >= bdmin and x.depth <= bdmax ,\
-								workList))
+	#return list(filter( lambda x:x.depth >= bdmin and x.depth <= bdmax ,\
+	#							workList))
 							   #[[v for v in nodeList if v.depth!=0] for k,nodeList in Globals.GS[0]._symTab.items()]
 	                           #[v for k,v in Globals.GS[0]._symTab.items() if v.depth!=0]\
 							 #))
+
+def filterCandidate(bdmin, bdmax, dmax):
+	
+	workList = []
+	opList = get_opList(DIV, bdmax)
+	D = find_common_dependence(opList,5, bdmax)
+	workList = list(reduce(lambda x,y : x.union(y), [v for k,v in D.items()], set()))
+	if len(workList)==0:
+		pass
+	else:
+		maxdepth = max([n.depth for n in workList])
+		print("1:From Filter Cands:", len(workList), len(opList))
+		workList = [n for n in workList if n.depth == maxdepth]
+		print("2:From Filter Cands:", len(workList), len(opList), [n.token.lineno for n in workList], maxdepth)
+
+	if(len(workList) == 0):
+		workList =  [[v for v in nodeList if v.depth!=0 and v.depth>=bdmin and v.depth<=bdmax]\
+	            for k,nodeList in Globals.depthTable.items()]
+		workList = list(set(reduce(lambda x,y : x+y, workList, [])))
+
+	return workList
 
 
 def selectCandidateNodes(maxdepth, bound_mindepth, bound_maxdepth):
@@ -224,18 +281,22 @@ def selectCandidateNodes(maxdepth, bound_mindepth, bound_maxdepth):
 	if(len(PreCandidateList) <= 0):
 		return []
 	else:
-		f = lambda x : float(x.depth)/(loc_bdmax) + 0.01
+		f = lambda x : float(x.depth)/((loc_bdmax) + 0.01)
 		g = lambda x, y : (-1)*y*math.log(y,2)*(len(x.parents)+ \
 		                       (len(x.children) if type(x).__name__ == "LiftOp" else 0) +\
 							   ops._Priority[x.token.type])
-
+		##
+		for cand in PreCandidateList:
+			print(cand.token.type, cand.token.value, cand.token.lineno, cand.depth)
+		##
+		loc_bdmax = max([n.depth for n in PreCandidateList])
 		cost_list = list(map( lambda x : [x.depth, g(x, f(x))], \
 		                 PreCandidateList \
 						))
 		#print("bdmax:", loc_bdmax)
 		sum_depth_cost = [(depth, sum(list(map(lambda x:x[1] if x[0]==depth\
 		                     else 0, cost_list)))) \
-							 for depth in range(bound_mindepth, loc_bdmax)]
+							 for depth in range(bound_mindepth, loc_bdmax+2)]
 		print(sum_depth_cost)
 		sum_depth_cost.sort(key=lambda x:(-x[1], x[0]))
 		abs_depth = sum_depth_cost[0][0]
