@@ -1,0 +1,61 @@
+
+#####################################################################################
+##	// Returns the squared distance between point c and segment ab
+#####################################################################################
+##	float SqDistPointSegment(Point a, Point b, Point c)
+##	{
+##		Vector ab = b – a, ac = c – a, bc = c – b;
+##		float e = Dot(ac, ab);
+##		// Handle cases where c projects outside ab
+##		if (e <= 0.0f) return Dot(ac, ac);
+##		float f = Dot(ab, ab);
+##		if (e >= f) return Dot(bc, bc);
+##		// Handle cases where c projects onto ab
+##		return Dot(ac, ac) – e * e / f;
+##	}
+#####################################################################################
+
+
+INPUTS {
+	bx fl64 : (4.0, 5.0);
+	by fl64 : (4.0, 5.0);
+	bz fl64 : (4.0, 5.0);
+	ax fl64 : (0.0, 2.0);
+	ay fl64 : (0.0, 2.0);
+	az fl64 : (0.0, 2.0);
+	cx fl64 : (3.0, 7.0);
+	cy fl64 : (3.0, 7.0);
+	cz fl64 : (3.0, 7.0);
+}
+
+OUTPUTS {
+	res; 
+}
+EXPRS {
+	abx = bx - ax ;
+	aby = by - ay ;
+	abz = bz - az ;
+
+	acx = cx - ax ;
+	acy = cy - ay ;
+	acz = cz - az ;
+
+	bcx = bx - cx ;
+	bcy = by - cy ;
+	bcz = bz - cz ;
+
+	e = acx*abx + acy*aby + acz*abz ;
+
+	res = 0.0 ;
+
+	if(e <= 0.0) then
+		res = acx*acx + acy*acy + acz*acz ;
+	endif
+
+	f = abx*abx + aby*aby + abz*abz ;
+	if(e >= f) then
+		e2 = acx*acx + acy*acy + acz *acz ;
+		res = e2 - ((e*e)/f) ;
+	endif
+
+}
