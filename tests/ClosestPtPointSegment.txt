@@ -1,4 +1,21 @@
 
+#####################################################################################
+##	 Given segment ab and point c, computes closest point d on ab.
+##	 Also returns t for the position of d, d(t) = a + t*(b - a)
+#####################################################################################
+##	void ClosestPtPointSegment(Point c, Point a, Point b, float &t, Point &d)
+##	{
+##		Vector ab = b – a;
+##		// Project c onto ab, computing parameterized position d(t) = a + t*(b – a)
+##		t = Dot(c – a, ab) / Dot(ab, ab);
+##		// If outside segment, clamp t (and therefore d) to the closest endpoint
+##		if (t < 0.0f) t = 0.0f;
+##		if (t > 1.0f) t = 1.0f;
+##		// Compute projected position from the clamped t
+##		d = a + t * ab;
+##	}
+#####################################################################################
+
 INPUTS {
 	bx fl64 : (4.0, 5.0);
 	by fl64 : (4.0, 5.0);
@@ -12,7 +29,7 @@ INPUTS {
 }
 
 OUTPUTS {
-	t; #Dot_ac_ab; #Dot_ab_ab; #t ;
+	dx; dy; dz; #t; #Dot_ac_ab; #Dot_ab_ab; #t ;
 }
 
 EXPRS {
@@ -29,14 +46,14 @@ EXPRS {
 
 	t = (Dot_ac_ab)/(Dot_ab_ab) ;
 
-	#if (t < 0.0) then
-	#	t = 0.0;
-	#endif
-	#if(t > 1.0) then
-	#	t = 1.0;
-	#endif
+	if (t < 0.0) then
+		t = 0.0;
+	endif
+	if(t > 1.0) then
+		t = 1.0;
+	endif
 
-	#dx = ax + t*abx ;
-	#dy = ay + t*aby ;
-	#dz = az + t*abz ;
+	dx = ax + t*abx ;
+	dy = ay + t*aby ;
+	dz = az + t*abz ;
 }
