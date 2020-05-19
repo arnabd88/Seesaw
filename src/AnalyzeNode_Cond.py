@@ -26,7 +26,8 @@ class AnalyzeNode_Cond(object):
 		self.workList = []
 		self.next_workList = []
 		self.parentTracker = defaultdict(int)
-		self.completed = defaultdict(set)
+		self.completed1 = defaultdict(set)
+		self.completed2 = defaultdict(set)
 		#self.Accumulator = defaultdict(int)
 		self.Accumulator = {} 
 		self.results = {}
@@ -105,7 +106,7 @@ class AnalyzeNode_Cond(object):
 						#print("One bak prop time = ", eti-sti)
 					self.next_workList.append(child_node)
 					self.parentTracker[child_node] += 1
-		self.completed[node.depth].add(node)
+		self.completed1[node.depth].add(node)
 		et = time.time()
 		#print("@node",node.depth, node.f_expression)
 		#print("Time taken =", et-st,"\n\n")
@@ -120,7 +121,9 @@ class AnalyzeNode_Cond(object):
 			node = self.workList.pop()
 			curr_depth = node.depth
 			next_depth = curr_depth - 1
-			if (utils.isConst(node) or self.completed[node.depth].__contains__(node)):
+			if (utils.isConst(node)):
+				self.completed1[node.depth].add(node)
+			elif self.completed1[node.depth].__contains__(node):
 				pass
 			elif (self.converge_parents(node)):
 				self.visit_node_deriv(node)
@@ -140,6 +143,7 @@ class AnalyzeNode_Cond(object):
 		constAcc = [0.0]
 		temp_racc = []
 		temp_dict = {}
+		res_avg_maxres = (0,0)
 		lim = 100 if (len(racc) > 20) else opLimit 
 		for els in racc:
 			(expr, cond) = els.exprCond
@@ -219,11 +223,12 @@ class AnalyzeNode_Cond(object):
 
 		#print(node.depth, type(node).__name__, "Out of there\n")
 		for child in node.children:
-			if not self.completed[child.depth].__contains__(child):
+			if not self.completed2[child.depth].__contains__(child):
 				self.visit_node_ferror(child)
 
-		self.propagate_symbolic(node)
-		self.completed[node.depth].add(node)
+		if(self.completed1[node.depth].__contains__(node)):
+			self.propagate_symbolic(node)
+		self.completed2[node.depth].add(node)
 
 
 	def condmerge(self, tupleList):
@@ -270,11 +275,12 @@ class AnalyzeNode_Cond(object):
 	def first_order_error(self):
 
 		for node in self.trimList:
-			if not self.completed[node.depth].__contains__(node):
+			if not self.completed2[node.depth].__contains__(node):
 				self.visit_node_ferror(node)
 		self.Accumulator = {k : self.condmerge(v) for k,v in self.Accumulator.items()}
 
 		## Placeholder for gelpia invocation
+		res_avg_maxres = (0,0)
 		for node, tupleList in self.Accumulator.items():
 			errList = []
 			funcList = []
@@ -338,7 +344,7 @@ class AnalyzeNode_Cond(object):
 		print(" > Finished in {duration} secs\n".format(duration=dt2-dt1))
 		logger.info(" > Finished in {duration} secs\n".format(duration=dt2-dt1))
 
-		self.completed.clear()
+		#self.completed.clear()
 		fe1 = time.time()
 		#print("//----------------------------//")
 		print(" > Analyzing error for the current abstraction block...\n")

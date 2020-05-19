@@ -44,7 +44,7 @@ gelpia_epsilons = (gelpia_input_epsilon,
 gelpia_timeout = 10
 gelpia_grace = 0
 gelpia_update = 0
-gelpia_max_iters = 100
+gelpia_max_iters = 1500
 gelpia_seed = 0
 
 timeout = 10000

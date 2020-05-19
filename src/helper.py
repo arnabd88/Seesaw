@@ -45,6 +45,7 @@ def dfs_expression_builder(node, reachable, parent_dict, free_syms, cond, etype,
 		parent_dict[child].append(node)
 
 	if type(node).__name__ == "ExprComp":
+		print("ExprComp line:", node.token.lineno)
 		if etype:
 			res0 = ANC([node.children[0]], [], node.children[0].depth).start()
 			res1 = ANC([node.children[1]], [], node.children[1].depth).start()
@@ -149,6 +150,7 @@ def get_child_dependence(node, mind, maxd):
 	
 	dependence = set()
 	if len(node.children) > 0 and node.depth > mind and node.depth <= maxd:
+		print("DD:", node.depth)
 		find_all_dependence = [get_child_dependence(child, mind, maxd) for child in node.children]
 		dependence = dependence.union(reduce(lambda x,y: x.union(y), find_all_dependence, set()))
 		dependence.add(node)
@@ -177,7 +179,7 @@ def find_common_dependence( nodeList, mind, maxd ):
 		preList = common_dependence(node, mind, maxd)
 		redundant_list = reduce(lambda x,y: x.union(y), [common_dependence(n, mind, maxd) for n in preList], set())
 		dep_set = preList.difference(redundant_list)
-		common_subset[node] = set([node]) if len(dep_set)==0 else dep_set
+		common_subset[node] = set([node] if node.depth > mind and node.depth <= maxd else []) if len(dep_set)==0 else dep_set
 #		common_subset[node] = common_dependence(node, mind, maxd)
 
 	return common_subset
@@ -253,6 +255,7 @@ def filterCandidate(bdmin, bdmax, dmax):
 	D = find_common_dependence(opList,5, bdmax)
 	workList = list(reduce(lambda x,y : x.union(y), [v for k,v in D.items()], set()))
 	if len(workList)==0:
+		print("Empty WorkList!")
 		pass
 	else:
 		maxdepth = max([n.depth for n in workList])
@@ -265,6 +268,7 @@ def filterCandidate(bdmin, bdmax, dmax):
 	            for k,nodeList in Globals.depthTable.items()]
 		workList = list(set(reduce(lambda x,y : x+y, workList, [])))
 
+	print("Final WorkList!", workList)
 	return workList
 
 
