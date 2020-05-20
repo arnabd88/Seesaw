@@ -291,16 +291,17 @@ def selectCandidateNodes(maxdepth, bound_mindepth, bound_maxdepth):
 							   ops._Priority[x.token.type])
 		##
 		for cand in PreCandidateList:
-			print(cand.token.type, cand.token.value, cand.token.lineno, cand.depth)
+			print("Else:", cand.token.type, cand.token.value, cand.token.lineno, cand.depth)
 		##
 		loc_bdmax = max([n.depth for n in PreCandidateList])
 		cost_list = list(map( lambda x : [x.depth, g(x, f(x))], \
 		                 PreCandidateList \
 						))
 		#print("bdmax:", loc_bdmax)
+		print(cost_list)
 		sum_depth_cost = [(depth, sum(list(map(lambda x:x[1] if x[0]==depth\
 		                     else 0, cost_list)))) \
-							 for depth in range(bound_mindepth, loc_bdmax+2)]
+							 for depth in range(2, loc_bdmax+2)]
 		print(sum_depth_cost)
 		sum_depth_cost.sort(key=lambda x:(-x[1], x[0]))
 		abs_depth = sum_depth_cost[0][0]

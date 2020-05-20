@@ -35,16 +35,16 @@ logging.set_log_filename(None)
 gelpia.setup_requirements(gelpia.GIT_DIR)
 gelpia_rust_executable = gelpia.setup_rust_env(gelpia.GIT_DIR, False)
 
-gelpia_input_epsilon = 1e-2
-gelpia_output_epsilon = 1e-2
-gelpia_output_epsilon_relative = 1e-2
+gelpia_input_epsilon = 1e-4
+gelpia_output_epsilon = 1e-4
+gelpia_output_epsilon_relative = 1e-4
 gelpia_epsilons = (gelpia_input_epsilon,
                    gelpia_output_epsilon,
                    gelpia_output_epsilon_relative)
 gelpia_timeout = 10
 gelpia_grace = 0
 gelpia_update = 0
-gelpia_max_iters = 1500
+gelpia_max_iters = 2000
 gelpia_seed = 0
 
 timeout = 10000
