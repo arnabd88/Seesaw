@@ -19,6 +19,14 @@ def getProbeList():
 	#print(Globals.GS[0]._symTab.keys())
 	return [Globals.GS[0]._symTab[outVar] for outVar in Globals.outVars]
 
+def freeCondSymbols(SymEl):
+	assert(type(SymEl).__name__ == "Sym")
+	cond = SymEl.exprCond[1]
+	if cond in (True,False):
+		return set()
+	else:
+		return cond.free_symbols
+
 
 def parse_cond(cond):
 	tcond = cond
@@ -36,11 +44,11 @@ def parse_cond(cond):
 	return tcond
 
 
-def dfs_expression_builder(node, reachable, parent_dict, free_syms, cond, etype, ctype):
+def dfs_expression_builder(node, reachable, parent_dict, free_syms, cond_syms, cond, etype, ctype, inv=False):
 
 	for child in node.children:
 		if not reachable[child.depth].__contains__(child):
-			dfs_expression_builder(child, reachable, parent_dict, free_syms, cond, etype, ctype)
+			(free_syms, cond_syms) = dfs_expression_builder(child, reachable, parent_dict, free_syms, cond_syms, cond, etype, ctype, inv)
 
 		parent_dict[child].append(node)
 
@@ -50,16 +58,24 @@ def dfs_expression_builder(node, reachable, parent_dict, free_syms, cond, etype,
 			res0 = ANC([node.children[0]], [], node.children[0].depth).start()
 			res1 = ANC([node.children[1]], [], node.children[1].depth).start()
 		## an exprComp node as a modified evaluation ops to include extra error terms
-			(fexpr,fsyms) = node.mod_eval(node, res0[node.children[0]]["ERR"]*pow(2,-53), \
+			(fexpr,fsyms) = node.mod_eval(node, inv, res0[node.children[0]]["ERR"]*pow(2,-53), \
 								   res1[node.children[1]]["ERR"]*pow(2,-53) )
 		else:
-			(fexpr,fsyms) = node.mod_eval(node, 0.0, 0.0)
-		free_syms.union(fsyms)
+			(fexpr,fsyms) = node.mod_eval(node, inv, 0.0, 0.0)
+		free_syms = free_syms.union(fsyms)
 	else:
-		fexpr = node.eval(node)
+		fexpr = node.eval(node, inv)
 
 	node.set_expression(fexpr)
+	#print("FEXPRESSION TYPE = ", type(node.f_expression).__name__)
+	if type(node.f_expression).__name__ == "SymTup":
+		csymSet = reduce(lambda x,y: x.union(y), \
+						[el.exprCond[1].free_symbols for el in node.f_expression if el.exprCond[1] not in (True,False)], \
+						set())
+		cond_syms = cond_syms.union(csymSet)
 	reachable[node.depth].add(node)
+
+	return (free_syms, cond_syms)
 
 
 	#print(node.depth, type(node).__name__, node.cond)
@@ -72,32 +88,37 @@ def dfs_expression_builder(node, reachable, parent_dict, free_syms, cond, etype,
 
 
 
-def expression_builder(probeList, etype=False, ctype=False):
+def expression_builder(probeList, etype=False, ctype=False, inv=False):
 
 	parent_dict = defaultdict(list)
 	reachable = defaultdict(set)
 	free_syms = set()
+	cond_syms = set()
 
 	for node in probeList:
 		if not reachable[node.depth].__contains__(node):
-			dfs_expression_builder(node, reachable, parent_dict, free_syms,  cond=Globals.__T__,etype=etype, ctype=ctype)
+			(free_syms, cond_syms) = dfs_expression_builder(node, reachable, parent_dict, free_syms, cond_syms, cond=Globals.__T__,etype=etype, ctype=ctype, inv=inv)
 
+		#print(node.f_expression)
+		#print("From expression builder: Root node stats -> opcount={opcount}, depth={depth}".format(opcount=0 if type(node).__name__ not in ('TransOp', 'BinOp') else node.f_expression.__countops__(), depth=node.depth))
 		#print(type(node).__name__, node.token.type, node.depth, node.f_expression)
 		#print([(type(child).__name__, child.token.type, child.depth, child.f_expression) for child in node.children])
 
 	del reachable
+
+	#print("Inside expression builder :", cond_syms)
 	
 	if ctype:
-		return free_syms
+		return (free_syms, cond_syms)
 	else:
-		return parent_dict
+		return (parent_dict, cond_syms)
 
 
-def handleConditionals(probeNodeList, etype=True):
+def handleConditionals(probeNodeList, etype=True, inv=False):
 	print("Building conditional expressions...\n")
 	logger.info("Building conditional expressions...\n")
-	fsyms = expression_builder(probeNodeList, etype, ctype=True)
-	return (" & ".join([str(probeNode.f_expression) for probeNode in probeNodeList]),fsyms)
+	(fsyms, csyms) = expression_builder(probeNodeList, etype, ctype=True, inv=inv)
+	return (" & ".join([str(probeNode.f_expression) for probeNode in probeNodeList]),fsyms, csyms)
 
 def pretraverse(node, reachable):
 	

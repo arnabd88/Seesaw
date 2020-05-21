@@ -50,6 +50,7 @@ _FOPS = {	PLUS	:	lambda L 	:	L[0] + L[1]	,	\
 			EXP		:	lambda L	:	L[0].__exp__()	\
 }
 
+
 _COPS = {	\
 			LT		:	lambda L	:	str("(") + str(L[0]) +" <"+ str(L[1]) + str(")") if bothNotConst(L[0],L[1])	else\
 										str("(") + str(L[0] < L[1])+ str(")")	,	\
@@ -65,6 +66,18 @@ _COPS = {	\
 										str("(") + str(L[0] != L[1]) + str(")")	\
 }
 
+invert = {	\
+			LT		:	GT 	,\
+			GT		:	LT	,\
+			LEQ		:	GEQ	,\
+			GEQ		:	LEQ	,\
+			EQ		:	EQ	,\
+			NEQ		:	NEQ ,\
+			AND		:	OR	,\
+			OR		:	AND \
+}
+
+#L = [f,s,ef,es]
 _MCOPS = {	\
 			LT		:	lambda L	:	str("(") + str(L[0]-L[3]) +" <"+ str(L[1]+L[2]) + str(")") if bothNotConst(L[0],L[1])	else\
 										str("(") + str(L[0] < L[1])+ str(")")	,	\

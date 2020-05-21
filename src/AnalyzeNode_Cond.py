@@ -19,6 +19,16 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+##-- Description of the data structures involved
+##-- workList, next_workList -> workList for the BFS traversal
+##-- parentTracker 		 -> node -> parent information post trimming
+##-- completed1			 -> completed list for bfs traversal
+##-- completed2			 -> reachable list for dfs traversal (keeping both for consistency check)
+##-- bwdDeriv			 -> Dictionary with derivative information
+##-- externConstraints   -> Constraints from "REQUIRES" pragmas
+##-- externFreeSymbols   -> Free symbols used in external constraints
+##-- results 			 -> dictionary of results to be returned
+
 
 class AnalyzeNode_Cond(object):
 
@@ -30,10 +40,13 @@ class AnalyzeNode_Cond(object):
 		self.completed2 = defaultdict(set)
 		#self.Accumulator = defaultdict(int)
 		self.Accumulator = {} 
+		self.InstabilityAccumulator = {}
 		self.results = {}
 		self.bwdDeriv = {}
 		self.externConstraints = ""
 		self.externFreeSymbols = set()
+		self.cond_syms = set()
+		self.truthTable = set()
 
 	def __init__(self, probeNodeList, argList, maxdepth):
 		self.initialize()
@@ -41,7 +54,24 @@ class AnalyzeNode_Cond(object):
 		self.trimList = probeNodeList
 		self.argList = argList
 		self.maxdepth = maxdepth
-		self.parent_dict = helper.expression_builder(probeNodeList)
+		(self.parent_dict, self.cond_syms) = helper.expression_builder(probeNodeList)
+		print("Expression builder condsyms:", self.cond_syms)
+
+	def __setup_condexpr__(self):
+		for csym in self.cond_syms:
+			# Fill in both csym and ~csym for delta substitution
+			symNode = Globals.predTable[csym]
+			Globals.condExprBank[csym] = Globals.condExprBank.get(csym) if csym in Globals.condExprBank.keys()\
+			else helper.handleConditionals([symNode], etype=True, inv=False)
+			# debug prints
+			(expr, FSYM, CSYM) = Globals.condExprBank[csym]
+			if "True" in expr or "False" in expr:
+				print("SETUP_CONDEXPR:", expr, type(expr), csym)
+				self.truthTable.add(csym)
+
+			Globals.condExprBank[~csym] = Globals.condExprBank.get(~csym) if ~csym in Globals.condExprBank.keys()\
+			else helper.handleConditionals([symNode], etype=True, inv=True)
+
 
 	def __setup_outputs__(self):
 		for node in self.trimList:
@@ -56,7 +86,7 @@ class AnalyzeNode_Cond(object):
 		self.workList = list(it2)
 
 	def __externConstraints__(self):
-		(subcond,free_symbols) = helper.handleConditionals( [v for k,v in Globals.externPredTable.items()], etype=False)
+		(subcond,free_symbols,cond_symbols) = helper.handleConditionals( [v for k,v in Globals.externPredTable.items()], etype=False)
 		self.externConstraints = subcond 
 		self.externFreeSymbols = free_symbols
 		print("Ext Constraints: ", subcond)
@@ -183,14 +213,38 @@ class AnalyzeNode_Cond(object):
 		#print("\n")
 		return s ;
 				
-	
+	def add_instability_error(self, expr_solve):
+		temp_list = [0]
+		if len(expr_solve) > 1:
+			print("INSTABILITY COMPRESSION LIST:", len(expr_solve))
+			unstable_cands = list(filter(lambda x: bool(helper.freeCondSymbols(x).difference(self.truthTable)), \
+							  expr_solve))
+			print("Candidates for instability:", len(unstable_cands))
+			for i in range(0, len(unstable_cands)):
+				for j in range(i+1, len(unstable_cands)):
+					expr_diff = (unstable_cands[i].exprCond[0] - unstable_cands[j].exprCond[0]).__abs__()
+					#cond = (unstable_cands[i].exprCond[1] & unstable_cands[j].exprCond[1]).simplify()
+					(cond1_expr, free_symbols1) = self.parse_cond(unstable_cands[i].exprCond[1])
+					(cond2_expr, free_symbols2) = self.parse_cond(unstable_cands[j].exprCond[1])
+					cond_expr =  cond1_expr  & cond2_expr 
+					free_symbols = free_symbols1.union(free_symbols2)
+					#(cond_expr, free_symbols) = self.parse_cond(cond)
+					errIntv = utils.generate_signature(expr_diff, \
+													   cond_expr, \
+													   self.externConstraints, \
+													   free_symbols.union(self.externFreeSymbols))
+					err = max([abs(i) for i in errIntv])
+					temp_list.append(err)
+					
+
+		return max(temp_list)
 		
 
 
 	def propagate_symbolic(self, node):
 		for outVar in self.bwdDeriv[node].keys():
 			#print(node.depth)
-			expr_solve = (\
+			expr_solve = self.condmerge(\
 							((self.bwdDeriv[node][outVar]) * \
 							(node.get_noise(node)) * node.get_rounding())\
 							).__abs__()
@@ -198,7 +252,12 @@ class AnalyzeNode_Cond(object):
 			#print("ACC:", len(acc), acc.__countops__())
 			if(len(acc) > 10):
 				acc = self.merge_discontinuities(self.condmerge(acc), 4000)
-			expr_solve = self.merge_discontinuities(self.condmerge(expr_solve), 1000)
+
+			instability_error = self.add_instability_error(expr_solve)
+			self.InstabilityAccumulator[outVar] = self.InstabilityAccumulator.get(outVar, 0.0) +\
+													instability_error
+			expr_solve = self.merge_discontinuities(expr_solve, 1000)
+			#expr_solve = self.merge_discontinuities(self.condmerge(expr_solve), 1000)
 			#else:
 			#acc = self.merge_discontinuities(acc)
 			#print("RACC:", len(acc), acc.__countops__())
@@ -256,15 +315,23 @@ class AnalyzeNode_Cond(object):
 				symNode = Globals.predTable[fsym]
 				print("Handling Condtional {symID}".format(symID=fsym))
 				logger.info("Handling Condtional {symID}".format(symID=fsym))
-				(subcond,free_symbols) =  Globals.condExprBank.get(fsym) if fsym in Globals.condExprBank.keys()\
-																		 else helper.handleConditionals([symNode], etype=True)
+				dict_element = Globals.condExprBank.get(fsym) 
+				assert(dict_element is not None)
+				(subcond,free_symbols, cond_symbols) =  dict_element
+				#(subcond,free_symbols, cond_symbols) =  Globals.condExprBank.get(fsym) if fsym in Globals.condExprBank.keys()\
+				#														 else helper.handleConditionals([symNode], etype=True)
 				#subcond = subcondList[0]
-				print("This:", subcond)
 				print("SubCond: {symID} : {SubCond}\n\n".format(symID=fsym, SubCond=subcond))
 				logger.info("SubCond:{symID} : {SubCond}\n\n".format(symID=fsym, SubCond=subcond))
-				Globals.condExprBank[fsym] = (subcond,free_symbols)
+				Globals.condExprBank[fsym] = (subcond,free_symbols, cond_symbols)
 				set_free_symbols.union(free_symbols)
-			tcond = tcond.subs({fsym: Globals.condExprBank[fsym][0] for fsym in free_syms})
+			symDict = {fsym: Globals.condExprBank[fsym][0] for fsym in free_syms}
+			inv_symDict = {~fsym: Globals.condExprBank[~fsym][0] for fsym,v in symDict.items() if v not in ('(True)', 'True', '(False)', 'False', True, False)}
+			inv_symDict.update(symDict)
+			print(inv_symDict)
+			print(tcond)
+			tcond = tcond.subs(inv_symDict)
+			#tcond = tcond.subs({fsym: Globals.condExprBank[fsym][0] for fsym in free_syms})
 			print("Finished parsing -> {cond} : {cexpr}".format(cond=cond, cexpr=tcond))
 			logger.info("Finished parsing -> {cond} : {cexpr}".format(cond=cond, cexpr=tcond))
 			#print("tcond:", tcond)
@@ -321,12 +388,14 @@ class AnalyzeNode_Cond(object):
 			#print(node.f_expression)
 			self.results[node] = {"ERR" : max(errList), \
 								  "SERR" : 0.0, \
+								  "INSTABILITY": self.InstabilityAccumulator[node], \
 								  "INTV" : ret_intv \
 								  }
 
 			#print("MaxError:", max(errList)*pow(2,-53), fintv)
 			logger.info(" > MaxError:\n {error} ; {fintv}\n".format(error=max(errList)*pow(2,-53), fintv=ret_intv))
 			print(" > MaxError:\n {error} ; {fintv}\n".format(error=max(errList)*pow(2,-53), fintv=ret_intv))
+			print(" > Instability:\n {instab} ;".format(instab=self.InstabilityAccumulator[node]))
 
 		return self.results
 
@@ -335,6 +404,8 @@ class AnalyzeNode_Cond(object):
 		self.__init_workStack__()
 		self.__setup_outputs__()
 		self.__externConstraints__()
+		self.__setup_condexpr__()
+		print("CondExpr:", Globals.condExprBank.keys())
 
 		dt1 = time.time()
 		print(" > Begin building derivatives....")

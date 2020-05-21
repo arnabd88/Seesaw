@@ -42,7 +42,7 @@ class AST(object):
 	def set_expression(self, fexpr):
 		self.f_expression = fexpr
 
-	def eval(obj):
+	def eval(obj, inv=False):
 		return obj.f_expression
 
 	@staticmethod
@@ -85,7 +85,7 @@ class Num(AST):
 		self.derived_token = token.type
 
 	@staticmethod
-	def eval(obj):
+	def eval(obj, inv=False):
 		return  SymTup((Sym( obj.token.value, Globals.__T__),))
 		#return obj.token.value
 
@@ -108,7 +108,7 @@ class FreeVar(AST):
 
 
 	@staticmethod
-	def eval(obj, round_mode="fl64"):
+	def eval(obj, round_mode="fl64", inv=False):
 		name = str(obj.token.value)
 		obj.depth = 0
 		intv = Globals.inputVars.get(obj.token.value, None)
@@ -151,12 +151,12 @@ class Var(AST):
 		self.cond = cond
 
 	@staticmethod
-	def eval(obj, round_mode="fl64"):
+	def eval(obj, round_mode="fl64", inv=False):
 		nodeList = Globals.GS[0]._symTab.get(obj.token.value, None)
-		if nodeList is None:
+		if nodeList is None or len(nodeList)==0:
 			return SymTup((Sym(obj.token.value, Globals.__T__),))
 		else:
-			child_der_tokens = [n[0].derived_token for n in obj.nodeList]
+			child_der_tokens = [n.derived_token for n in obj.children]
 			obj.derived_token = FLOAT if FLOAT in child_der_tokens else INTEGER
 			clist = [n[0].f_expression.__and__(n[1])  for n in obj.nodeList]
 			f = lambda x, y: SymConcat(x,y)
@@ -183,15 +183,15 @@ class LiftOp(AST):
 #		self.token.type = IF
 		self.depth = max([n[0].depth for n in nodeList]) +1
 		self.nodeList = nodeList
-		self.derived_token = FLOAT if FLOAT in [n[0].derived_token for n in self.nodeList] else INTEGER
 		self.children = [n[0] for n in nodeList]
+		self.derived_token = FLOAT if FLOAT in [n.derived_token for n in self.children] else INTEGER
 		self.cond = cond
 		for n in nodeList:
 			n[0].parents += (self, )
 		#print(nodeList)
 
 	@staticmethod
-	def eval(obj):
+	def eval(obj, inv=False):
 		
 		clist = [n[0].f_expression.__and__(n[1])  for n in obj.nodeList]
 		f = lambda x, y: SymConcat(x,y)
@@ -232,10 +232,10 @@ class TransOp(AST):
 		self.depth = right.depth+1
 		self.children = (right, )
 		right.parents += (self, )
-		self.derived_token = FLOAT if FLOAT in [n[0].derived_token for n in self.nodeList] else INTEGER
+		self.derived_token = FLOAT if FLOAT in [n.derived_token for n in self.children] else INTEGER
 
 	@staticmethod
-	def eval(obj):
+	def eval(obj, inv=False):
 		lexpr = ops._FOPS[obj.token.type]([obj.children[0].f_expression])
 		obj.depth = obj.children[0].depth +1
 		obj.rnd = obj.children[0].rnd
@@ -273,10 +273,10 @@ class BinOp(AST):
 		self.depth = max(left.depth, right.depth) +1
 		left.parents += (self,)
 		right.parents += (self, )
-		self.derived_token = FLOAT if FLOAT in [n[0].derived_token for n in self.nodeList] else INTEGER
+		self.derived_token = FLOAT if FLOAT in [n.derived_token for n in self.children] else INTEGER
 
 	@staticmethod
-	def eval(obj):
+	def eval(obj, inv=False):
 		#print(obj.token.value, [child.f_expression for child in obj.children])
 		lexpr = ops._FOPS[obj.token.type]([child.f_expression for child in obj.children])
 		obj.depth = max([child.depth for child in obj.children])+1
@@ -335,14 +335,14 @@ class BinLiteral(AST):
 
 
 	@staticmethod
-	def eval(obj):
+	def eval(obj, inv=False):
 		obj.depth = max([child.depth for child in obj.children])+1
 		lstr = obj.children[0].f_expression
 		rstr = obj.children[1].f_expression
 		print("LSTR:", lstr)
 		print("RSTR:", rstr)
 
-		litexpr = ops._BOPS[obj.token.type]([lstr,rstr])
+		litexpr = ops._BOPS[obj.token.type if not inv else ops.invert[obj.token.type]]([lstr,rstr])
 		print("LITEXPR:", litexpr)
 
 		return litexpr
@@ -389,15 +389,22 @@ class ExprComp(AST):
 		#self.f_expression = self.eval(self)
 
 	@staticmethod
-	def mod_eval(obj, err0, err1):
+	def mod_eval(obj, inv, err0, err1):
 		obj.depth = max([child.depth for child in obj.children])+1
 		lstrTup = obj.children[0].f_expression
 		rstrTup = obj.children[1].f_expression
 		free_syms = lstrTup.__freeSyms__().union(rstrTup.__freeSyms__())
 		ERR0 = 0 if obj.children[0].derived_token==INTEGER else err0
 		ERR1 = 0 if obj.children[1].derived_token==INTEGER else err1
+		#ERR0 = err0
+		#ERR1 = err1
+		#for child in obj.children:
+		#	if child.derived_token==INTEGER:
+		#		print("INTEGER DERIVED TOKEN @", obj.token.lineno)
+		#		print(child.f_expression, type(child))
+		#		print([c.derived_token==FLOAT for c in child.children])
 
-		cexpr = tuple(set(ops._MCOPS[obj.token.type]([fl.exprCond[0],\
+		cexpr = tuple(set(ops._MCOPS[obj.token.type if not inv else ops.invert[obj.token.type]]([fl.exprCond[0],\
 											 sl.exprCond[0], ERR0, ERR1]) \
 											 for fl in lstrTup \
 										     for sl in rstrTup))

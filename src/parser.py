@@ -542,5 +542,11 @@ if __name__ == "__main__":
 	end_parse_time = time.time()
 	print("Parsing time -> ", end_parse_time - start_parse_time)
 	
-	for k,v in Globals.progTrace.items():
-		print("Line {num} , val = {expr}".format(num=k, expr=v.rec_eval(v)))
+#	for k,v in Globals.progTrace.items():
+#		print("Line {num} , val = {expr}".format(num=k, expr=v.rec_eval(v)))
+
+	for k,v in Globals.predTable.items():
+		#print(k, v.token.lineno, v.rec_eval(v))
+		if "True" in v.rec_eval(v):
+			print(k, v.token.lineno, v.rec_eval(v))
+			

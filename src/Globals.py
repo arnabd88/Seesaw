@@ -1,12 +1,15 @@
 
 import sympy
+import symengine as seng
 
 from collections import OrderedDict, defaultdict
 
 # Global Flag, disable when expand seems to misbehave
 simplify = True
 
-inputVars = {}
+deps = seng.var('eps')
+
+inputVars = {eps : {"INTV" : [pow(2,53), pow(2,53)]}}
 outVars = []
 
 ## SymbolTable Hierarchy Tracker
