@@ -4,6 +4,7 @@ import symengine as seng
 
 from collections import OrderedDict, defaultdict
 
+argList = []
 # Global Flag, disable when expand seems to misbehave
 simplify = True
 

@@ -33,6 +33,8 @@ def parseArguments():
 									  default=40, type=int)
 	parser.add_argument('--stat', help='Report statistics on error expression. Disabled by default', \
 									  default=False, action='store_true')
+	parser.add_argument('--report-instability', help='Report instability for every divergent path. Disabled by default', \
+									  default=False, action='store_true')
 	parser.add_argument('--simplify', help='Simplify expression -> could be costly for very large expressions',
 										default=False, action='store_true')
 	parser.add_argument('--logfile', help='Python logging file name -> default is default.log', default='default.log')
@@ -228,6 +230,7 @@ def ErrorAnalysis(argList):
 if __name__ == "__main__":
 	start_exec_time	= time.time()
 	argList = parseArguments()
+	Globals.argList = argList
 	sys.setrecursionlimit(10**6)
 	print(argList)
 	text = open(argList.file, 'r').read()

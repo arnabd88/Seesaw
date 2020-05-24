@@ -339,11 +339,11 @@ class BinLiteral(AST):
 		obj.depth = max([child.depth for child in obj.children])+1
 		lstr = obj.children[0].f_expression
 		rstr = obj.children[1].f_expression
-		print("LSTR:", lstr)
-		print("RSTR:", rstr)
+		#print("LSTR:", lstr)
+		#print("RSTR:", rstr)
 
 		litexpr = ops._BOPS[obj.token.type if not inv else ops.invert[obj.token.type]]([lstr,rstr])
-		print("LITEXPR:", litexpr)
+		#print("LITEXPR:", litexpr)
 
 		return litexpr
 

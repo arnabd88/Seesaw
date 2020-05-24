@@ -253,7 +253,7 @@ class AnalyzeNode_Cond(object):
 			if(len(acc) > 10):
 				acc = self.merge_discontinuities(self.condmerge(acc), 4000)
 
-			instability_error = self.add_instability_error(expr_solve)
+			instability_error = 0 if not Globals.argList.report_instability else self.add_instability_error(expr_solve)
 			self.InstabilityAccumulator[outVar] = self.InstabilityAccumulator.get(outVar, 0.0) +\
 													instability_error
 			expr_solve = self.merge_discontinuities(expr_solve, 1000)
@@ -306,7 +306,7 @@ class AnalyzeNode_Cond(object):
 
 	def parse_cond(self, cond):
 		tcond = cond
-		print("\n Parsing Conditional = {pcond}".format(pcond=tcond))
+		print("\n ******** Parsing Conditional = {pcond}".format(pcond=tcond))
 		logger.info("\n Parsing Conditional = {pcond}".format(pcond=tcond))
 		set_free_symbols = set()
 		if tcond not in (True,False):
@@ -328,11 +328,11 @@ class AnalyzeNode_Cond(object):
 			symDict = {fsym: Globals.condExprBank[fsym][0] for fsym in free_syms}
 			inv_symDict = {~fsym: Globals.condExprBank[~fsym][0] for fsym,v in symDict.items() if v not in ('(True)', 'True', '(False)', 'False', True, False)}
 			inv_symDict.update(symDict)
-			print(inv_symDict)
-			print(tcond)
+			print("Inside parsing conditionals -> cond sub dict : {sdict}".format(sdict=inv_symDict))
+			#print("Inside parsing conditionals -> total cond : {total_cond}".format(total_cond=tcond))
 			tcond = tcond.subs(inv_symDict)
 			#tcond = tcond.subs({fsym: Globals.condExprBank[fsym][0] for fsym in free_syms})
-			print("Finished parsing -> {cond} : {cexpr}".format(cond=cond, cexpr=tcond))
+			print("Finished parsing -> {cond} : {cexpr}\n".format(cond=cond, cexpr=tcond))
 			logger.info("Finished parsing -> {cond} : {cexpr}".format(cond=cond, cexpr=tcond))
 			#print("tcond:", tcond)
 			return (tcond, set_free_symbols)

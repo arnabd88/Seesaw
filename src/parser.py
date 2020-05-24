@@ -546,7 +546,7 @@ if __name__ == "__main__":
 #		print("Line {num} , val = {expr}".format(num=k, expr=v.rec_eval(v)))
 
 	for k,v in Globals.predTable.items():
-		#print(k, v.token.lineno, v.rec_eval(v))
-		if "True" in v.rec_eval(v):
-			print(k, v.token.lineno, v.rec_eval(v))
+		print(k, v.token.lineno, v.rec_eval(v))
+		#if "True" in v.rec_eval(v):
+		#	print(k, v.token.lineno, v.rec_eval(v))
 			

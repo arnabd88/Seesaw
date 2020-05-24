@@ -99,7 +99,7 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	str_extc_expr = re.sub(r'Abs', "abs", str_extc_expr)
 	str_extc_expr = re.sub(r're\b', "", str_extc_expr)
 	str_extc_expr = re.sub(r'im\b', "0.0*", str_extc_expr)
-	print("Pass conversion gelpia")
+	#print("Pass conversion gelpia")
 	gstr_expr = inputStr + str_expr  ## without the constraints
 	Globals.gelpiaID += 1
 	#print("Begining New gelpia query->ID:", Globals.gelpiaID)

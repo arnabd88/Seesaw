@@ -53,7 +53,7 @@ def dfs_expression_builder(node, reachable, parent_dict, free_syms, cond_syms, c
 		parent_dict[child].append(node)
 
 	if type(node).__name__ == "ExprComp":
-		print("ExprComp line:", node.token.lineno)
+		#print("ExprComp line:", node.token.lineno)
 		if etype:
 			res0 = ANC([node.children[0]], [], node.children[0].depth).start()
 			res1 = ANC([node.children[1]], [], node.children[1].depth).start()
@@ -111,6 +111,10 @@ def expression_builder(probeList, etype=False, ctype=False, inv=False):
 	if ctype:
 		return (free_syms, cond_syms)
 	else:
+		for k,v in Globals.GS[0]._symTab.items():
+			print("\n*******Symbol Name:", k)
+			for vi in v:
+				print(vi[0].f_expression)
 		return (parent_dict, cond_syms)
 
 
