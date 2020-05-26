@@ -19,7 +19,7 @@ def initialize(p_num, d_num, fout):
 			seed = ( seed % i4_huge )
 			if ( seed < 0):
 				seed = seed + i4_huge
-			rand_val = 0.0 + ( 10.0 - 0.0 ) * seed * 4.656612875E-10
+			rand_val = 2.0 + ( 10.0 - 2.0 ) * seed * 4.656612875E-10
 			fout.write("\t{var}\tfl64 : ({val} - {err}, {val} + {err});\n".format(var=var_name,err=err,val=str(rand_val)))
 
 	return POS, VEL, ACC
@@ -140,12 +140,12 @@ def md( p_num, d_num, step_num, dt, fout):
 if __name__ == "__main__":
 	p_num = 10
 	d_num = 3
-	step_num = 4
+	step_num = 10
 	dt = 0.1
 
 	## default arrays to begin with
 
 
-	fout = open("MD.txt", 'w')
+	fout = open(sys.argv[1], 'w')
 	md(p_num, d_num, step_num, dt, fout)
 	fout.close()
