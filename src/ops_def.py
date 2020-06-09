@@ -66,6 +66,8 @@ _COPS = {	\
 										str("(") + str(L[0] != L[1]) + str(")")	\
 }
 
+
+# inverted token of _MCOPS
 invert = {	\
 			LT		:	GT 	,\
 			GT		:	LT	,\
@@ -77,7 +79,7 @@ invert = {	\
 			OR		:	AND \
 }
 
-#L = [f,s,ef,es]
+#L = [f,s,ef,es] Modified _COPS
 _MCOPS = {	\
 			LT		:	lambda L	:	str("(") + str(L[0]-L[3]) +" <"+ str(L[1]+L[2]) + str(")") if bothNotConst(L[0],L[1])	else\
 										str("(") + str(L[0] < L[1])+ str(")")	,	\
@@ -94,6 +96,7 @@ _MCOPS = {	\
 }
 
 
+# ops over binary literals
 _BOPS = { \
 			AND		:	lambda L	:	"False" if ("False" in L[0] or "False" in L[1]) else "True" if "True" in L[1] and "True" in L[0] else L[0] if "True" in L[1] else L[1] if "True" in L[0] else   str("(") + L[0] +"&"+ L[1] + str(")"), \
 			OR		:	lambda L	:	"True" if ("True" in L[0] or "True" in L[1]) else "False" if "False" in L[1] and "False" in L[0] else L[0] if "False" in L[1] else L[1] if "False" in L[0] else str("(") + L[0] +"|"+ L[1] + str(")"), \
@@ -103,6 +106,7 @@ _BOPS = { \
 }
 
 
+# derivatives
 _DFOPS = { \
 			PLUS	:	[lambda L : SymTup((Sym(1.0,Globals.__T__),)), \
 			             lambda L : SymTup((Sym(1.0,Globals.__T__),))],\

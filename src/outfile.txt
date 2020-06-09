@@ -1,0 +1,10 @@
+INPUT_FILE : ../../Satern-2nd/test/satern-test/all_compatable_fpbench/hartman6.txt
+
+//-------------------------------------
+VAR : hartman6
+ABSOLUTE_ERROR : 9.976460548267585e-13
+First-order Error : 9.976460548267585e-13
+REAL_INTERVAL : [-4.104832670397422, -1.193215714079706e-09]
+FP_INTERVAL : [-4.1048326703984195, -1.1922180680248792e-09]
+//-------------------------------------
+

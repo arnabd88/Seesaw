@@ -117,7 +117,9 @@ def expression_builder(probeList, etype=False, ctype=False, inv=False):
 				print(vi[0].f_expression)
 		return (parent_dict, cond_syms)
 
-
+#etype = to analyze error within the conditional expressions
+#ctype = free_syms + cond_syms ( specifically used when handling conditonals to retrieve conditional symbols )
+# inv  = To generate delta inverse that includes the grey-zone
 def handleConditionals(probeNodeList, etype=True, inv=False):
 	print("Building conditional expressions...\n")
 	logger.info("Building conditional expressions...\n")

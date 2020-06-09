@@ -8,6 +8,9 @@ argList = []
 # Global Flag, disable when expand seems to misbehave
 simplify = True
 
+# Global flag to control constraint passing
+enable_constr = False
+
 deps = seng.var('eps')
 
 inputVars = {eps : {"INTV" : [pow(2,53), pow(2,53)]}}

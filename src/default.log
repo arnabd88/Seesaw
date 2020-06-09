@@ -1,0 +1,30 @@
+INFO:root:Parsing time : 0.005900382995605469 secs
+INFO:helper:Total number of nodes pre-processing: 190
+INFO:helper:Total number of nodes post-processing: 190
+INFO:root:Full AST_DEPTH : 16
+INFO:helper:Building conditional expressions...
+
+INFO:AnalyzeNode_Cond: > Begin building derivatives....
+INFO:AnalyzeNode_Cond: > Finished in 0.15547728538513184 secs
+
+INFO:AnalyzeNode_Cond:Analyzing error for the current abstraction block...
+
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond: > MaxError:
+ 9.976460548267585e-13 ; [-4.104832670397422, -1.193215714079706e-09]
+
+INFO:AnalyzeNode_Cond:Finished in 2.081420421600342 secs
+
+INFO:root:Optimizer calls : 2
+
+INFO:root:Parsing time : 0.005900382995605469
+
+INFO:root:PreProcessing time : 0.0005977153778076172
+
+INFO:root:Analysis time : 2.2663841247558594
+
+INFO:root:Full time : 2.275473117828369
+

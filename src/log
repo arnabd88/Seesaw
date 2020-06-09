@@ -1,0 +1,2042 @@
+Namespace(compress=False, enable_abstraction=True, file='../tests/ray_tracing_01.txt', force=False, logfile='default.log', maxdepth=20, mindepth=5, outfile='outfile.txt', parallel=False, simplify=False, sound=False, std=True)
+Inside Program
+Scope creattion: ID =  0
+Scope creattion: ID =  1
+Stack: deque([(0,), (1,)])
+0 1
+0 to_index ~CS1
+Scope creattion: ID =  2
+Scope creattion: ID =  3
+Scope creattion: ID =  4
+Stack: deque([(0,), (2,), (3, 4)])
+Stack: deque([(0,), (2,)])
+2 3
+2 axis_slope_angle ~CS3
+Scope creattion: ID =  5
+Stack: deque([(0,), (2, 5)])
+Stack: deque([(0,)])
+0 2
+0 axis_slope_angle False
+0 to_index False
+0 object_distance False
+Scope creattion: ID =  6
+Stack: deque([(0,), (6,)])
+0 6
+0 object_distance ~CS4
+Scope creattion: ID =  7
+Stack: deque([(0,), (7,)])
+0 7
+0 to_index ~CS5
+Scope creattion: ID =  8
+Scope creattion: ID =  9
+Scope creattion: ID =  10
+Stack: deque([(0,), (8,), (9, 10)])
+Stack: deque([(0,), (8,)])
+8 9
+8 object_distance False
+8 iang_sin False
+8 axis_slope_angle ~CS7
+Scope creattion: ID =  11
+Stack: deque([(0,), (8, 11)])
+Stack: deque([(0,)])
+0 8
+0 sagitta ~CS6
+0 axis_slope_angle False
+0 rang_sin ~CS6
+0 rang CS6
+0 old_axis_slope_angle ~CS6
+0 iang_sin ~CS6
+0 to_index False
+0 object_distance False
+0 iang ~CS6
+Scope creattion: ID =  12
+Stack: deque([(0,), (12,)])
+0 12
+0 object_distance ~CS8
+
+------------------------------
+PreProcessing Block:
+DIV :--> 56
+DIV :--> 58
+DIV :--> 50
+DIV :--> 50
+DIV :--> 62
+DIV :--> 69
+DIV :--> 91
+DIV :--> 67
+DIV :--> 65
+DIV :--> 70
+DIV :--> 93
+DIV :--> 85
+DIV :--> 85
+DIV :--> 97
+DIV :--> 104
+Symbol count Pre Processing : 34
+Symbol count Post Processing : 34
+Total number of nodes pre-processing: 116
+Total number of nodes post-processing: 82
+------------------------------
+
+
+After: dict_keys([TC_00, TC_01, TC_02, TC_03, TC_10, TC_11, TC_12, TC_13, SPC_0, SPC_1, SPC_2, SPC_3, SPC_4, SPC_5, SPC_6, SPC_7, SPC_8, niter, paraxial, axis_slope_angle, line_0, rayh_0, object_distance, ray_height, from_index, iter, radc, to_index, sagitta, rang_sin, rang, old_axis_slope_angle, iang_sin, iang]) 
+
+
+maxdepth =  25
+
+Abstraction Enabled... 
+
+20 5 25
+DD: 18
+DD: 17
+DD: 15
+DD: 13
+DD: 12
+DD: 8
+DD: 7
+DD: 6
+DD: 11
+DD: 10
+DD: 9
+DD: 6
+DD: 8
+DD: 7
+DD: 6
+DD: 10
+DD: 9
+DD: 8
+DD: 7
+DD: 6
+DD: 8
+DD: 7
+DD: 6
+DD: 14
+DD: 13
+DD: 12
+DD: 11
+DD: 10
+DD: 9
+DD: 8
+DD: 7
+DD: 6
+DD: 16
+DD: 15
+DD: 13
+DD: 12
+DD: 8
+DD: 7
+DD: 6
+DD: 11
+DD: 10
+DD: 9
+DD: 6
+DD: 8
+DD: 7
+DD: 6
+DD: 10
+DD: 9
+DD: 8
+DD: 7
+DD: 6
+DD: 8
+DD: 7
+DD: 6
+DD: 14
+DD: 13
+DD: 12
+DD: 11
+DD: 10
+DD: 9
+DD: 8
+DD: 7
+DD: 6
+DD: 6
+DD: 10
+DD: 9
+DD: 6
+DD: 8
+DD: 7
+DD: 6
+DD: 6
+DD: 6
+DD: 12
+DD: 11
+DD: 10
+DD: 9
+DD: 8
+DD: 7
+DD: 6
+1:From Filter Cands: 8 15
+2:From Filter Cands: 1 15 [93] 19
+Final WorkList! [<ASTtypes.BinOp object at 0x7fcab974cc78>]
+DIV / 93 19
+[(5, 0), (6, 0), (7, 0), (8, 0), (9, 0), (10, 0), (11, 0), (12, 0), (13, 0), (14, 0), (15, 0), (16, 0), (17, 0), (18, 0), (19, 0.0007587141070276991), (20, 0)]
+CURRENT AST_DEPTH = : 25
+ABSTRACTION_DEPTH : 19
+Candidate List Length: 1
+-----------------------------------
+ABSTRACTION LEVEL = 1
+SetupOutputs: BinOp <ASTtypes.BinOp object at 0x7fcab974cc78>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 1.3923983573913574 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 27.05 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 0 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 0 , Cond : ~CS3),(Expr: 0.0 , Cond : CS3) )
+NodeCHar: 1 LiftOp
+Tup( (Expr: 2 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 0.07393715341959334 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: -27.05 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: -1.0 , Cond : True) )
+NodeCHar: 2 BinOp
+Tup( (Expr: 0 , Cond : True) )
+NodeCHar: 1 TransOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 3 BinOp
+Tup( (Expr: 0.07393715341959334 , Cond : CS3),(Expr: 0.0 , Cond : ~CS3) )
+NodeCHar: 4 LiftOp
+Tup( (Expr: 0.0738698064250355 , Cond : CS3),(Expr: 0.0 , Cond : ~CS3) )
+NodeCHar: 5 TransOp
+Tup( (Expr: 0.0738698064250355 , Cond : CS3),(Expr: 0 , Cond : ~CS3) )
+NodeCHar: 6 BinOp
+Tup( (Expr: 0.0738026432621575 , Cond : CS3),(Expr: 0 , Cond : ~CS3) )
+NodeCHar: 7 TransOp
+Tup( (Expr: 1.99636150024136 , Cond : CS3) )
+NodeCHar: 8 BinOp
+Tup( (Expr: 1 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 0.0738698064250355 , Cond : CS3),(Expr: 0 , Cond : ~CS3) )
+NodeCHar: 6 BinOp
+Tup( (Expr: 1.0 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 1.5137 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 5895.944 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: 6562.816 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 4861.344 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 1701.472 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 2 BinOp
+Tup( (Expr: 1.0 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 0.5137 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: 63.6 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 0.00807704402515723 , Cond : True) )
+NodeCHar: 2 BinOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 3 BinOp
+Tup( (Expr: 1.5137 , Cond : True) )
+NodeCHar: 4 BinOp
+Tup( (Expr: 1.5137 , Cond : ~CS1),(Expr: 1.5137 , Cond : CS1) )
+NodeCHar: 5 LiftOp
+Tup( (Expr: 0.6606328863050802 , Cond : ~CS1),(Expr: 0.66063288630508 , Cond : CS1) )
+NodeCHar: 6 BinOp
+Tup( (Expr: 0.0 , Cond : ~CS1 & ~CS3),(Expr: 0.0488453150687675 , Cond : CS1 & CS3),(Expr: 0.0488453150687675 , Cond : CS3 & ~CS1) )
+NodeCHar: 7 BinOp
+Tup( (Expr: 0.0 , Cond : ~CS1 & ~CS3),(Expr: 0.0488258943326629 , Cond : CS1 & CS3),(Expr: 0.0488258943326629 , Cond : CS3 & ~CS1) )
+NodeCHar: 8 TransOp
+Tup( (Expr: 0.0250439120923725 , Cond : CS3 & ~CS1),(Expr: 0.0250439120923725 , Cond : CS1 & CS3),(Expr: 0 , Cond : ~CS1 & ~CS3) )
+NodeCHar: 9 BinOp
+Tup( (Expr: 0.0250491492328912 , Cond : CS1 & CS3),(Expr: 0.0250491492328912 , Cond : CS3 & ~CS1),(Expr: 0 , Cond : ~CS1 & ~CS3) )
+NodeCHar: 10 TransOp
+Tup( (Expr: 39.9215155254429 , Cond : CS3 & ~CS1),(Expr: 39.9215155254429 , Cond : CS1 & CS3) )
+NodeCHar: 11 BinOp
+Tup( (Expr: 79.6977766262818 , Cond : CS1 & CS3),(Expr: 79.6977766262818 , Cond : CS3 & ~CS1) )
+NodeCHar: 12 BinOp
+Tup( (Expr: 2 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 54.1 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: 0.0738698064250355 , Cond : CS3),(Expr: 0 , Cond : ~CS3) )
+NodeCHar: 6 BinOp
+Tup( (Expr: 2 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 0.0369349032125177 , Cond : CS3),(Expr: 0 , Cond : ~CS3) )
+NodeCHar: 7 BinOp
+Tup( (Expr: 0.0369265060990348 , Cond : CS3),(Expr: 0 , Cond : ~CS3) )
+NodeCHar: 8 TransOp
+Tup( (Expr: 1.99772397995778 , Cond : CS3) )
+NodeCHar: 9 BinOp
+Tup( (Expr: 0.073768966730099 , Cond : CS3) )
+NodeCHar: 10 BinOp
+Tup( (Expr: 79.7715455930119 , Cond : CS1 & CS3),(Expr: 79.7715455930119 , Cond : CS3 & ~CS1) )
+NodeCHar: 13 BinOp
+Tup( (Expr: 1.5137 , Cond : ~CS1),(Expr: 1.5137 , Cond : CS1) )
+NodeCHar: 5 LiftOp
+Tup( (Expr: -1 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: -1 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 0.6606328863050802 , Cond : ~CS1),(Expr: 0.66063288630508 , Cond : CS1) )
+NodeCHar: 6 BinOp
+Tup( (Expr: 0 , Cond : True) )
+NodeCHar: 1 TransOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 7 BinOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 8 TransOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 9 BinOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 10 BinOp
+Tup( (Expr: 1.0 , Cond : True) )
+NodeCHar: 11 TransOp
+Tup( (Expr: 1.5137 , Cond : CS1),(Expr: 1.5137 , Cond : ~CS1) )
+NodeCHar: 12 BinOp
+Tup( (Expr: 1 , Cond : True) )
+NodeCHar: 1 TransOp
+Tup( (Expr: 1.0 , Cond : True) )
+NodeCHar: 2 BinOp
+Tup( (Expr: 1.5137 , Cond : CS1),(Expr: 1.5137 , Cond : ~CS1) )
+NodeCHar: 13 BinOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 14 BinOp
+Tup( (Expr: 79.7715455930119 , Cond : CS1 & CS2 & CS3),(Expr: 79.7715455930119 , Cond : CS2 & CS3 & ~CS1),(Expr: 0.0 , Cond : ~CS2) )
+NodeCHar: 15 LiftOp
+Tup( (Expr: 0.52 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 79.2515455930119 , Cond : CS2 & CS3 & ~CS1),(Expr: -0.52 , Cond : ~CS2),(Expr: 79.2515455930119 , Cond : CS1 & CS2 & CS3) )
+NodeCHar: 16 BinOp
+Tup( (Expr: 79.7715455930119 , Cond : CS2 & CS3 & ~CS1 & ~CS4 & (CS2 | ~CS2)),(Expr: 0.0 , Cond : ~CS2 & ~CS4 & (CS2 | ~CS2)),(Expr: 79.7715455930119 , Cond : CS1 & CS2 & CS3 & ~CS4 & (CS2 | ~CS2)),(Expr: 79.2515455930119 , Cond : CS1 & CS2 & CS3 & CS4),(Expr: -0.52 , Cond : CS4 & ~CS2),(Expr: 79.2515455930119 , Cond : CS2 & CS3 & CS4 & ~CS1) )
+NodeCHar: 17 LiftOp
+Tup( (Expr: -16.68 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 16.16 , Cond : CS4 & ~CS2),(Expr: 96.4515455930119 , Cond : CS1 & CS2 & CS3 & ~CS4),(Expr: 96.4515455930119 , Cond : CS2 & CS3 & ~CS1 & ~CS4),(Expr: 95.9315455930119 , Cond : CS2 & CS3 & CS4 & ~CS1),(Expr: 16.68 , Cond : ~CS2 & ~CS4),(Expr: 95.9315455930119 , Cond : CS1 & CS2 & CS3 & CS4) )
+NodeCHar: 18 BinOp
+Tup( (Expr: -0.968824940047962 , Cond : CS4 & ~CS2),(Expr: -5.75129170221894 , Cond : CS1 & CS2 & CS3 & CS4),(Expr: -5.75129170221894 , Cond : CS2 & CS3 & CS4 & ~CS1),(Expr: -1.0 , Cond : ~CS2 & ~CS4),(Expr: -5.78246676217098 , Cond : CS1 & CS2 & CS3 & ~CS4),(Expr: -5.78246676217098 , Cond : CS2 & CS3 & ~CS1 & ~CS4) )
+NodeCHar: 19 BinOp
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:1601.75190020786, maxres:1601.75190020786, avg:1601.75190020786
+<class 'float'> 1.7783018393478622e-13
+
+ Parsing Conditional = CS4 & ~CS2
+Handling Condtional CS2
+Building conditional expressions...
+
+ExprComp line: 53
+SetupOutputs: FreeVar <ASTtypes.FreeVar object at 0x7fcab97798b8>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 2.9325485229492188e-05 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 27.05 , Cond : True) )
+NodeCHar: 0 FreeVar
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.0, maxres:0.0, avg:0.0
+<class 'float'> 0.0
+
+ Parsing Conditional = True
+ > MaxError:
+ 0.0 ; [27.05, 27.05]
+
+ > Finished in 0.0007753372192382812 secs
+
+SetupOutputs: Num <ASTtypes.Num object at 0x7fcab9734930>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 2.574920654296875e-05 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 0 , Cond : True) )
+NodeCHar: 0 Num
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.0, maxres:0.0, avg:0.0
+<class 'float'> 0.0
+
+ Parsing Conditional = True
+ > MaxError:
+ 0.0 ; [0.0, 0.0]
+
+ > Finished in 0.0007472038269042969 secs
+
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS4
+Building conditional expressions...
+
+ExprComp line: 75
+SetupOutputs: Num <ASTtypes.Num object at 0x7fcab9734480>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 2.574920654296875e-05 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 0 , Cond : True) )
+NodeCHar: 0 Num
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.0, maxres:0.0, avg:0.0
+<class 'float'> 0.0
+
+ Parsing Conditional = True
+ > MaxError:
+ 0.0 ; [0.0, 0.0]
+
+ > Finished in 0.0008652210235595703 secs
+
+SetupOutputs: Num <ASTtypes.Num object at 0x7fcab974c318>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 2.5987625122070312e-05 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 4 , Cond : True) )
+NodeCHar: 0 Num
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.0, maxres:0.0, avg:0.0
+<class 'float'> 0.0
+
+ Parsing Conditional = True
+ > MaxError:
+ 0.0 ; [4.0, 4.0]
+
+ > Finished in 0.0008168220520019531 secs
+
+This: (True)
+SubCond: CS4 : (True)
+
+
+Finished parsing -> CS4 & ~CS2 : False
+
+ Parsing Conditional = CS1 & CS2 & CS3 & CS4
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS1
+Building conditional expressions...
+
+ExprComp line: 49
+SetupOutputs: FreeVar <ASTtypes.FreeVar object at 0x7fcab9779930>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 2.8848648071289062e-05 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 1.5137 , Cond : True) )
+NodeCHar: 0 FreeVar
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.0, maxres:0.0, avg:0.0
+<class 'float'> 0.0
+
+ Parsing Conditional = True
+ > MaxError:
+ 0.0 ; [1.5137, 1.5137]
+
+ > Finished in 0.0007903575897216797 secs
+
+SetupOutputs: Num <ASTtypes.Num object at 0x7fcab97344f8>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 2.5987625122070312e-05 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 1.0 , Cond : True) )
+NodeCHar: 0 Num
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.0, maxres:0.0, avg:0.0
+<class 'float'> 0.0
+
+ Parsing Conditional = True
+ > MaxError:
+ 0.0 ; [1.0, 1.0]
+
+ > Finished in 0.0007493495941162109 secs
+
+This: (True)
+SubCond: CS1 : (True)
+
+
+Handling Condtional CS4
+This: (True)
+SubCond: CS4 : (True)
+
+
+Handling Condtional CS3
+Building conditional expressions...
+
+ExprComp line: 54
+SetupOutputs: Num <ASTtypes.Num object at 0x7fcab9734390>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 2.5033950805664062e-05 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 0 Num
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.0, maxres:0.0, avg:0.0
+<class 'float'> 0.0
+
+ Parsing Conditional = True
+ > MaxError:
+ 0.0 ; [0.0, 0.0]
+
+ > Finished in 0.000812530517578125 secs
+
+SetupOutputs: Num <ASTtypes.Num object at 0x7fcab97349a8>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 2.5272369384765625e-05 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 0 , Cond : True) )
+NodeCHar: 0 Num
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.0, maxres:0.0, avg:0.0
+<class 'float'> 0.0
+
+ Parsing Conditional = True
+ > MaxError:
+ 0.0 ; [0.0, 0.0]
+
+ > Finished in 0.0008077621459960938 secs
+
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS1 & CS2 & CS3 & CS4 : True
+
+ Parsing Conditional = CS2 & CS3 & CS4 & ~CS1
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS4
+This: (True)
+SubCond: CS4 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & CS3 & CS4 & ~CS1 : False
+
+ Parsing Conditional = ~CS2 & ~CS4
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS4
+This: (True)
+SubCond: CS4 : (True)
+
+
+Finished parsing -> ~CS2 & ~CS4 : False
+
+ Parsing Conditional = CS1 & CS2 & CS3 & ~CS4
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Handling Condtional CS4
+This: (True)
+SubCond: CS4 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS1 & CS2 & CS3 & ~CS4 : False
+
+ Parsing Conditional = CS2 & CS3 & ~CS1 & ~CS4
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS4
+This: (True)
+SubCond: CS4 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & CS3 & ~CS1 & ~CS4 : False
+ > MaxError:
+ 1.7783018393478622e-13 ; [-5.78246676217098, -0.968824940047962]
+
+ > Finished in 1.1464972496032715 secs
+
+
+  ********* Rebuilding AST post abstracttion ********
+
+Synthesizing expression with fresh FreeVars .... 
+ >  Rebuilt AST Nodes = 79 (108)
+ >  Rebuilt AST Depth = 18
+  **********Rebuilt AST in 0.00026226043701171875 secs********
+
+-----------------------------------
+
+DD: 6
+DD: 6
+1:From Filter Cands: 4 11
+2:From Filter Cands: 2 11 [104, 97] 7
+Final WorkList! [<ASTtypes.BinOp object at 0x7fcab9747b10>, <ASTtypes.BinOp object at 0x7fcab974cf48>]
+DIV / 104 7
+DIV / 97 7
+[(5, 0), (6, 0), (7, 0.004113168401728884), (8, 0)]
+CURRENT AST_DEPTH = : 18
+ABSTRACTION_DEPTH : 7
+Candidate List Length: 4
+-----------------------------------
+ABSTRACTION LEVEL = 2
+SetupOutputs: BinOp <ASTtypes.BinOp object at 0x7fcab9748b10>
+SetupOutputs: BinOp <ASTtypes.BinOp object at 0x7fcab9747b10>
+SetupOutputs: BinOp <ASTtypes.BinOp object at 0x7fcab974cf48>
+SetupOutputs: BinOp <ASTtypes.BinOp object at 0x7fcab9734ed0>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 0.8613064289093018 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 1.0 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 1.5137 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 5895.944 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: 6562.816 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 4861.344 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 1701.472 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 2 BinOp
+Tup( (Expr: 1.0 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 0.5137 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: 63.6 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 0.00807704402515723 , Cond : True) )
+NodeCHar: 2 BinOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 3 BinOp
+Tup( (Expr: 1.5137 , Cond : True) )
+NodeCHar: 4 BinOp
+Tup( (Expr: 1.5137 , Cond : ~CS1),(Expr: 1.5137 , Cond : CS1) )
+NodeCHar: 5 LiftOp
+Tup( (Expr: 0.6606328863050802 , Cond : ~CS1),(Expr: 0.66063288630508 , Cond : CS1) )
+NodeCHar: 6 BinOp
+Tup( (Expr: 0 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 0 , Cond : True) )
+NodeCHar: 1 TransOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 7 BinOp
+Tup( (Expr: 1.5137 , Cond : ~CS1),(Expr: 1.5137 , Cond : CS1) )
+NodeCHar: 5 LiftOp
+Tup( (Expr: 1.5137 , Cond : CS2 & ~CS1),(Expr: 1.5137 , Cond : CS1 & CS2),(Expr: 1.5137 , Cond : ~CS1 & ~CS2),(Expr: 1.5137 , Cond : CS1 & ~CS2) )
+NodeCHar: 6 LiftOp
+Tup( (Expr: 1.0 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: 1701.472 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 2 BinOp
+Tup( (Expr: 1.0 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: 1.0 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 2 BinOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 3 BinOp
+Tup( (Expr: 1.0 , Cond : True) )
+NodeCHar: 4 BinOp
+Tup( (Expr: 1.0 , Cond : ~CS5),(Expr: 1.0 , Cond : CS5) )
+NodeCHar: 5 LiftOp
+Tup( (Expr: 1.5137 , Cond : ~CS1 & ~CS2 & ~CS5),(Expr: 1.5137 , Cond : CS5 & ~CS1 & ~CS2),(Expr: 1.5137 , Cond : CS1 & ~CS2 & ~CS5),(Expr: 1.5137 , Cond : CS1 & CS5 & ~CS2),(Expr: 1.5137 , Cond : CS2 & ~CS1 & ~CS5),(Expr: 1.5137 , Cond : CS2 & CS5 & ~CS1),(Expr: 1.5137 , Cond : CS1 & CS2 & ~CS5),(Expr: 1.5137 , Cond : CS1 & CS2 & CS5) )
+NodeCHar: 7 BinOp
+Tup( (Expr: 1.0 , Cond : ~CS5),(Expr: 1.0 , Cond : CS5) )
+NodeCHar: 5 LiftOp
+Tup( (Expr: 1.5137 , Cond : ~CS1 & ~CS2 & ~CS5),(Expr: 1.5137 , Cond : CS5 & ~CS1 & ~CS2),(Expr: 1.5137 , Cond : CS1 & ~CS2 & ~CS5),(Expr: 1.5137 , Cond : CS1 & CS5 & ~CS2),(Expr: 1.5137 , Cond : CS2 & ~CS1 & ~CS5),(Expr: 1.5137 , Cond : CS2 & CS5 & ~CS1),(Expr: 1.5137 , Cond : CS1 & CS2 & ~CS5),(Expr: 1.5137 , Cond : CS1 & CS2 & CS5) )
+NodeCHar: 7 BinOp
+Tup( (Expr: 0.6606328863050802 , Cond : ~CS1),(Expr: 0.66063288630508 , Cond : CS1) )
+NodeCHar: 6 BinOp
+Tup( (Expr: 2 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 27.05 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 0.07393715341959334 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: -27.05 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: -1.0 , Cond : True) )
+NodeCHar: 2 BinOp
+Tup( (Expr: 0 , Cond : True) )
+NodeCHar: 1 TransOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 3 BinOp
+Tup( (Expr: 0.07393715341959334 , Cond : CS3),(Expr: 0.0 , Cond : ~CS3) )
+NodeCHar: 4 LiftOp
+Tup( (Expr: 0.0 , Cond : ~CS1 & ~CS3),(Expr: 0.0488453150687675 , Cond : CS1 & CS3),(Expr: 0.0488453150687675 , Cond : CS3 & ~CS1) )
+NodeCHar: 7 BinOp
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.0, maxres:0.0, avg:0.0
+<class 'float'> 0.0
+
+ Parsing Conditional = True
+ > MaxError:
+ 0.0 ; [0.0, 0.0]
+
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.0488453150687675, maxres:0.0488453150687675, avg:0.0488453150687675
+<class 'float'> 5.422919343441579e-18
+
+ Parsing Conditional = ~CS1 & ~CS3
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> ~CS1 & ~CS3 : False
+
+ Parsing Conditional = CS1 & CS3
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS1 & CS3 : True
+
+ Parsing Conditional = CS3 & ~CS1
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS3 & ~CS1 : False
+ > MaxError:
+ 5.422919343441579e-18 ; [0.0, 0.0488453150687675]
+
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.75685, maxres:0.75685, avg:0.75685
+<class 'float'> 8.402722961875498e-17
+
+ Parsing Conditional = ~CS1 & ~CS2 & ~CS5
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS5
+Building conditional expressions...
+
+ExprComp line: 84
+SetupOutputs: FreeVar <ASTtypes.FreeVar object at 0x7fcab9779b10>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 3.123283386230469e-05 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 1.0 , Cond : True) )
+NodeCHar: 0 FreeVar
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.0, maxres:0.0, avg:0.0
+<class 'float'> 0.0
+
+ Parsing Conditional = True
+ > MaxError:
+ 0.0 ; [1.0, 1.0]
+
+ > Finished in 0.0008716583251953125 secs
+
+SetupOutputs: Num <ASTtypes.Num object at 0x7fcab974c4f8>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 2.765655517578125e-05 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 1.0 , Cond : True) )
+NodeCHar: 0 Num
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.0, maxres:0.0, avg:0.0
+<class 'float'> 0.0
+
+ Parsing Conditional = True
+ > MaxError:
+ 0.0 ; [1.0, 1.0]
+
+ > Finished in 0.0008232593536376953 secs
+
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Finished parsing -> ~CS1 & ~CS2 & ~CS5 : False
+
+ Parsing Conditional = CS5 & ~CS1 & ~CS2
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS5
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Finished parsing -> CS5 & ~CS1 & ~CS2 : False
+
+ Parsing Conditional = CS1 & ~CS2 & ~CS5
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS5
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Finished parsing -> CS1 & ~CS2 & ~CS5 : False
+
+ Parsing Conditional = CS1 & CS5 & ~CS2
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS5
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Finished parsing -> CS1 & CS5 & ~CS2 : False
+
+ Parsing Conditional = CS2 & ~CS1 & ~CS5
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Handling Condtional CS5
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Finished parsing -> CS2 & ~CS1 & ~CS5 : False
+
+ Parsing Conditional = CS2 & CS5 & ~CS1
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Handling Condtional CS5
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Finished parsing -> CS2 & CS5 & ~CS1 : False
+
+ Parsing Conditional = CS1 & CS2 & ~CS5
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS5
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Finished parsing -> CS1 & CS2 & ~CS5 : True
+
+ Parsing Conditional = CS1 & CS2 & CS5
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS5
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Finished parsing -> CS1 & CS2 & CS5 : False
+ > MaxError:
+ 8.402722961875498e-17 ; [1.5137, 1.5137]
+
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.75685, maxres:0.75685, avg:0.75685
+<class 'float'> 8.402722961875498e-17
+
+ Parsing Conditional = ~CS1 & ~CS2 & ~CS5
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS5
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Finished parsing -> ~CS1 & ~CS2 & ~CS5 : False
+
+ Parsing Conditional = CS5 & ~CS1 & ~CS2
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS5
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Finished parsing -> CS5 & ~CS1 & ~CS2 : False
+
+ Parsing Conditional = CS1 & ~CS2 & ~CS5
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS5
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Finished parsing -> CS1 & ~CS2 & ~CS5 : False
+
+ Parsing Conditional = CS1 & CS5 & ~CS2
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS5
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Finished parsing -> CS1 & CS5 & ~CS2 : False
+
+ Parsing Conditional = CS2 & ~CS1 & ~CS5
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Handling Condtional CS5
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Finished parsing -> CS2 & ~CS1 & ~CS5 : False
+
+ Parsing Conditional = CS2 & CS5 & ~CS1
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Handling Condtional CS5
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Finished parsing -> CS2 & CS5 & ~CS1 : False
+
+ Parsing Conditional = CS1 & CS2 & ~CS5
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS5
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Finished parsing -> CS1 & CS2 & ~CS5 : True
+
+ Parsing Conditional = CS1 & CS2 & CS5
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS5
+This: (False)
+SubCond: CS5 : (False)
+
+
+Handling Condtional CS1
+This: (True)
+SubCond: CS1 : (True)
+
+
+Finished parsing -> CS1 & CS2 & CS5 : False
+ > MaxError:
+ 8.402722961875498e-17 ; [1.5137, 1.5137]
+
+ > Finished in 0.45015883445739746 secs
+
+
+  ********* Rebuilding AST post abstracttion ********
+
+Synthesizing expression with fresh FreeVars .... 
+ >  Rebuilt AST Nodes = 47 (79)
+ >  Rebuilt AST Depth = 15
+  **********Rebuilt AST in 0.0002009868621826172 secs********
+
+-----------------------------------
+
+Empty WorkList!
+Final WorkList! [<ASTtypes.TransOp object at 0x7fcab9747c00>, <ASTtypes.LiftOp object at 0x7fcab97471b0>, <ASTtypes.TransOp object at 0x7fcab9747228>, <ASTtypes.LiftOp object at 0x7fcab974ce58>, <ASTtypes.BinOp object at 0x7fcab9747c78>, <ASTtypes.BinOp object at 0x7fcab97472a0>, <ASTtypes.BinOp object at 0x7fcab97470c0>, <ASTtypes.TransOp object at 0x7fcab974ced0>, <ASTtypes.TransOp object at 0x7fcab974ccf0>, <ASTtypes.TransOp object at 0x7fcab9747cf0>, <ASTtypes.BinOp object at 0x7fcab975a318>, <ASTtypes.BinOp object at 0x7fcab9748138>, <ASTtypes.BinOp object at 0x7fcab9734f48>, <ASTtypes.BinOp object at 0x7fcab9747138>, <ASTtypes.TransOp object at 0x7fcab9734d68>, <ASTtypes.BinOp object at 0x7fcab974cd68>, <ASTtypes.BinOp object at 0x7fcab9747d68>, <ASTtypes.LiftOp object at 0x7fcab975a390>, <ASTtypes.LiftOp object at 0x7fcab974c1b0>]
+SIN sin 104 9
+IF None None 9
+SIN asin 99 13
+IF None None 11
+MUL * 104 10
+MINUS - 99 14
+MUL * 97 12
+SIN asin 96 12
+SIN sin 93 9
+SIN asin 104 11
+MUL * 106 13
+MINUS - 64 7
+PLUS + 64 6
+PLUS + 99 13
+SIN asin 61 5
+MUL * 93 10
+MUL * 104 12
+IF None None 15
+IF None None 8
+[(5, 2.113156531590408), (6, 0.5288032929213089), (7, 1.026446375552101), (8, 2.9031911691276657), (9, 3.539690144507855), (10, 0.7807114949481697), (11, 1.9717355037822772), (12, 2.32325607471547), (13, 0.538912844403064), (14, 0.18746969980506795), (15, 0.0019216713606500645), (16, 0)]
+CURRENT AST_DEPTH = : 15
+ABSTRACTION_DEPTH : 9
+Candidate List Length: 3
+-----------------------------------
+ABSTRACTION LEVEL = 3
+SetupOutputs: TransOp <ASTtypes.TransOp object at 0x7fcab9747c00>
+SetupOutputs: LiftOp <ASTtypes.LiftOp object at 0x7fcab97471b0>
+SetupOutputs: TransOp <ASTtypes.TransOp object at 0x7fcab974ccf0>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 0.2206563949584961 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 0 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 0 , Cond : ~CS3),(Expr: 0.0 , Cond : CS3) )
+NodeCHar: 1 LiftOp
+Tup( (Expr: 2 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 27.05 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 0.07393715341959334 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: -27.05 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: -1.0 , Cond : True) )
+NodeCHar: 2 BinOp
+Tup( (Expr: 0 , Cond : True) )
+NodeCHar: 1 TransOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 3 BinOp
+Tup( (Expr: 0.07393715341959334 , Cond : CS3),(Expr: 0.0 , Cond : ~CS3) )
+NodeCHar: 4 LiftOp
+Tup( (Expr: 0.0738698064250355 , Cond : CS3),(Expr: 0.0 , Cond : ~CS3) )
+NodeCHar: 5 TransOp
+Tup( (Expr: 0.0738698064250355 , Cond : CS3),(Expr: 0 , Cond : ~CS3) )
+NodeCHar: 6 BinOp
+Tup( (Expr: _F3 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: sin(_F3) , Cond : True) )
+NodeCHar: 1 TransOp
+Tup( (Expr: 0.0738698064250355 - sin(_F3) , Cond : CS3),(Expr: -sin(_F3) , Cond : ~CS3) )
+NodeCHar: 7 BinOp
+Tup( (Expr: -1 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: -1 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 1 TransOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 2 BinOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 3 BinOp
+Tup( (Expr: 0.0738698064250355 - sin(_F3) , Cond : CS2 & CS3),(Expr: -sin(_F3) , Cond : CS2 & ~CS3),(Expr: 0.0 , Cond : ~CS2) )
+NodeCHar: 8 LiftOp
+Tup( (Expr: 0.0 , Cond : ~CS2),(Expr: sin(0.0738698064250355 - sin(_F3)) , Cond : CS2 & CS3),(Expr: -sin(sin(_F3)) , Cond : CS2 & ~CS3) )
+NodeCHar: 9 TransOp
+Tup( (Expr: 0.0 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 0.0 , Cond : ~CS2 & ~CS7 & (CS2 | ~CS2)),(Expr: 0.0738698064250355 - sin(_F3) , Cond : CS2 & CS3 & ~CS7 & (CS2 | ~CS2)),(Expr: -sin(_F3) , Cond : CS2 & ~CS3 & ~CS7 & (CS2 | ~CS2)),(Expr: 0.0 , Cond : CS7) )
+NodeCHar: 9 LiftOp
+Tup( (Expr: 0.0 , Cond : ~CS2),(Expr: sin(0.0738698064250355 - sin(_F3)) , Cond : CS2 & CS3),(Expr: -sin(sin(_F3)) , Cond : CS2 & ~CS3) )
+NodeCHar: 9 TransOp
+
+ Parsing Conditional = CS2 & CS3
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & CS3 : True
+Query1:  56
+Pass conversion gelpia
+Gelpia solve =  0.024700164794921875 opCount = 56
+STAT: SP:0.3145413685355497, maxres:0.306578557340221, avg:0.295043107237616
+<class 'float'> 3.40370573215478e-17
+
+ Parsing Conditional = CS2 & ~CS3
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & ~CS3 : False
+Query1:  25
+Pass conversion gelpia
+Gelpia solve =  0.015101432800292969 opCount = 25
+STAT: SP:0.17089065331813386, maxres:0.170496203593525, avg:0.110341727797532
+<class 'float'> 1.8928881084071e-17
+
+ Parsing Conditional = ~CS2
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Finished parsing -> ~CS2 : False
+
+ Parsing Conditional = CS2 & CS3
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & CS3 : True
+Pass conversion gelpia
+Gelpia solve =  0.018261194229125977 opCount = 4
+
+ Parsing Conditional = CS2 & ~CS3
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & ~CS3 : False
+Pass conversion gelpia
+Gelpia solve =  0.019863128662109375 opCount = 3
+ > MaxError:
+ 3.4921106954527404e-17 ; [-0.04880649675037171, 0.0738026432621579]
+
+
+ Parsing Conditional = CS2 & CS3 & ~CS7
+Handling Condtional CS7
+Building conditional expressions...
+
+ExprComp line: 89
+SetupOutputs: LiftOp <ASTtypes.LiftOp object at 0x7fcab974ca20>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 0.015016317367553711 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 27.05 , Cond : True) )
+Tup( (Expr: 0 , Cond : True) )
+Tup( (Expr: 0.0 , Cond : True) )
+Tup( (Expr: 0 , Cond : ~CS3),(Expr: 0.0 , Cond : CS3) )
+Tup( (Expr: 2 , Cond : True) )
+Tup( (Expr: 0.07393715341959334 , Cond : True) )
+Tup( (Expr: 0.0 , Cond : True) )
+Tup( (Expr: -27.05 , Cond : True) )
+Tup( (Expr: -1.0 , Cond : True) )
+Tup( (Expr: 0 , Cond : True) )
+Tup( (Expr: 0.0 , Cond : True) )
+Tup( (Expr: 0.07393715341959334 , Cond : CS3),(Expr: 0.0 , Cond : ~CS3) )
+Tup( (Expr: 0.0738698064250355 , Cond : CS3),(Expr: 0.0 , Cond : ~CS3) )
+Tup( (Expr: 0.0738698064250355 , Cond : CS3),(Expr: 0 , Cond : ~CS3) )
+Tup( (Expr: 0.0738026432621575 , Cond : CS3),(Expr: 0 , Cond : ~CS3) )
+Tup( (Expr: 1.99636150024136 , Cond : CS3) )
+Tup( (Expr: 1 , Cond : True) )
+Tup( (Expr: 0.0738698064250355 , Cond : CS3),(Expr: 0 , Cond : ~CS3) )
+Tup( (Expr: _F3 , Cond : True) )
+Tup( (Expr: sin(_F3) , Cond : True) )
+Tup( (Expr: 0.0738698064250355 - sin(_F3) , Cond : CS3),(Expr: -sin(_F3) , Cond : ~CS3) )
+Tup( (Expr: tan(0.0738698064250355 - sin(_F3)) , Cond : CS3),(Expr: -tan(sin(_F3)) , Cond : ~CS3) )
+Tup( (Expr: tan(0.0738698064250355 - sin(_F3))**(-1) , Cond : CS3),(Expr: -1/tan(sin(_F3)) , Cond : ~CS3) )
+Tup( (Expr: 1.99636150024136/tan(0.0738698064250355 - sin(_F3)) , Cond : CS3) )
+Tup( (Expr: 2 , Cond : True) )
+Tup( (Expr: 54.1 , Cond : True) )
+Tup( (Expr: 0.0738698064250355 , Cond : CS3),(Expr: 0 , Cond : ~CS3) )
+Tup( (Expr: 2 , Cond : True) )
+Tup( (Expr: 0.0369349032125177 , Cond : CS3),(Expr: 0 , Cond : ~CS3) )
+Tup( (Expr: 0.0369265060990348 , Cond : CS3),(Expr: 0 , Cond : ~CS3) )
+Tup( (Expr: 1.99772397995778 , Cond : CS3) )
+Tup( (Expr: 0.073768966730099 , Cond : CS3) )
+Tup( (Expr: 0.073768966730099 + 1.99636150024136*tan(0.0738698064250355 - sin(_F3))**(-1) , Cond : CS3) )
+Tup( (Expr: 1.5137 , Cond : True) )
+Tup( (Expr: 5895.944 , Cond : True) )
+Tup( (Expr: 0.0 , Cond : True) )
+Tup( (Expr: 6562.816 , Cond : True) )
+Tup( (Expr: 4861.344 , Cond : True) )
+Tup( (Expr: 1701.472 , Cond : True) )
+Tup( (Expr: 0.0 , Cond : True) )
+Tup( (Expr: 1.0 , Cond : True) )
+Tup( (Expr: 0.5137 , Cond : True) )
+Tup( (Expr: 63.6 , Cond : True) )
+Tup( (Expr: 0.00807704402515723 , Cond : True) )
+Tup( (Expr: 0.0 , Cond : True) )
+Tup( (Expr: 1.5137 , Cond : True) )
+Tup( (Expr: 1.5137 , Cond : ~CS1),(Expr: 1.5137 , Cond : CS1) )
+Tup( (Expr: -1 , Cond : True) )
+Tup( (Expr: -1 , Cond : True) )
+Tup( (Expr: 0.0 , Cond : True) )
+Tup( (Expr: 0.0 , Cond : True) )
+Tup( (Expr: 0.0 , Cond : True) )
+Tup( (Expr: 0.0 , Cond : True) )
+Tup( (Expr: 1.0 , Cond : True) )
+Tup( (Expr: 1.5137 , Cond : CS1),(Expr: 1.5137 , Cond : ~CS1) )
+Tup( (Expr: 1.0 , Cond : True) )
+Tup( (Expr: 1 , Cond : True) )
+Tup( (Expr: 1.0 , Cond : True) )
+Tup( (Expr: 1.5137 , Cond : CS1),(Expr: 1.5137 , Cond : ~CS1) )
+Tup( (Expr: 0.0 , Cond : True) )
+Tup( (Expr: 0.073768966730099 + 1.99636150024136*tan(0.0738698064250355 - sin(_F3))**(-1) , Cond : CS2 & CS3),(Expr: 0.0 , Cond : ~CS2) )
+NodeCHar: 15 LiftOp
+Tup( (Expr: 0.52 , Cond : True) )
+Tup( (Expr: -0.446231033269901 + 1.99636150024136*tan(0.0738698064250355 - sin(_F3))**(-1) , Cond : CS2 & CS3),(Expr: -0.52 , Cond : ~CS2) )
+NodeCHar: 16 BinOp
+Tup( (Expr: 0.073768966730099 + 1.99636150024136*tan(0.0738698064250355 - sin(_F3))**(-1) , Cond : CS2 & CS3 & ~CS4 & (CS2 | ~CS2)),(Expr: 0.0 , Cond : ~CS2 & ~CS4 & (CS2 | ~CS2)),(Expr: -0.52 , Cond : CS4 & ~CS2),(Expr: -0.446231033269901 + 1.99636150024136*tan(0.0738698064250355 - sin(_F3))**(-1) , Cond : CS2 & CS3 & CS4) )
+NodeCHar: 17 LiftOp
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.26, maxres:0.26, avg:0.26
+<class 'float'> 2.886579864025407e-17
+
+ Parsing Conditional = CS2 & CS3 & CS4
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS4
+This: (True)
+SubCond: CS4 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & CS3 & CS4 : True
+Query1:  8
+Pass conversion gelpia
+Gelpia solve =  0.012032032012939453 opCount = 8
+STAT: SP:39.625772796506176, maxres:39.6148905277744, avg:21.8351818804392
+<class 'float'> 4.39813635819402e-15
+
+ Parsing Conditional = CS2 & CS3 & ~CS4 & (CS2 | ~CS2)
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS4
+This: (True)
+SubCond: CS4 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & CS3 & ~CS4 & (CS2 | ~CS2) : False
+Pass conversion gelpia
+Gelpia solve =  0.014689445495605469 opCount = 7
+
+ Parsing Conditional = ~CS2 & ~CS4 & (CS2 | ~CS2)
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS4
+This: (True)
+SubCond: CS4 : (True)
+
+
+Finished parsing -> ~CS2 & ~CS4 & (CS2 | ~CS2) : False
+
+ Parsing Conditional = CS4 & ~CS2
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS4
+This: (True)
+SubCond: CS4 : (True)
+
+
+Finished parsing -> CS4 & ~CS2 : False
+
+ Parsing Conditional = CS2 & CS3 & CS4
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS4
+This: (True)
+SubCond: CS4 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & CS3 & CS4 : True
+Pass conversion gelpia
+Gelpia solve =  0.013910055160522461 opCount = 7
+ > MaxError:
+ 4.3993445327246335e-15 ; [-0.52, 79.77154559301235]
+
+ > Finished in 0.0809478759765625 secs
+
+SetupOutputs: Num <ASTtypes.Num object at 0x7fcab974c9a8>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 4.172325134277344e-05 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 0 , Cond : True) )
+NodeCHar: 0 Num
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.0, maxres:0.0, avg:0.0
+<class 'float'> 0.0
+
+ Parsing Conditional = True
+ > MaxError:
+ 0.0 ; [0.0, 0.0]
+
+ > Finished in 0.00160980224609375 secs
+
+This: (True)
+SubCond: CS7 : (True)
+
+
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & CS3 & ~CS7 : False
+Query1:  4
+Pass conversion gelpia
+Gelpia solve =  0.015130281448364258 opCount = 4
+STAT: SP:0.036934903212517786, maxres:0.0369267267378371, avg:0.0245635433651111
+<class 'float'> 4.09969022483881e-18
+
+ Parsing Conditional = CS2 & ~CS3 & ~CS7
+Handling Condtional CS7
+This: (True)
+SubCond: CS7 : (True)
+
+
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & ~CS3 & ~CS7 : False
+Query1:  3
+Pass conversion gelpia
+Gelpia solve =  0.018697261810302734 opCount = 3
+STAT: SP:0.024412947166331543, maxres:0.0243853969503465, avg:0.0125283688810786
+<class 'float'> 2.70732291588987e-18
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.147672284264052, maxres:0.147672284264052, avg:0.147672284264052
+<class 'float'> 1.639491700889417e-17
+
+ Parsing Conditional = CS2 & ~CS7
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS7
+This: (True)
+SubCond: CS7 : (True)
+
+
+Finished parsing -> CS2 & ~CS7 : False
+Query1:  7
+Pass conversion gelpia
+Gelpia solve =  0.015717029571533203 opCount = 7
+STAT: SP:0.09767120940143059, maxres:0.0976052221894354, avg:0.0739707524591625
+<class 'float'> 1.08363564998365e-17
+
+ Parsing Conditional = ~CS2 & ~CS7 & (CS2 | ~CS2)
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS7
+This: (True)
+SubCond: CS7 : (True)
+
+
+Finished parsing -> ~CS2 & ~CS7 & (CS2 | ~CS2) : False
+
+ Parsing Conditional = CS2 & CS3 & ~CS7 & (CS2 | ~CS2)
+Handling Condtional CS7
+This: (True)
+SubCond: CS7 : (True)
+
+
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & CS3 & ~CS7 & (CS2 | ~CS2) : False
+Pass conversion gelpia
+Gelpia solve =  0.015500783920288086 opCount = 3
+
+ Parsing Conditional = CS2 & ~CS3 & ~CS7 & (CS2 | ~CS2)
+Handling Condtional CS7
+This: (True)
+SubCond: CS7 : (True)
+
+
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & ~CS3 & ~CS7 & (CS2 | ~CS2) : False
+Pass conversion gelpia
+Gelpia solve =  0.018361806869506836 opCount = 2
+
+ Parsing Conditional = CS7
+Handling Condtional CS7
+This: (True)
+SubCond: CS7 : (True)
+
+
+Finished parsing -> CS7 : True
+ > MaxError:
+ 1.639491700889417e-17 ; [-0.048825894332663086, 0.07386980642503567]
+
+
+ Parsing Conditional = CS2 & CS3
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & CS3 : True
+Query1:  56
+STAT: SP:0.3145413685355497, maxres:0.306604481066038, avg:0.294676947444077
+<class 'float'> 3.40399354332764e-17
+
+ Parsing Conditional = CS2 & ~CS3
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & ~CS3 : False
+Query1:  25
+STAT: SP:0.17089065331813386, maxres:0.170646418344856, avg:0.110017257172847
+<class 'float'> 1.89455582716276e-17
+
+ Parsing Conditional = ~CS2
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Finished parsing -> ~CS2 : False
+
+ Parsing Conditional = CS2 & CS3
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & CS3 : True
+
+ Parsing Conditional = CS2 & ~CS3
+Handling Condtional CS2
+This: (True)
+SubCond: CS2 : (True)
+
+
+Handling Condtional CS3
+This: (True)
+SubCond: CS3 : (True)
+
+
+Finished parsing -> CS2 & ~CS3 : False
+ > MaxError:
+ 3.4921106954527404e-17 ; [-0.04880649675037171, 0.0738026432621579]
+
+ > Finished in 0.6525063514709473 secs
+
+
+  ********* Rebuilding AST post abstracttion ********
+
+Synthesizing expression with fresh FreeVars .... 
+ >  Rebuilt AST Nodes = 23 (47)
+ >  Rebuilt AST Depth = 6
+  **********Rebuilt AST in 0.00025153160095214844 secs********
+
+-----------------------------------
+
+Empty WorkList!
+Final WorkList! [<ASTtypes.LiftOp object at 0x7fcab975a390>, <ASTtypes.BinOp object at 0x7fcab97472a0>]
+IF None None 6
+MINUS - 99 5
+[(5, 0.4416587288670521), (6, 0.004796985454851027), (7, 0)]
+CURRENT AST_DEPTH = : 6
+ABSTRACTION_DEPTH : 5
+Candidate List Length: 1
+-----------------------------------
+ABSTRACTION LEVEL = 4
+SetupOutputs: BinOp <ASTtypes.BinOp object at 0x7fcab97472a0>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 0.014331340789794922 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: _F7 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 2 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: -16.68 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: -0.11990407673860912 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: _F1 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: _F6 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: _F6*_F1 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: -0.11990407673860912 , Cond : CS7),(Expr: _F6*_F1 , Cond : ~CS7) )
+NodeCHar: 2 LiftOp
+Tup( (Expr: sin(_F6*_F1) , Cond : ~CS7),(Expr: -0.119616973296025 , Cond : CS7) )
+NodeCHar: 3 TransOp
+Tup( (Expr: _F7 + sin(_F6*_F1) , Cond : ~CS7),(Expr: -0.119616973296025 + _F7 , Cond : CS7) )
+NodeCHar: 4 BinOp
+Tup( (Expr: 1.5137 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: -0.181498800959233 , Cond : CS7),(Expr: 1.5137*_F6*_F1 , Cond : ~CS7) )
+NodeCHar: 3 BinOp
+Tup( (Expr: -0.180503957657859 , Cond : CS7),(Expr: sin(1.5137*_F6*_F1) , Cond : ~CS7) )
+NodeCHar: 4 TransOp
+Tup( (Expr: 0.0608869843618335 + _F7 , Cond : CS7),(Expr: _F7 + sin(_F6*_F1) - sin(1.5137*_F6*_F1) , Cond : ~CS7) )
+NodeCHar: 5 BinOp
+
+ Parsing Conditional = CS7
+Handling Condtional CS7
+This: (True)
+SubCond: CS7 : (True)
+
+
+Finished parsing -> CS7 : True
+Query1:  7
+Pass conversion gelpia
+Gelpia solve =  0.016649961471557617 opCount = 7
+STAT: SP:0.1005053274120951, maxres:0.0902519788289293, avg:0.0902519788289301
+<class 'float'> 1.00199824913859e-17
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.656047948380676, maxres:0.656047948380676, avg:0.656047948380676
+<class 'float'> 7.283595375503227e-17
+
+ Parsing Conditional = ~CS7
+Handling Condtional CS7
+This: (True)
+SubCond: CS7 : (True)
+
+
+Finished parsing -> ~CS7 : False
+Query1:  76
+Pass conversion gelpia
+Gelpia solve =  0.12460732460021973 opCount = 76
+STAT: SP:158.02096740866259, maxres:59.9032823442185, avg:25.6896884080282
+<class 'float'> 6.6506003309173e-15
+
+ Parsing Conditional = CS7
+Handling Condtional CS7
+This: (True)
+SubCond: CS7 : (True)
+
+
+Finished parsing -> CS7 : True
+Pass conversion gelpia
+Gelpia solve =  0.01366281509399414 opCount = 1
+
+ Parsing Conditional = ~CS7
+Handling Condtional CS7
+This: (True)
+SubCond: CS7 : (True)
+
+
+Finished parsing -> ~CS7 : False
+Pass conversion gelpia
+Gelpia solve =  0.03918027877807617 opCount = 8
+ > MaxError:
+ 1.7543851639063866e-14 ; [-0.5533775440590534, 0.5862112284270815]
+
+ > Finished in 0.26569294929504395 secs
+
+
+  ********* Rebuilding AST post abstracttion ********
+
+Synthesizing expression with fresh FreeVars .... 
+ >  Rebuilt AST Nodes = 10 (23)
+ >  Rebuilt AST Depth = 5
+  **********Rebuilt AST in 0.00033020973205566406 secs********
+
+-----------------------------------
+
+
+-----------------------------------
+Full Analysis Block:
+
+SetupOutputs: LiftOp <ASTtypes.LiftOp object at 0x7fcab975a390>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 0.007366180419921875 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: _F9 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: -1 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: -1 , Cond : True) )
+NodeCHar: 0 Num
+Tup( (Expr: 1.5137 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: _F8 , Cond : True) )
+NodeCHar: 0 FreeVar
+Tup( (Expr: 1.5137*_F8 , Cond : True) )
+NodeCHar: 1 BinOp
+Tup( (Expr: sin(1.5137*_F8) , Cond : True) )
+NodeCHar: 2 TransOp
+Tup( (Expr: -sin(1.5137*_F8) , Cond : True) )
+NodeCHar: 3 BinOp
+Tup( (Expr: sin(1.5137*_F8) , Cond : True) )
+NodeCHar: 4 BinOp
+Tup( (Expr: _F9 , Cond : CS6),(Expr: sin(1.5137*_F8) , Cond : ~CS6) )
+NodeCHar: 5 LiftOp
+
+ Parsing Conditional = ~CS6
+Handling Condtional CS6
+Building conditional expressions...
+
+ExprComp line: 88
+SetupOutputs: FreeVar <ASTtypes.FreeVar object at 0x7fcab9779a98>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 3.886222839355469e-05 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: -16.68 , Cond : True) )
+NodeCHar: 0 FreeVar
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.0, maxres:0.0, avg:0.0
+<class 'float'> 0.0
+
+ Parsing Conditional = True
+ > MaxError:
+ 0.0 ; [-16.68, -16.68]
+
+ > Finished in 0.0010056495666503906 secs
+
+SetupOutputs: Num <ASTtypes.Num object at 0x7fcab974c930>
+Building conditional expressions...
+
+Ext Constraints:  
+ > Begin building derivatives....
+ > Finished in 3.266334533691406e-05 secs
+
+ > Analyzing error for the current abstraction block...
+
+Tup( (Expr: 0 , Cond : True) )
+NodeCHar: 0 Num
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:0.0, maxres:0.0, avg:0.0
+<class 'float'> 0.0
+
+ Parsing Conditional = True
+ > MaxError:
+ 0.0 ; [0.0, 0.0]
+
+ > Finished in 0.0010445117950439453 secs
+
+This: (True)
+SubCond: CS6 : (True)
+
+
+Finished parsing -> ~CS6 : False
+Query1:  20
+Pass conversion gelpia
+Gelpia solve =  0.014103889465332031 opCount = 20
+STAT: SP:0.6992030510951258, maxres:0.695828594096789, avg:0.572647735776379
+<class 'float'> 7.72524926358808e-17
+
+ Parsing Conditional = True
+Query1:  0
+STAT: SP:158.020967408663, maxres:158.020967408663, avg:158.020967408663
+<class 'float'> 1.7543851639063913e-14
+
+ Parsing Conditional = CS6
+Handling Condtional CS6
+This: (True)
+SubCond: CS6 : (True)
+
+
+Finished parsing -> CS6 : True
+Gensig: _F9
+Pass conversion gelpia
+Gelpia solve =  0.021849632263183594 opCount = 0
+
+ Parsing Conditional = ~CS6
+Handling Condtional CS6
+This: (True)
+SubCond: CS6 : (True)
+
+
+Finished parsing -> ~CS6 : False
+Pass conversion gelpia
+Gelpia solve =  0.026076555252075195 opCount = 2
+ > MaxError:
+ 1.7543851639063913e-14 ; [-0.5533775440590535, 0.5862112284270815]
+
+ > Finished in 0.09728312492370605 secs
+
+-----------------------------------
+
+
+//-------------------------------------
+VAR : axis_slope_angle
+ABSOLUTE_ERROR : 1.7543851639063913e-14
+First-order Error : 1.7543851639063913e-14
+REAL_INTERVAL : [-0.5533775440590535, 0.5862112284270815]
+FP_INTERVAL : [-0.553377544059071, 0.586211228427099]
+//-------------------------------------
+
+Optimizer calls : 19
+Parsing time : 0.0495908260345459
+PreProcessing time : 0.00022459030151367188
+Analysis time : 5.223762035369873
+Full time : 5.275056838989258

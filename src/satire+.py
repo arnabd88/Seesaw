@@ -43,6 +43,8 @@ def parseArguments():
 	parser.add_argument('--sound', help='Turn on analysis for higher order errors', default=False, action='store_true')
 	parser.add_argument('--compress', help='Perform signature matching to reduce optimizer calls using hashing and md5 signature', default=False, action='store_true')
 	parser.add_argument('--force', help='Sideline additional tricks used for non-linear examples. Use this option for linear examples', default=False, action='store_true')
+	parser.add_argument('--realpaver', help='Enable realpaver guided subdivision inside satire+', default=False, action='store_true')
+	parser.add_argument('--enable-constr', help='Enable solving constrained optimization queries', default=False, action='store_true')
 	                                  
 
 	result = parser.parse_args()
@@ -231,6 +233,7 @@ if __name__ == "__main__":
 	start_exec_time	= time.time()
 	argList = parseArguments()
 	Globals.argList = argList
+	Globals.enable_constr = argList.enable_constr
 	sys.setrecursionlimit(10**6)
 	print(argList)
 	text = open(argList.file, 'r').read()

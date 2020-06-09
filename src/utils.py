@@ -85,12 +85,15 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	str_expr = re.sub(r're\b', "", str_expr)
 	str_expr = re.sub(r'im\b', "0.0*", str_expr)
 
-	str_cond_expr = re.sub(r'\&', "&&", str(cond_expr))
-	str_cond_expr = re.sub(r'\|', "||", str_cond_expr)
-	str_cond_expr = re.sub(r'\*\*', "^", str_cond_expr)
-	str_cond_expr = re.sub(r'Abs', "abs", str_cond_expr)
-	str_cond_expr = re.sub(r're\b', "", str_cond_expr)
-	str_cond_expr = re.sub(r'im\b', "0.0*", str_cond_expr)
+	if cond_expr == Globals.__T__:
+		str_cond_expr = "(1 <= 1)"
+	else:
+		str_cond_expr = re.sub(r'\&', "&&", str(cond_expr))
+		str_cond_expr = re.sub(r'\|', "||", str_cond_expr)
+		str_cond_expr = re.sub(r'\*\*', "^", str_cond_expr)
+		str_cond_expr = re.sub(r'Abs', "abs", str_cond_expr)
+		str_cond_expr = re.sub(r're\b', "", str_cond_expr)
+		str_cond_expr = re.sub(r'im\b', "0.0*", str_cond_expr)
 
 	#str_extc_expr = str(externConstraints)
 	str_extc_expr = re.sub(r'\&', "&&", str(externConstraints))
@@ -102,7 +105,7 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	#print("Pass conversion gelpia")
 	gstr_expr = inputStr + str_expr  ## without the constraints
 	Globals.gelpiaID += 1
-	#print("Begining New gelpia query->ID:", Globals.gelpiaID)
+	print("Constr?", Globals.enable_constr, " Begining New gelpia query->ID:", Globals.gelpiaID)
 	fout = open("gelpia_"+str(Globals.gelpiaID)+".txt", "w")
 	fout.write("# --input-epsilon {ieps}\n".format(ieps=str(gelpia_input_epsilon)))
 	fout.write("# --output-epsilon {oeps}\n".format(oeps=str(gelpia_output_epsilon)))
@@ -113,6 +116,8 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	str_constraint = " && ".join([str_cond_expr]+([] if str_extc_expr is None or len(str_extc_expr)==0 else [str_extc_expr]))
 
 	fout.write(inputStr + str_constraint +"; " + str_expr)
+	if Globals.enable_constr:
+		gstr_expr = inputStr + str_constraint +"; " + str_expr
 	#fout.write(str_expr)
 	fout.close()
 
