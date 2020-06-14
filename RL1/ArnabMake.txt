@@ -1,0 +1,36 @@
+## for execution inside build
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.   -O2 -ffloat-store -funroll-loops -c ../src/parser.c
+                    -fPIC               -Isrc/.
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.   -O2 -ffloat-store -funroll-loops -c ../src/lexer.c
+                    -fPIC               -Isrc/.
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.   -O2 -ffloat-store -funroll-loops -c ../src/profile.c
+                    -fPIC               -Isrc/.
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.   -O2 -ffloat-store -funroll-loops -c ../src/interval.c
+                    -fPIC               -Isrc/.
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-loops -c ../src/union_interval.c
+                    -fPIC               -Isrc/.
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-loops -c ../src/domain.c
+                    -fPIC               -Isrc/.
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-loops -c ../src/default_interval.c
+                    -fPIC               -Isrc/.
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-loops -c ../src/constant.c
+                    -fPIC               -Isrc/.
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-loops -c ../src/variable.c
+                    -fPIC               -Isrc/.
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.   -O2 -ffloat-store -funroll-loops -c ../src/constraint.c
+                    -fPIC               -Isrc/.
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-loops -c ../src/evaluator.c
+                    -fPIC               -Isrc/.
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-loops -c ../src/narrowing_hullbox.c
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-loops -c ../src/narrowing_newton.c
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-loops -c ../src/propagation_local.c
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-loops -c ../src/propagation_strong.c
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-loops -c ../src/list_domains.c
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-loops -c ../src/search.c
+gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-loops -c ../src/main.c
+
+# \rm libfoo.so ; make clean ; find . -name "*.o" | xargs rm -rf
+# 
+# source ../ArnabMake.txt; gcc  -O2 -ffloat-store -funroll-loops -shared -o libfoo.so  parser.o lexer.o profile.o interval.o union_interval.o domain.o default_interval.o constant.o variable.o constraint.o evaluator.o narrowing_hullbox.o narrowing_newton.o propagation_local.o propagation_strong.o list_domains.o search.o main.o -lm -lfl
+# 
+# p3 interface.py
