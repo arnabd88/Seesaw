@@ -187,6 +187,7 @@ class AnalyzeNode_Cond(object):
 				print("Query2: ", seng.count_ops(expr))
 				#print("COND-EXPR:", cond_expr)
 				res_avg_maxres = utils.get_statistics(expr)
+				print("Processed:", utils.process_conditionals(cond_expr, self.externConstraints))
 				errIntv = utils.generate_signature(expr,\
 												   cond_expr, \
 												   self.externConstraints, \
@@ -303,6 +304,16 @@ class AnalyzeNode_Cond(object):
 
 		return reduce(lambda x,y : x.__concat__(y,trim=True), [v for k,v in ld.items()], SymTup((Sym(0.0,Globals.__T__),)))
 
+	def subsitute(self, tcond, symDict, inv_symDict):
+		#symDict = {fsym: Globals.condExprBank[fsym][0] for fsym in free_syms}
+		#inv_symDict = {~fsym: Globals.condExprBank[~fsym][0] for fsym,v in symDict.items() if v not in ('(True)', 'True', '(False)', 'False', True, False)}
+		str_tcond = str(tcond)
+		for k in inv_symDict.keys():
+			str_tcond = str_tcond.replace(str(k), inv_symDict[k])
+		for k in symDict.keys():
+			str_tcond = str_tcond.replace(str(k), symDict[k])
+
+		return str_tcond
 
 	def parse_cond(self, cond):
 		tcond = cond
@@ -328,16 +339,17 @@ class AnalyzeNode_Cond(object):
 				set_free_symbols = set_free_symbols.union(free_symbols)
 			symDict = {fsym: Globals.condExprBank[fsym][0] for fsym in free_syms}
 			inv_symDict = {~fsym: Globals.condExprBank[~fsym][0] for fsym,v in symDict.items() if v not in ('(True)', 'True', '(False)', 'False', True, False)}
-			inv_symDict.update(symDict)
+			#inv_symDict.update(symDict)
 			print("Inside parsing conditionals -> cond sub dict : {sdict}".format(sdict=inv_symDict))
 			#print("Inside parsing conditionals -> total cond : {total_cond}".format(total_cond=tcond))
-			tcond = tcond.subs(inv_symDict)
+			#tcond = str(tcond.subs(inv_symDict))
+			tcond = self.subsitute(tcond, symDict, inv_symDict)
 			#tcond = tcond.subs({fsym: Globals.condExprBank[fsym][0] for fsym in free_syms})
 			print("Finished parsing -> {cond} : {cexpr}\n".format(cond=cond, cexpr=tcond))
 			logger.info("Finished parsing -> {cond} : {cexpr}".format(cond=cond, cexpr=tcond))
 			#print("tcond:", tcond)
 			return (tcond, set_free_symbols)
-		return (tcond, set_free_symbols)
+		return ("(<<{tcond}>>)".format(tcond=tcond), set_free_symbols)
 
 
 	def first_order_error(self):
@@ -361,6 +373,7 @@ class AnalyzeNode_Cond(object):
 				res_avg_maxres = utils.get_statistics(expr)				
 				#print("cond_expr", cond_expr)
 				#errIntv = utils.generate_signature(expr,cond_expr, free_symbols)
+				print("Processed:", utils.process_conditionals(cond_expr, self.externConstraints))
 				errIntv = utils.generate_signature(expr,\
 												   #cond_expr, \
 												   cond_expr, \
@@ -383,6 +396,7 @@ class AnalyzeNode_Cond(object):
 				(cond_expr,free_symbols) = self.parse_cond(cond)
 				#print("COND-EXPR:", cond_expr)
 				#fintv = utils.generate_signature(expr,cond_expr, free_symbols)
+				print("Processed:", utils.process_conditionals(cond_expr, self.externConstraints))
 				fintv = utils.generate_signature(expr,\
 												   cond_expr, \
 												   self.externConstraints, \

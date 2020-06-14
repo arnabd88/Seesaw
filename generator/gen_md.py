@@ -9,7 +9,7 @@ def initialize(p_num, d_num, fout):
 
 	seed = 123456789
 	i4_huge = 2147483647
-	err = 0.0
+	err = 0.1
 
 	for i in range(d_num):
 		for j in range(p_num):
@@ -19,7 +19,7 @@ def initialize(p_num, d_num, fout):
 			seed = ( seed % i4_huge )
 			if ( seed < 0):
 				seed = seed + i4_huge
-			rand_val = 2.0 + ( 10.0 - 2.0 ) * seed * 4.656612875E-10
+			rand_val = 1.0 + ( 10.0 - 1.0 ) * seed * 4.656612875E-10
 			fout.write("\t{var}\tfl64 : ({val} - {err}, {val} + {err});\n".format(var=var_name,err=err,val=str(rand_val)))
 
 	return POS, VEL, ACC
@@ -140,7 +140,7 @@ def md( p_num, d_num, step_num, dt, fout):
 if __name__ == "__main__":
 	p_num = 10
 	d_num = 3
-	step_num = 10
+	step_num = 2
 	dt = 0.1
 
 	## default arrays to begin with

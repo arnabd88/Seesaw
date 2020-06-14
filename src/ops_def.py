@@ -98,8 +98,8 @@ _MCOPS = {	\
 
 # ops over binary literals
 _BOPS = { \
-			AND		:	lambda L	:	"False" if ("False" in L[0] or "False" in L[1]) else "True" if "True" in L[1] and "True" in L[0] else L[0] if "True" in L[1] else L[1] if "True" in L[0] else   str("(") + L[0] +"&"+ L[1] + str(")"), \
-			OR		:	lambda L	:	"True" if ("True" in L[0] or "True" in L[1]) else "False" if "False" in L[1] and "False" in L[0] else L[0] if "False" in L[1] else L[1] if "False" in L[0] else str("(") + L[0] +"|"+ L[1] + str(")"), \
+			AND		:	lambda L	:	"<<False>>" if ("False" in L[0] or "False" in L[1]) else "<<True>>" if "True" in L[1] and "True" in L[0] else L[0] if "True" in L[1] else L[1] if "True" in L[0] else   str("(") + L[0] +"&"+ L[1] + str(")"), \
+			OR		:	lambda L	:	"<<True>>" if ("True" in L[0] or "True" in L[1]) else "<<False>>" if "False" in L[1] and "False" in L[0] else L[0] if "False" in L[1] else L[1] if "False" in L[0] else str("(") + L[0] +"|"+ L[1] + str(")"), \
 			NOT		:	lambda L	:	str("(~(") + L[0] + str("))") \
 			#OR		:	lambda L	:	L[0] +"|"+ L[1], \
 			#NOT		:	lambda L	:	(~(L[0]))	\

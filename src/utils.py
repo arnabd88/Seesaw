@@ -69,6 +69,23 @@ def split_gelpia_format(msg):
 								 .split(",")
 
 
+# the two inputs provided are in compatible forms only requiring to be Anded together
+# hence process them together before sending pre-processing for RealPaver
+def process_conditionals( innerConds, externConds ):
+
+	str_inner = str(innerConds)
+	str_outer = str(externConds)
+	str_cond_expr = " & ".join([str_inner]+([] if externConds is None or len(str_outer)==0 else [str_outer]))
+	str_cond_expr = re.sub(r'\&', "&&", str_cond_expr)
+	str_cond_expr = re.sub(r'\|', "||", str_cond_expr)
+	str_cond_expr = re.sub(r'\*\*', "^", str_cond_expr)
+	str_cond_expr = re.sub(r'Abs', "abs", str_cond_expr)
+	str_cond_expr = re.sub(r're\b', "", str_cond_expr)
+	str_cond_expr = re.sub(r'im\b', "0.0*", str_cond_expr)
+	#str_cond_expr = re.sub(r'\<\<', "(", str_cond_expr)
+	#str_cond_expr = re.sub(r'\>\>', ")", str_cond_expr)
+
+	return str_cond_expr
 
 
 def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func-> Dur:"):
@@ -85,7 +102,7 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	str_expr = re.sub(r're\b', "", str_expr)
 	str_expr = re.sub(r'im\b', "0.0*", str_expr)
 
-	if cond_expr == Globals.__T__:
+	if cond_expr == Globals.__T__ :
 		str_cond_expr = "(1 <= 1)"
 	else:
 		str_cond_expr = re.sub(r'\&', "&&", str(cond_expr))
@@ -94,6 +111,8 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 		str_cond_expr = re.sub(r'Abs', "abs", str_cond_expr)
 		str_cond_expr = re.sub(r're\b', "", str_cond_expr)
 		str_cond_expr = re.sub(r'im\b', "0.0*", str_cond_expr)
+		str_cond_expr = re.sub(r'\<\<', "(", str_cond_expr)
+		str_cond_expr = re.sub(r'\>\>', ")", str_cond_expr)
 
 	#str_extc_expr = str(externConstraints)
 	str_extc_expr = re.sub(r'\&', "&&", str(externConstraints))
@@ -102,6 +121,8 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	str_extc_expr = re.sub(r'Abs', "abs", str_extc_expr)
 	str_extc_expr = re.sub(r're\b', "", str_extc_expr)
 	str_extc_expr = re.sub(r'im\b', "0.0*", str_extc_expr)
+	str_extc_expr = re.sub(r'\<\<', "(", str_extc_expr)
+	str_extc_expr = re.sub(r'\>\>', ")", str_extc_expr)
 	#print("Pass conversion gelpia")
 	gstr_expr = inputStr + str_expr  ## without the constraints
 	Globals.gelpiaID += 1
@@ -220,15 +241,22 @@ def invoke_gelpia_herror(symExpr, inputStr, label="Func-> Dur:"):
 	return [min_lower, max_upper.value]
 
 	
+#def extract_input_dep(free_syms):
+#	ret_list = list()
+#	for fsyms in free_syms:
+#		ret_list += [str(fsyms), " = ", str(Globals.inputVars[fsyms]["INTV"]), ";"]
+#	return "".join(ret_list)
+#    #for name,val in inputs.items():
+#    #    ret_list += [name, " = ", str(val["INTV"]), ";"]
+#    #return "".join(ret_list)
 def extract_input_dep(free_syms):
 	ret_list = list()
-	for fsyms in free_syms:
-		ret_list += [str(fsyms), " = ", str(Globals.inputVars[fsyms]["INTV"]), ";"]
+	flist = [str(i) for i in free_syms]
+	flist.sort()
+	for fsyms in flist:
+		ret_list += [str(fsyms), " = ", str(Globals.inputVars[seng.var(fsyms)]["INTV"]), ";"]
 	return "".join(ret_list)
     #for name,val in inputs.items():
-    #    ret_list += [name, " = ", str(val["INTV"]), ";"]
-    #return "".join(ret_list)
-
 def genSig(sym_expr):
 	try:
 		if seng.count_ops(sym_expr) == 0 :
