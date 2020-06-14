@@ -113,13 +113,25 @@ int IBparser(char *namefile)
  *  Parser of the Software
  */
 {
-    //yyin = fopen(namefile, "r");  /* the existence of the file has already been checked */
+
+	printf("%s is this same\n", namefile);
+    //FILE* ptr = fopen(namefile, "r");  /* the existence of the file has already been checked */
+    yyin = fopen(namefile, "r");  /* the existence of the file has already been checked */
 	//yy_scan_string("db_type : mysql\ndb_name : testdata");
 	//yy_scan_string("Variables x1 in [0.01, 1.0], x2 in [0.01, 1.0], x3 in [0.01, 1.0], x4 in [0.01, 1.0] ; Constraints 0.249999999994 <= x3^2 , 0.399999999997 <= x1 - x2 , x4*(x3+x2/x1) - 5.55111512312578e-17 <= x1^2 + 1.11577413974828e-14 , min(x3^2 - 0.250000000006,  x1^2 - x4*(x3+x2/x1) - 1.11577e-14 - 5.5511151e-15) <= 0 ;");
-	yy_scan_string(namefile);
+	//yy_scan_string(namefile);
     yyparse();
     //fclose(yyin);
     
+    if( IBNbParsingError==0 ) return( 1 );
+    else return( 0 );
+	return 0;
+}
+
+int IBparsepred(char *predStr)
+{
+	yy_scan_string(predStr);
+	yyparse();
     if( IBNbParsingError==0 ) return( 1 );
     else return( 0 );
 }
@@ -210,7 +222,966 @@ void IBhelp()
 }
 
 
-main(int argc, char **argv)
+initialize()
+{
+    char version[] = VERSION,          /* version of the Software from config.h */
+    software_run[] = PACKAGE,     /* name of the Software from config.h */
+    software_name[] = SOFTWARE_NAME, /* name of the Software from config.h */
+    IBarguments[100] = "",        /* used for printing wrong arguments */
+    slong[30],                    /* used for printing long integers */
+    *IBinfile,                    /* name of input file from argv */
+    IBInfoConsistency[50];        /* name of consistency enforced */
+    
+    FILE *faux;                        /* used to open the input file */
+    
+    int  argBisect,                    /* type of bisection strategy */
+    argHelp,                      /* 1 if the help of the Software is printed */
+    argVerbose,                   /* 1 if verbose mode */
+    argPhi,                       /* 1 if phi of box_phi consistency is parameterized */
+    argFile,                      /* 1 if an input file exists */
+	argPred,					  /* 1 if predicate passed directly from cmd */
+    slongesp,                     /* used for printing long integers */
+    sysVar,                       /* information on the variables occurring in constraints */
+    sysCtr,                       /* information on the constraints */
+    nEq,                          /* number of equations */
+    nIneq,                        /* number of inequations */
+    nOccOne,                      /* number of variables occurring once */
+    nOccMul,                      /* number of variables occurring more than once */
+    completeProcess,              /* 1 if the used algorithm is complete */
+    nbsol,                        /* number of output boxes */
+    i, n;
+    
+    long IBnblocvar,                   /* sum_(c in constraints) cardinal({x occurring in c}) */
+    time;                         /* used to implement the online mode */
+    
+    double x;
+    
+    
+    /* Initialisation of structures */
+    variables        = IBNewV();
+    constants        = IBNewConstants();
+    constraints      = IBNewConstraints();
+    operations       = IBOperationsInit();
+
+}
+
+//main(int argc, char **argv)
+///***************************************************************************
+// *  The main function of the Software
+// */
+//{
+//    char version[] = VERSION,          /* version of the Software from config.h */
+//    software_run[] = PACKAGE,     /* name of the Software from config.h */
+//    software_name[] = SOFTWARE_NAME, /* name of the Software from config.h */
+//    IBarguments[100] = "",        /* used for printing wrong arguments */
+//    slong[30],                    /* used for printing long integers */
+//    *IBinfile,                    /* name of input file from argv */
+//    IBInfoConsistency[50];        /* name of consistency enforced */
+//    
+//    FILE *faux;                        /* used to open the input file */
+//    
+//    int  argBisect,                    /* type of bisection strategy */
+//    argHelp,                      /* 1 if the help of the Software is printed */
+//    argVerbose,                   /* 1 if verbose mode */
+//    argPhi,                       /* 1 if phi of box_phi consistency is parameterized */
+//    argFile,                      /* 1 if an input file exists */
+//	argPred,					  /* 1 if predicate passed directly from cmd */
+//    slongesp,                     /* used for printing long integers */
+//    sysVar,                       /* information on the variables occurring in constraints */
+//    sysCtr,                       /* information on the constraints */
+//    nEq,                          /* number of equations */
+//    nIneq,                        /* number of inequations */
+//    nOccOne,                      /* number of variables occurring once */
+//    nOccMul,                      /* number of variables occurring more than once */
+//    completeProcess,              /* 1 if the used algorithm is complete */
+//    nbsol,                        /* number of output boxes */
+//    i, n;
+//    
+//    long IBnblocvar,                   /* sum_(c in constraints) cardinal({x occurring in c}) */
+//    time;                         /* used to implement the online mode */
+//    
+//    double x;
+//    
+//    
+//    /* Initialisation of structures */
+//    variables        = IBNewV();
+//    constants        = IBNewConstants();
+//    constraints      = IBNewConstraints();
+//    operations       = IBOperationsInit();
+//    
+//    
+//    /* Initialization of pragmas */
+//    IBPragmaNbGeneratedDomains = 1;
+//    IBPragmaMaxSolution        = 1024;
+//    IBPragmaPrecision          = 1.0e-8;
+//    IBPragmaBisection          = IBBisectRoundRobin;
+//    IBPragmaNumberBisection    = 3;
+//    IBPragmaImprovement        = 0.9;    /* 10% */
+//    IBPragmaPrecisionShrink    = 0.0;
+//    IBPragmaPrecision3B        = 0.001;
+//    IBPragmaStyleInterval      = IBPrintIntervalBounds;
+//    IBPragmaIntervalDigits     = 16;
+//    IBPragmaHullMode           = 0; /* default: union mode, returns the list of output boxes */
+//    IBPragmaMaxTime            = 1000000000;   /* default: 1 million seconds (11.57 days) */
+//    IBPragmaSubpaving          = 0; /* default: no subpaving */
+//    
+//    /* Initialization of other variables */
+//    IBComputableIntervalNewton = 0;
+//    IBfilter2B                 = IBF2Bbc5;
+//    IBsplit                    = IBBsplit3;
+//    IBcompute3B                = 0;
+//    IBcomputeWeak3B            = 0;
+//    IBwidth3B                  = NULL;
+//    
+//    IBpropaglist               = NULL;
+//    IBpropaglistsave           = NULL;
+//    IBpropaglistctr            = NULL;
+//    IBpropaglistglobal         = NULL;
+//    
+//    completeProcess = 1;
+//    
+//    /* Initialization of modules */
+//    IBClockInit();  /* clock management */
+//    IBInitIA();     /* interval arithmetic */
+//    
+//    
+//    /* Initialization of arguments */
+//    argHelp = argFile = 0;
+//	argPred = 0;
+//    argBisect = IBBisectNone;
+//    IBargBisectNo = 0;
+//    argVerbose = 0;
+//    argPhi = 0;
+//    
+//    printf("\n%s v. %s (c) LINA 2004\n",software_name,version);
+//    /* printf("[report bugs to Laurent.Granvilliers@lina.univ-nantes.fr]\n"); */
+//    printf("\n");
+//    
+//    
+//    /* PARSING OF THE ARGUMENTS ON THE COMMAND LINE */
+//    i=1;
+//    while( i<argc )
+//    {
+//        if( (faux=fopen(argv[i],"r"))!=NULL )
+//        {
+//            fclose(faux);
+//            IBinfile = argv[i];
+//            argFile = 1;
+//        }
+//        else
+//        {
+//            /* CONSISTENCY */
+//            if( strcmp(argv[i],"-bc3")==0 )
+//            {
+//                IBfilter2B = IBF2Bbc3;
+//            }
+//			else if( strcmp(argv[i], "-file")==0 )
+//			{
+//				i++ ;
+//				if( (faux=fopen(argv[i], "r"))!=NULL )
+//				{
+//					fclose(faux);
+//					IBinfile = argv[i];
+//					argFile = 1;
+//					printf("Fount file\n");
+//				}
+//				else {
+//					argFile = 0;
+//					printf("Incorrect -file argument\n");
+//				}
+//			}
+//            else if( strcmp(argv[i],"-bc3_newton")==0 )
+//            {
+//                IBfilter2B = IBF2Bbc3Newton;
+//            }
+//            else if( strcmp(argv[i],"-bc4")==0 )
+//            {
+//                IBfilter2B = IBF2Bbc4;
+//            }
+//            else if( strcmp(argv[i],"-bc5")==0 )
+//            {
+//                IBfilter2B = IBF2Bbc5;
+//            }
+//            else if( strcmp(argv[i],"-hc3")==0 )
+//            {
+//                IBfilter2B = IBF2Bhc3;
+//            }
+//            else if( strcmp(argv[i],"-hc4")==0 )
+//            {
+//                IBfilter2B = IBF2Bhc4;
+//            }
+//            else if( strcmp(argv[i],"-hc4I")==0 )
+//            {
+//                IBfilter2B = IBF2Bhc4I;
+//            }
+//            else if( strcmp(argv[i],"-hc4_newton")==0 )
+//            {
+//                IBfilter2B = IBF2Bhc4Newton;
+//            }
+//            else if( strcmp(argv[i],"-3B")==0 )
+//            {
+//                IBcompute3B = 1;              /* 3B consistency is enforced */
+//                if( i<argc-1 )
+//                {
+//                    if( (x=strtod(argv[i+1],NULL))>0.0 )
+//                    {
+//                        IBPragmaPrecision3B = x;  /* precision of 3B */
+//                        i++;
+//                    }
+//                }
+//            }
+//            else if( strcmp(argv[i],"-weak3B")==0 )
+//            {
+//                IBcomputeWeak3B = 1;          /* weak 3B consistency is enforced */
+//                if( i<argc-1 )
+//                {
+//                    if( (x=strtod(argv[i+1],NULL))>0.0 )
+//                    {
+//                        IBPragmaPrecision3B = x;  /* precision of 3B */
+//                        i++;
+//                    }
+//                }
+//            }
+//            
+//            /* PRECISION */
+//            else if( strcmp(argv[i],"-precision")==0 )
+//            {
+//                if( i<argc-1 )
+//                {
+//                    if( (x=strtod(argv[i+1],NULL))>0.0 )
+//                    {
+//                        IBPragmaPrecision = x;
+//                        i++;
+//                    }
+//                }
+//            }
+//            
+//            /* BISECTION */
+//            else if( strcmp(argv[i],"-paving")==0 )
+//            {
+//                IBPragmaSubpaving = 1;
+//            }
+//            else if( strcmp(argv[i],"-points")==0 )
+//            {
+//                IBPragmaSubpaving = 0;
+//            }
+//            else if( strcmp(argv[i],"-rr")==0 )
+//            {
+//                argBisect = IBBisectRoundRobin;
+//            }
+//            else if( strcmp(argv[i],"-lf")==0 )
+//            {
+//                argBisect = IBBisectLargestFirst;
+//            }
+//            else if( strcmp(argv[i],"-mn")==0 )
+//            {
+//                argBisect = IBBisectMaxNarrow;
+//            }
+//            else if( strcmp(argv[i],"-bisect2")==0 )
+//            {
+//                IBsplit = IBBsplit2;
+//                IBPragmaNumberBisection = 2;
+//            }
+//            else if( strcmp(argv[i],"-split2")==0 )
+//            {
+//                IBsplit = IBBsplit2;
+//                IBPragmaNumberBisection = 2;
+//            }
+//            else if( strcmp(argv[i],"-bisect3")==0 )
+//            {
+//                IBPragmaNumberBisection = 3;
+//                IBsplit = IBBsplit3;
+//            }
+//            else if( strcmp(argv[i],"-split3")==0 )
+//            {
+//                IBPragmaNumberBisection = 3;
+//                IBsplit = IBBsplit3;
+//            }
+//            else if( strcmp(argv[i],"-nobisect")==0 )
+//            {
+//                IBPragmaNumberBisection = 0;
+//                IBargBisectNo = 1;
+//            }
+//            else if( strcmp(argv[i],"-nosplit")==0 )
+//            {
+//                IBPragmaNumberBisection = 0;
+//                IBargBisectNo = 1;
+//            }
+//            else if( strcmp(argv[i],"-number")==0 )
+//            {
+//                if( i<argc-1 )
+//                {
+//                    if( strcmp(argv[i+1],"+oo")==0 )
+//                    {
+//                        IBPragmaMaxSolution = ~0;    /* stop after "all" output boxes */
+//                        i++;
+//                    }
+//                    else if( (n=atoi(argv[i+1]))>0 )
+//                    {
+//                        IBPragmaMaxSolution = n;   /* maximum number of output boxes */
+//                        i++;
+//                    }
+//                    else
+//                    {
+//                        if (strcmp(IBarguments,"")!=0) strcat(IBarguments,", ");
+//                        strcat(IBarguments,argv[i]);
+//                    }
+//                }
+//                else
+//                {
+//                    if (strcmp(IBarguments,"")!=0) strcat(IBarguments,", ");
+//                    strcat(IBarguments,argv[i]);
+//                }
+//            }
+//			//-- hack for directly passing a string
+//			else if( strcmp(argv[i], "-predicate")==0 )
+//			{
+//				IBinfile = argv[i+1] ;
+//    			printf(" From the hack: %s\n",IBinfile);
+//				argPred = 1;
+//				i++ ;
+//			}
+//			//-- end
+//            
+//            else if( strcmp(argv[i],"-hull")==0 )
+//            {
+//                IBPragmaHullMode = 1;
+//            }
+//            else if( strcmp(argv[i],"-union")==0 )
+//            {
+//                IBPragmaHullMode = 0;
+//            }
+//            
+//            /* PARAMETERS OF PROPAGATION ALGORITHMS */
+//            else if( strcmp(argv[i],"-improve")==0 )
+//            {
+//                if( i<argc-1 )
+//                {
+//                    x = 0.0;
+//                    x = strtod(argv[i+1],NULL);
+//                    if( x>0.0 )
+//                    {
+//                        IBPragmaImprovement = 1 - (x/100);
+//                        i++;
+//                    }
+//                    else if( x==0.0 )
+//                    {
+//                        IBPragmaImprovement = 1.0;
+//                        i++;
+//                    }
+//                }
+//            }
+//            else if( strcmp(argv[i],"-phi")==0 )
+//            {
+//                if( i<argc-1 )
+//                {
+//                    x = 0.0;
+//                    x = atof(argv[i+1]);
+//                    if( x>=0.0 )
+//                    {
+//                        IBPragmaPrecisionShrink = x;
+//                        argPhi = 1;
+//                        i++;
+//                    }
+//                }
+//                else
+//                {
+//                    if (strcmp(IBarguments,"")!=0) strcat(IBarguments,", ");
+//                    strcat(IBarguments,argv[i]);
+//                }
+//            }
+//            
+//            /* INTERVAL PRINTING STYLE */
+//            else if( strcmp(argv[i],"-bound")==0 )
+//            {
+//                IBPragmaStyleInterval = IBPrintIntervalBounds;
+//            }
+//            else if( strcmp(argv[i],"-midpoint")==0 )
+//            {
+//                IBPragmaStyleInterval = IBPrintIntervalMidError;
+//            }
+//            
+//            /* VERBOSE MODE AND HELP */
+//            else if( (strcmp(argv[i],"-verb")==0) || (strcmp(argv[i],"-verbose")==0) )
+//            {
+//                argVerbose = 1;
+//            }
+//            else if( (strcmp(argv[i],"-h")==0) || (strcmp(argv[i],"-help")==0) )
+//            {
+//                argHelp = 1;
+//                i = argc;
+//            }
+//            
+//            /* ONLINE MODE: MAX TIME */
+//            else if( strcmp(argv[i],"-time")==0 )
+//            {
+//                if( i<argc-1 )
+//                {
+//                    time = 0;
+//                    time = strtoul(argv[i+1],NULL,10);
+//                    if( time>0 )
+//                    {
+//                        IBPragmaMaxTime = time;
+//                        i++;
+//                    }
+//                }
+//                else
+//                {
+//                    if (strcmp(IBarguments,"")!=0) strcat(IBarguments,", ");
+//                    strcat(IBarguments,argv[i]);
+//                }
+//            }
+//            
+//            /* WRONG ARGUMENT */
+//            else
+//            {
+//                if (strcmp(IBarguments,"")!=0) {
+//                    strcat(IBarguments,", ");
+//                }
+//                strcat(IBarguments,argv[i]);
+//            }
+//        }
+//        i++;
+//    }
+//    
+//    
+//    if( argHelp )
+//    {
+//        IBhelp();
+//        
+//        IBFreeConstraints(constraints);
+//        IBFreeV(variables);
+//        IBOperationsFree(operations);
+//        IBClockFree();
+//        return 0;
+//    }
+//    
+//    if( argVerbose )
+//    {
+//        printf("  !! sorry, no verbose mode...\n\n");
+//    }
+//    
+//    if( argFile==0 && argPred==0 )
+//    {
+//        printf("  !! error: neither input file nor predicate found [use '%s -h' for help]\n\n",software_run);
+//        return 0;
+//    } 
+//	else if (argFile==1 && argPred==1)
+//	{
+//        printf("  !! error: Both input file and predicate cannot be active together [use '%s -h' for help]\n\n",software_run);
+//        return 0;
+//	}
+//    
+//    if (strcmp(IBarguments,"")!=0) {
+//    	printf("  IBArgs: %s\n",IBarguments);
+//        printf("  !! wrong arguments on the command line: %s\n\n",IBarguments);
+//    }
+//    
+//    
+//    /* PARSING
+//     *------------------------------------------------------------------------*/
+//    IBClockBegin(IBClockParse);
+//    IByyline = 1;
+//    
+//    
+//#if SOFTWARE_PROFILE
+//    printf("PARSING\n");
+//    printf("  File: %s\n",IBinfile);
+//#endif
+//    
+//    //if( IBparser(IBinfile) )
+//    if( argPred==1 || argFile==1 )
+//    {
+//		if (argPred==1) IBparsepred(IBinfile);
+//		else if (argFile==1) IBparser(IBinfile);
+//	    else
+//    	{
+//        	printf("  !! l.%d: error: %s\n\n",IByyline,IBParsingError);
+//			return 0;
+//	    }
+//        IBClockEnd(IBClockParse);
+//        
+//        
+//#if SOFTWARE_PROFILE
+//        _IBprintlong(slong,IBClockGet(IBClockParse),1);
+//        printf("  Elapsed time: %s ms\n",slong);
+//#endif
+//        
+//        
+//        /* end of parsing: creation of constraints integer(x) */
+//        IBAddIntegerTypeConstraints(constraints,variables);
+//        
+//        /* after parsing: reallocation of structures */
+//        IBReallocV(variables);
+//        IBReallocConstraints(constraints);
+//        IBFreeConstants(constants);  /* constants are no more used */
+//        
+//        /* creation of the dependencies between variables and constraints */
+//        IBCreateDependencies(constraints,variables);
+//        
+//        /* creation of propagation lists */
+//        IBpropaglist       = IBPLnew(IBCNbProj(constraints));
+//        IBpropaglistsave   = IBPLnew(IBVnb(variables));
+//        IBpropaglistctr    = IBPLCnew(IBCNbCtr(constraints));
+//        IBpropaglistglobal = IBPGlobalNew(IBCNbCtr(constraints));
+//        
+//        
+//        /* Type of the constraint system
+//         *------------------------------*/
+//        IBnblocvar = nOccOne = nOccMul = nEq = nIneq = 0;
+//        for( i=0; i<IBCNbCtr(constraints); i++ )
+//        {
+//            if( IBCNbProjOne(IBCCtr(constraints,i)) ) nOccOne++;
+//            if( IBCNbProjMul(IBCCtr(constraints,i)) ) nOccMul++;
+//            if( IBCrel(IBCCtr(constraints,i))==IBRelationEQU ) nEq++;
+//            else nIneq++;
+//            IBnblocvar += IBCNbVar(IBCCtr(constraints,i));
+//        }
+//        if( nOccMul==0 )      sysVar = IBSystemOccOne;
+//        else if( nOccOne==0 ) sysVar = IBSystemOccMul;
+//        else                  sysVar = IBSystemOccAll;
+//        
+//        if( nEq==0 )          sysCtr = IBSystemCtrIneq;
+//        else if( nIneq==0 )   sysCtr = IBSystemCtrEq;
+//        else                  sysCtr = IBSystemCtrAll;
+//        
+//        
+//        /* Is the Interval Newton method computable ?
+//         *-------------------------------------------*/
+//        if( (IBCNbCtr(constraints)>=IBVnb(variables)) && (IBCNbCtr(constraints)>1) )
+//        {
+//            IBComputableIntervalNewton=1;
+//            i=0;
+//            while( IBComputableIntervalNewton && (i<IBVnb(variables)) )
+//            {
+//                if( (IBCrelfunc(IBCCtr(constraints,i))!=IBRelationEQU) ||
+//                   (!IBTDerivable(IBCfunc(IBCCtr(constraints,i)))) )
+//                {
+//                    IBComputableIntervalNewton = 0;
+//                }
+//                else
+//                {
+//                    i++;
+//                }
+//            }
+//            if( IBComputableIntervalNewton )
+//            {
+//                IBMIjacobian    = IBMIntervalNew(IBVnb(variables));
+//                IBMIfinalsystem = IBMIntervalNew(IBVnb(variables));
+//                IBMIzero        = IBMIntervalNewZero(IBVnb(variables));
+//                IBMDmidjacobian = IBMDoubleNew(IBVnb(variables));
+//                IBMDinverse     = IBMDoubleNew(IBVnb(variables));
+//                IBMDzero        = IBMDoubleNewZero(IBVnb(variables));
+//                IBMDidentity    = IBMDoubleNewIdentity(IBVnb(variables));
+//                IBdnwt1         = IBNewD(IBVnb(variables));
+//                IBdnwt2         = IBNewD(IBVnb(variables));
+//                IBdnwt3         = IBNewD(IBVnb(variables));
+//                IBdnwt4         = IBNewD(IBVnb(variables));
+//            }
+//        }
+//        else IBComputableIntervalNewton = 0;
+//        
+//        /* Reasoning about the best 2B consistency-based propagation algorithm
+//         *--------------------------------------------------------------------*/
+//        if( IBfilter2B==IBF2Bbc5 )
+//        {
+//            if( sysVar==IBSystemOccOne )  /* bc5 equivalent to hc4 */
+//            {
+//                IBfilter2B = IBF2Bhc4Newton;
+//            }
+//            else
+//                if( sysVar==IBSystemOccMul )  /* bc5 equivalent to bc3 */
+//                {
+//                    IBfilter2B = IBF2Bbc3Newton;
+//                }
+//        }
+//        
+//        
+//        /* If Interval Newton cannot be computed, BC5, BC3+Newton and HC4+Newton
+//         * must be avoided
+//         *--------------------------------------------------------------------*/
+//        if (!IBComputableIntervalNewton) {
+//            if( IBfilter2B==IBF2Bbc5 ) {
+//                IBfilter2B = IBF2Bbc4;            /* BC4 instead of BC5 */
+//            }
+//            else if ( IBfilter2B==IBF2Bhc4Newton) {
+//                IBfilter2B = IBF2Bhc4;            /* HC4 instead of HC4+Newton */
+//            }
+//            else if ( IBfilter2B==IBF2Bbc3Newton ) {
+//                IBfilter2B = IBF2Bbc3;            /* BC3 instead of BC3+Newton */
+//            }
+//        }
+//        
+//        
+//        /* Exact box consistency is computed if Interval Newton is not used
+//         * and if no phi argument on the command line or in the input file is specified
+//         * Otherwise, box(1.0e-8) consistency is computed
+//         *-----------------------------------------------------------------*/
+//        if( (argPhi==0) && ((IBfilter2B!=IBF2Bbc3) && (IBfilter2B!=IBF2Bbc4)) )
+//        {
+//            IBPragmaPrecisionShrink = 1.0e-8;
+//        }
+//        
+//        
+//        /* Reasoning about the choice algorithm for the bisected variable's domain
+//         *------------------------------------------------------------------------*/
+//        
+//        /* Force the strategy largest_first if a subpaving is computed */
+//        if( IBPragmaSubpaving )
+//        {
+//            IBPragmaBisection = IBBisectLargestFirst;
+//            IBbisect = IBBlf;
+//        }
+//        else
+//        {
+//            if( argBisect!=IBBisectNone )       /* bisection specified on comand line */
+//                IBPragmaBisection = argBisect;
+//            
+//            if( IBPragmaBisection==IBBisectRoundRobin )
+//            {
+//                IBbisect = IBBrr;
+//            }
+//            else if( IBPragmaBisection==IBBisectLargestFirst )
+//            {
+//                IBbisect = IBBlf;
+//            }
+//            else   /* MAX REDUCTION strategy, used only if Interval Newton is applied */
+//            {
+//                if( IBComputableIntervalNewton &&
+//                   ((IBfilter2B==IBF2Bbc5) ||
+//                    (IBfilter2B==IBF2Bhc4Newton) ||
+//                    (IBfilter2B==IBF2Bbc3Newton)) )
+//                {
+//                    IBbisect = IBBmn;
+//                    IBPragmaBisection = IBBisectMaxNarrow;
+//                }
+//                else
+//                {
+//                    IBbisect = IBBrr;
+//                    IBPragmaBisection = IBBisectRoundRobin;
+//                }
+//            }
+//        }
+//        
+//        
+//        /* Association 2B consistency-based propagation algorithm (IBfilter2B) /
+//         propagation algorithm (IBfilter)
+//         *----------------------------------------------------------------------*/
+//        
+//        if( IBcompute3B )
+//        {
+//            IBfilter=IBF3B;
+//            IBwidth3B = (double *)malloc(IBVnb(variables)*sizeof(double));
+//        }
+//        else if( IBcomputeWeak3B )
+//        {
+//            IBfilter=IBF3Bweak;
+//            IBwidth3B = (double *)malloc(IBVnb(variables)*sizeof(double));
+//        }
+//        else
+//        {
+//            if( IBfilter2B==IBF2Bhc3 )
+//            {
+//                IBfilter=IBFhc3;
+//            }
+//            else if (IBfilter2B==IBF2Bhc4 )
+//            {
+//                IBfilter=IBFhc4;
+//            }
+//            else if (IBfilter2B==IBF2Bhc4I )
+//            {
+//                IBfilter=IBFhc4I;
+//            }
+//            else if (IBfilter2B==IBF2Bhc4Newton )
+//            {
+//                IBfilter=IBFhc4Newton;
+//            }
+//            else if (IBfilter2B==IBF2Bbc3 )
+//            {
+//                IBfilter=IBFbc3;
+//            }
+//            else if (IBfilter2B==IBF2Bbc3Newton )
+//            {
+//                IBfilter=IBFbc3Newton;
+//            }
+//            else if (IBfilter2B==IBF2Bbc4 )
+//            {
+//                IBfilter=IBFbc4;
+//            }
+//            else if (IBfilter2B==IBF2Bbc5 )
+//            {
+//                IBfilter=IBFbc5;
+//            }
+//        }
+//        
+//        
+//        /* Propagation algorithm used => message
+//         *--------------------------------------*/
+//        if( IBfilter==IBFbc5 )
+//        {
+//            sprintf(IBInfoConsistency,"BC5(%.4g)",IBPragmaPrecisionShrink);
+//        }
+//        else if( IBfilter==IBFbc4 )
+//        {
+//            sprintf(IBInfoConsistency,"BC4(%.4g)",IBPragmaPrecisionShrink);
+//        }
+//        else if( IBfilter==IBFbc3 )
+//        {
+//            sprintf(IBInfoConsistency,"BC3(%.4g)",IBPragmaPrecisionShrink);
+//        }
+//        else if( IBfilter==IBFbc3Newton )
+//        {
+//            sprintf(IBInfoConsistency,"BC3(%.4g) + Newton",IBPragmaPrecisionShrink);
+//        }
+//        else if( IBfilter==IBFhc4Newton )
+//        {
+//            sprintf(IBInfoConsistency,"HC4 + Newton");
+//        }
+//        else if( IBfilter==IBFhc3 )
+//        {
+//            sprintf(IBInfoConsistency,"HC3");
+//        }
+//        else if( IBfilter==IBFhc4I )
+//        {
+//            sprintf(IBInfoConsistency,"HC4/Intervals");
+//        }
+//        else if( IBfilter==IBFhc4 )
+//        {
+//            sprintf(IBInfoConsistency,"HC4/Union");
+//        }
+//        else if( (IBfilter==IBF3B) || (IBfilter==IBF3Bweak) )
+//        {
+//            if( IBfilter==IBF3B )
+//            {
+//                sprintf(IBInfoConsistency,"3B(%.4g) / ",IBPragmaPrecision3B);
+//            }
+//            else
+//            {
+//                sprintf(IBInfoConsistency,"weak 3B(%.4g) / ",IBPragmaPrecision3B);
+//            }
+//            
+//            if( IBfilter2B==IBF2Bhc3 )
+//            {
+//                strcat(IBInfoConsistency,"HC3");
+//            }
+//            else if (IBfilter2B==IBF2Bhc4 )
+//            {
+//                strcat(IBInfoConsistency,"HC4");
+//            }
+//            else if (IBfilter2B==IBF2Bhc4I )
+//            {
+//                strcat(IBInfoConsistency,"HC4I");
+//            }
+//            else if (IBfilter2B==IBF2Bhc4Newton )
+//            {
+//                strcat(IBInfoConsistency,"HC4 + Newton");
+//            }
+//            else if (IBfilter2B==IBF2Bbc3 )
+//            {
+//                strcat(IBInfoConsistency,"BC3");
+//            }
+//            else if (IBfilter2B==IBF2Bbc3Newton )
+//            {
+//                strcat(IBInfoConsistency,"BC3 + Newton");
+//            }
+//            else if (IBfilter2B==IBF2Bbc4 )
+//            {
+//                strcat(IBInfoConsistency,"BC4");
+//            }
+//            else if (IBfilter2B==IBF2Bbc5 )
+//            {
+//                strcat(IBInfoConsistency,"BC5");
+//            }
+//        }
+//        
+//        /* Information on solving algorithms
+//         *----------------------------------*/
+//#if SOFTWARE_PROFILE
+//        printf("\nSOLVING\n");
+//        
+//        printf("  System: %d x %d",IBCNbCtr(constraints),
+//               IBVnb(variables));
+//        if( sysCtr==IBSystemCtrEq )        printf(" of equations");
+//        else if( sysCtr==IBSystemCtrIneq ) printf(" of inequations");
+//        else                               printf(" of equations/inequations");
+//        
+//        printf(", density: %.3g\n",
+//               (double)IBnblocvar/
+//               ((double)IBCNbCtr(constraints)*(double)IBVnb(variables)));
+//        
+//        printf("  Reduction: %s\n",IBInfoConsistency);
+//        
+//        if( !IBargBisectNo ) {
+//            printf("  Split: ");
+//            if( IBPragmaSubpaving ) printf("paving");
+//            else                    printf("points");
+//            
+//            if( IBPragmaBisection==IBBisectRoundRobin )         printf(", round-robin");
+//            else if( IBPragmaBisection==IBBisectLargestFirst )  printf(", largest-first");
+//            else if( IBPragmaBisection==IBBisectMaxNarrow )     printf(", max-narrow");
+//            
+//            printf(", %d parts",IBPragmaNumberBisection);
+//            printf(", precision: %g\n\n",IBPragmaPrecision);
+//        }
+//#endif
+//        
+//        
+//        /* SOLVING */
+//        IBClockBegin(IBClockSolve);
+//        if( nbsol=IBBisection(IBDomVars(variables),IBargBisectNo,&completeProcess) )
+//        {
+//            IBClockEnd(IBClockSolve);
+//            printf("\nEND OF SOLVING\n");
+//        }
+//        else
+//        {
+//            printf("\nEND OF SOLVING\n");
+//            IBClockEnd(IBClockSolve);
+//            if( completeProcess )
+//            {
+//                printf("  Property:     no solution in the initial box\n");
+//            }
+//            else
+//            {
+//                _IBprintlong(slong,IBClockGet(IBClockSolve),1);
+//                printf("\n  Property:     no consistent box at %g found in %s ms\n",IBPragmaPrecision,slong);
+//            }
+//        }
+//        
+//        
+//        /* Information on resolution
+//         *--------------------------*/
+//        if( nbsol>0 )
+//        {
+//            if( completeProcess )
+//            {
+//                printf("  Property:     reliable process (no solution is lost)\n");
+//            }
+//            else
+//            {
+//                printf("  Property:     non reliable process (some solutions may be lost)\n");
+//            }
+//        }
+//        
+//        
+//        _IBprintlong(slong,IBClockGet(IBClockSolve),1);
+//        printf("  Elapsed time: %s ms\n",slong);
+//        
+//        
+//#if SOFTWARE_PROFILE
+//        printf("\nPROFILING\n");
+//        if( IBPragmaNbGeneratedDomains<=1 ) {
+//            printf("  Split: no, 1 box examined\n");
+//        }
+//        else {
+//            _IBprintlong(slong,(IBPragmaNbGeneratedDomains-1)/IBPragmaNumberBisection,1);
+//            printf("  Split: %s",slong);
+//            
+//            _IBprintlong(slong,IBPragmaNbGeneratedDomains,1);
+//            printf(", %s boxes examined\n",slong);
+//        }
+//        
+//        
+//        printf("  Solving time in consistency algorithms:\n");
+//        
+//        
+//        /* The solving times for HC3 and HC4 may be wrong due to rounding errors...
+//         if there are a lot of iterations such that each one is very short */
+//        
+//        if( IBClockGet(IBClockHC3)>0 )  /* HC3 is used */
+//        {
+//            if( IBClockGet(IBClockHC3) +
+//               IBClockGet(IBClockBC3) +
+//               IBClockGet(IBClockINwt) > IBClockGet(IBClockSolve) )
+//            {
+//                IBClockSet(IBClockHC3,IBClockGet(IBClockSolve) -
+//                           IBClockGet(IBClockINwt)  -
+//                           IBClockGet(IBClockBC3));
+//            }
+//        }
+//        
+//        /* Note that HC3 and HC4 cannot be used together */
+//        if( IBClockGet(IBClockHC4)>0 )  /* HC4 is used */
+//        {
+//            if( IBClockGet(IBClockHC4) +
+//               IBClockGet(IBClockBC3) +
+//               IBClockGet(IBClockINwt) > IBClockGet(IBClockSolve) )
+//            {
+//                IBClockSet(IBClockHC4,IBClockGet(IBClockSolve) -
+//                           IBClockGet(IBClockINwt)  -
+//                           IBClockGet(IBClockBC3));
+//            }
+//        }
+//        
+//        slongesp=0;
+//        if (slongesp<(i=_IBNbDigits(IBClockGet(IBClockBC3))))  slongesp=i;
+//        if (slongesp<(i=_IBNbDigits(IBClockGet(IBClockHC3))))  slongesp=i;
+//        if (slongesp<(i=_IBNbDigits(IBClockGet(IBClockHC4))))  slongesp=i;
+//        if (slongesp<(i=_IBNbDigits(IBClockGet(IBClockINwt)))) slongesp=i;
+//        slongesp+=(slongesp-1)/3;
+//        
+//        _IBprintlong(slong,IBClockGet(IBClockBC3),slongesp);
+//        printf("     in BC3:    %s ms\n",slong);
+//        
+//        _IBprintlong(slong,IBClockGet(IBClockHC3),slongesp);
+//        printf("     in HC3:    %s ms\n",slong);
+//        
+//        _IBprintlong(slong,IBClockGet(IBClockHC4),slongesp);
+//        printf("     in HC4:    %s ms\n",slong);
+//        
+//        _IBprintlong(slong,IBClockGet(IBClockINwt),slongesp);
+//        printf("     in Newton: %s ms\n",slong);
+//        
+//        if( IBfilter2B==IBF2Bhc3 )
+//        {
+//            _IBprintlong(slong,IBNbFreshVar(variables),1);
+//            printf("\n  Number of fresh variables in HC3: %s\n",slong);
+//        }
+//        
+//        IBProfileIA();
+//#endif
+//        
+//        
+//        printf("\n");
+//    }
+//    else
+//    {
+//        printf("  !! l.%d: error: %s\n\n",IByyline,IBParsingError);
+//    }
+//    
+//    
+//    /* the end: desallocation of global structures --*/
+//    if( IBComputableIntervalNewton )
+//    {
+//        IBMIntervalFree(IBMIjacobian);
+//        IBMIntervalFree(IBMIfinalsystem);
+//        IBMIntervalFree(IBMIzero);
+//        IBMDoubleFree(IBMDmidjacobian);
+//        IBMDoubleFree(IBMDinverse);
+//        IBMDoubleFree(IBMDzero);
+//        IBMDoubleFree(IBMDidentity);
+//        IBFreeD(IBdnwt1);
+//        IBFreeD(IBdnwt2);
+//        IBFreeD(IBdnwt3);
+//        IBFreeD(IBdnwt4);
+//    }
+//    
+//    if( IBpropaglist!=NULL )       IBPLfree(IBpropaglist);
+//    if( IBpropaglistsave!=NULL )   IBPLfree(IBpropaglistsave);
+//    if( IBpropaglistctr!=NULL )    IBPLCfree(IBpropaglistctr);
+//    if( IBpropaglistglobal!=NULL ) IBPGlobalFree(IBpropaglistglobal);
+//    
+//    if( IBwidth3B!=NULL ) free(IBwidth3B);
+//    
+//    IBFreeConstraints(constraints);
+//    IBFreeV(variables);
+//    IBOperationsFree(operations);
+//    IBClockFree();
+//}
+
+
+
+void initializeRP(char* namefile)
 /***************************************************************************
  *  The main function of the Software
  */
@@ -230,6 +1201,7 @@ main(int argc, char **argv)
     argVerbose,                   /* 1 if verbose mode */
     argPhi,                       /* 1 if phi of box_phi consistency is parameterized */
     argFile,                      /* 1 if an input file exists */
+	argPred,					  /* 1 if predicate passed directly from cmd */
     slongesp,                     /* used for printing long integers */
     sysVar,                       /* information on the variables occurring in constraints */
     sysCtr,                       /* information on the constraints */
@@ -267,7 +1239,7 @@ main(int argc, char **argv)
     IBPragmaIntervalDigits     = 16;
     IBPragmaHullMode           = 0; /* default: union mode, returns the list of output boxes */
     IBPragmaMaxTime            = 1000000000;   /* default: 1 million seconds (11.57 days) */
-    IBPragmaSubpaving          = 0; /* default: no subpaving */
+    IBPragmaSubpaving          = 1; /* default: no subpaving */
     
     /* Initialization of other variables */
     IBComputableIntervalNewton = 0;
@@ -291,6 +1263,7 @@ main(int argc, char **argv)
     
     /* Initialization of arguments */
     argHelp = argFile = 0;
+	argPred = 0;
     argBisect = IBBisectNone;
     IBargBisectNo = 0;
     argVerbose = 0;
@@ -303,301 +1276,42 @@ main(int argc, char **argv)
     
     /* PARSING OF THE ARGUMENTS ON THE COMMAND LINE */
     i=1;
-    while( i<argc )
-    {
-        if( (faux=fopen(argv[i],"r"))!=NULL )
-        {
-            fclose(faux);
-            IBinfile = argv[i];
-            argFile = 1;
-        }
-        else
-        {
-            /* CONSISTENCY */
-            if( strcmp(argv[i],"-bc3")==0 )
-            {
-                IBfilter2B = IBF2Bbc3;
-            }
-            else if( strcmp(argv[i],"-bc3_newton")==0 )
-            {
-                IBfilter2B = IBF2Bbc3Newton;
-            }
-            else if( strcmp(argv[i],"-bc4")==0 )
-            {
-                IBfilter2B = IBF2Bbc4;
-            }
-            else if( strcmp(argv[i],"-bc5")==0 )
-            {
-                IBfilter2B = IBF2Bbc5;
-            }
-            else if( strcmp(argv[i],"-hc3")==0 )
-            {
-                IBfilter2B = IBF2Bhc3;
-            }
-            else if( strcmp(argv[i],"-hc4")==0 )
-            {
-                IBfilter2B = IBF2Bhc4;
-            }
-            else if( strcmp(argv[i],"-hc4I")==0 )
-            {
-                IBfilter2B = IBF2Bhc4I;
-            }
-            else if( strcmp(argv[i],"-hc4_newton")==0 )
-            {
-                IBfilter2B = IBF2Bhc4Newton;
-            }
-            else if( strcmp(argv[i],"-3B")==0 )
-            {
-                IBcompute3B = 1;              /* 3B consistency is enforced */
-                if( i<argc-1 )
-                {
-                    if( (x=strtod(argv[i+1],NULL))>0.0 )
-                    {
-                        IBPragmaPrecision3B = x;  /* precision of 3B */
-                        i++;
-                    }
-                }
-            }
-            else if( strcmp(argv[i],"-weak3B")==0 )
-            {
-                IBcomputeWeak3B = 1;          /* weak 3B consistency is enforced */
-                if( i<argc-1 )
-                {
-                    if( (x=strtod(argv[i+1],NULL))>0.0 )
-                    {
-                        IBPragmaPrecision3B = x;  /* precision of 3B */
-                        i++;
-                    }
-                }
-            }
-            
-            /* PRECISION */
-            else if( strcmp(argv[i],"-precision")==0 )
-            {
-                if( i<argc-1 )
-                {
-                    if( (x=strtod(argv[i+1],NULL))>0.0 )
-                    {
-                        IBPragmaPrecision = x;
-                        i++;
-                    }
-                }
-            }
-            
-            /* BISECTION */
-            else if( strcmp(argv[i],"-paving")==0 )
-            {
-                IBPragmaSubpaving = 1;
-            }
-            else if( strcmp(argv[i],"-points")==0 )
-            {
-                IBPragmaSubpaving = 0;
-            }
-            else if( strcmp(argv[i],"-rr")==0 )
-            {
-                argBisect = IBBisectRoundRobin;
-            }
-            else if( strcmp(argv[i],"-lf")==0 )
-            {
-                argBisect = IBBisectLargestFirst;
-            }
-            else if( strcmp(argv[i],"-mn")==0 )
-            {
-                argBisect = IBBisectMaxNarrow;
-            }
-            else if( strcmp(argv[i],"-bisect2")==0 )
-            {
-                IBsplit = IBBsplit2;
-                IBPragmaNumberBisection = 2;
-            }
-            else if( strcmp(argv[i],"-split2")==0 )
-            {
-                IBsplit = IBBsplit2;
-                IBPragmaNumberBisection = 2;
-            }
-            else if( strcmp(argv[i],"-bisect3")==0 )
-            {
-                IBPragmaNumberBisection = 3;
-                IBsplit = IBBsplit3;
-            }
-            else if( strcmp(argv[i],"-split3")==0 )
-            {
-                IBPragmaNumberBisection = 3;
-                IBsplit = IBBsplit3;
-            }
-            else if( strcmp(argv[i],"-nobisect")==0 )
-            {
-                IBPragmaNumberBisection = 0;
-                IBargBisectNo = 1;
-            }
-            else if( strcmp(argv[i],"-nosplit")==0 )
-            {
-                IBPragmaNumberBisection = 0;
-                IBargBisectNo = 1;
-            }
-            else if( strcmp(argv[i],"-number")==0 )
-            {
-                if( i<argc-1 )
-                {
-                    if( strcmp(argv[i+1],"+oo")==0 )
-                    {
-                        IBPragmaMaxSolution = ~0;    /* stop after "all" output boxes */
-                        i++;
-                    }
-                    else if( (n=atoi(argv[i+1]))>0 )
-                    {
-                        IBPragmaMaxSolution = n;   /* maximum number of output boxes */
-                        i++;
-                    }
-                    else
-                    {
-                        if (strcmp(IBarguments,"")!=0) strcat(IBarguments,", ");
-                        strcat(IBarguments,argv[i]);
-                    }
-                }
-                else
-                {
-                    if (strcmp(IBarguments,"")!=0) strcat(IBarguments,", ");
-                    strcat(IBarguments,argv[i]);
-                }
-            }
-			//-- hack for directly passing a string
-			else if( strcmp(argv[i], "-predicate")==0 )
-			{
-				IBinfile = argv[i+1] ;
-    			printf(" From the hack: %s\n",IBinfile);
-				i++ ;
-			}
-			//-- end
-            
-            else if( strcmp(argv[i],"-hull")==0 )
-            {
-                IBPragmaHullMode = 1;
-            }
-            else if( strcmp(argv[i],"-union")==0 )
-            {
-                IBPragmaHullMode = 0;
-            }
-            
-            /* PARAMETERS OF PROPAGATION ALGORITHMS */
-            else if( strcmp(argv[i],"-improve")==0 )
-            {
-                if( i<argc-1 )
-                {
-                    x = 0.0;
-                    x = strtod(argv[i+1],NULL);
-                    if( x>0.0 )
-                    {
-                        IBPragmaImprovement = 1 - (x/100);
-                        i++;
-                    }
-                    else if( x==0.0 )
-                    {
-                        IBPragmaImprovement = 1.0;
-                        i++;
-                    }
-                }
-            }
-            else if( strcmp(argv[i],"-phi")==0 )
-            {
-                if( i<argc-1 )
-                {
-                    x = 0.0;
-                    x = atof(argv[i+1]);
-                    if( x>=0.0 )
-                    {
-                        IBPragmaPrecisionShrink = x;
-                        argPhi = 1;
-                        i++;
-                    }
-                }
-                else
-                {
-                    if (strcmp(IBarguments,"")!=0) strcat(IBarguments,", ");
-                    strcat(IBarguments,argv[i]);
-                }
-            }
-            
-            /* INTERVAL PRINTING STYLE */
-            else if( strcmp(argv[i],"-bound")==0 )
-            {
-                IBPragmaStyleInterval = IBPrintIntervalBounds;
-            }
-            else if( strcmp(argv[i],"-midpoint")==0 )
-            {
-                IBPragmaStyleInterval = IBPrintIntervalMidError;
-            }
-            
-            /* VERBOSE MODE AND HELP */
-            else if( (strcmp(argv[i],"-verb")==0) || (strcmp(argv[i],"-verbose")==0) )
-            {
-                argVerbose = 1;
-            }
-            else if( (strcmp(argv[i],"-h")==0) || (strcmp(argv[i],"-help")==0) )
-            {
-                argHelp = 1;
-                i = argc;
-            }
-            
-            /* ONLINE MODE: MAX TIME */
-            else if( strcmp(argv[i],"-time")==0 )
-            {
-                if( i<argc-1 )
-                {
-                    time = 0;
-                    time = strtoul(argv[i+1],NULL,10);
-                    if( time>0 )
-                    {
-                        IBPragmaMaxTime = time;
-                        i++;
-                    }
-                }
-                else
-                {
-                    if (strcmp(IBarguments,"")!=0) strcat(IBarguments,", ");
-                    strcat(IBarguments,argv[i]);
-                }
-            }
-            
-            /* WRONG ARGUMENT */
-            else
-            {
-                if (strcmp(IBarguments,"")!=0) {
-                    strcat(IBarguments,", ");
-                }
-                strcat(IBarguments,argv[i]);
-            }
-        }
-        i++;
-    }
+
+	/* Disable all parsing */
+	IBinfile = namefile ;
+
     
-    
-    if( argHelp )
-    {
-        IBhelp();
-        
-        IBFreeConstraints(constraints);
-        IBFreeV(variables);
-        IBOperationsFree(operations);
-        IBClockFree();
-        return 0;
-    }
-    
-    if( argVerbose )
-    {
-        printf("  !! sorry, no verbose mode...\n\n");
-    }
-    
-    //if( !argFile )
+    //if( argHelp )
     //{
-    //    printf("  !! error: input file not found [use '%s -h' for help]\n\n",software_run);
+    //    IBhelp();
+    //    
+    //    IBFreeConstraints(constraints);
+    //    IBFreeV(variables);
+    //    IBOperationsFree(operations);
+    //    IBClockFree();
     //    return 0;
     //}
-    
-    if (strcmp(IBarguments,"")!=0) {
-    	printf("  IBArgs: %s\n",IBarguments);
-        printf("  !! wrong arguments on the command line: %s\n\n",IBarguments);
-    }
+    //
+    //if( argVerbose )
+    //{
+    //    printf("  !! sorry, no verbose mode...\n\n");
+    //}
+    //
+    //if( argFile==0 && argPred==0 )
+    //{
+    //    printf("  !! error: neither input file nor predicate found [use '%s -h' for help]\n\n",software_run);
+    //    return 0;
+    //} 
+	//else if (argFile==1 && argPred==1)
+	//{
+    //    printf("  !! error: Both input file and predicate cannot be active together [use '%s -h' for help]\n\n",software_run);
+    //    return 0;
+	//}
+    //
+    //if (strcmp(IBarguments,"")!=0) {
+    //	printf("  IBArgs: %s\n",IBarguments);
+    //    printf("  !! wrong arguments on the command line: %s\n\n",IBarguments);
+    //}
     
     
     /* PARSING
@@ -610,9 +1324,20 @@ main(int argc, char **argv)
     printf("PARSING\n");
     printf("  File: %s\n",IBinfile);
 #endif
+		IBparsepred(IBinfile);
+        IBClockEnd(IBClockParse);
     
-    if( IBparser(IBinfile) )
-    {
+    //if( IBparser(IBinfile) )
+//    if( argPred==1 || argFile==1 )
+//    {
+//		//if (argPred==1) IBparsepred(IBinfile);
+//		//else if (argFile==1) IBparser(IBinfile);
+//	    //else
+//    	//{
+//        //	printf("  !! l.%d: error: %s\n\n",IByyline,IBParsingError);
+//		//	return 0;
+//	    //}
+		IBparsepred(IBinfile);
         IBClockEnd(IBClockParse);
         
         
@@ -1057,38 +1782,39 @@ main(int argc, char **argv)
         
         
         printf("\n");
-    }
-    else
-    {
-        printf("  !! l.%d: error: %s\n\n",IByyline,IBParsingError);
-    }
-    
-    
-    /* the end: desallocation of global structures --*/
-    if( IBComputableIntervalNewton )
-    {
-        IBMIntervalFree(IBMIjacobian);
-        IBMIntervalFree(IBMIfinalsystem);
-        IBMIntervalFree(IBMIzero);
-        IBMDoubleFree(IBMDmidjacobian);
-        IBMDoubleFree(IBMDinverse);
-        IBMDoubleFree(IBMDzero);
-        IBMDoubleFree(IBMDidentity);
-        IBFreeD(IBdnwt1);
-        IBFreeD(IBdnwt2);
-        IBFreeD(IBdnwt3);
-        IBFreeD(IBdnwt4);
-    }
-    
-    if( IBpropaglist!=NULL )       IBPLfree(IBpropaglist);
-    if( IBpropaglistsave!=NULL )   IBPLfree(IBpropaglistsave);
-    if( IBpropaglistctr!=NULL )    IBPLCfree(IBpropaglistctr);
-    if( IBpropaglistglobal!=NULL ) IBPGlobalFree(IBpropaglistglobal);
-    
-    if( IBwidth3B!=NULL ) free(IBwidth3B);
-    
-    IBFreeConstraints(constraints);
-    IBFreeV(variables);
-    IBOperationsFree(operations);
-    IBClockFree();
+//    }
+//--    else
+//--    {
+//--        printf("  !! l.%d: error: %s\n\n",IByyline,IBParsingError);
+//--    }
+//--    
+//--    
+//--    /* the end: desallocation of global structures --*/
+//--    if( IBComputableIntervalNewton )
+//--    {
+//--        IBMIntervalFree(IBMIjacobian);
+//--        IBMIntervalFree(IBMIfinalsystem);
+//--        IBMIntervalFree(IBMIzero);
+//--        IBMDoubleFree(IBMDmidjacobian);
+//--        IBMDoubleFree(IBMDinverse);
+//--        IBMDoubleFree(IBMDzero);
+//--        IBMDoubleFree(IBMDidentity);
+//--        IBFreeD(IBdnwt1);
+//--        IBFreeD(IBdnwt2);
+//--        IBFreeD(IBdnwt3);
+//--        IBFreeD(IBdnwt4);
+//--    }
+//--    
+//--    if( IBpropaglist!=NULL )       IBPLfree(IBpropaglist);
+//--    if( IBpropaglistsave!=NULL )   IBPLfree(IBpropaglistsave);
+//--    if( IBpropaglistctr!=NULL )    IBPLCfree(IBpropaglistctr);
+//--    if( IBpropaglistglobal!=NULL ) IBPGlobalFree(IBpropaglistglobal);
+//--    
+//--    if( IBwidth3B!=NULL ) free(IBwidth3B);
+//--    
+//--    IBFreeConstraints(constraints);
+//--    IBFreeV(variables);
+//--    IBOperationsFree(operations);
+//--    IBClockFree();
 }
+
