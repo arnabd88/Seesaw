@@ -147,6 +147,7 @@ void IBWriteVdom(FILE *out, IBDomains d, IBVariables a, int digits, int mode)
  */
 {
     int i, j;
+	information[IBInfoTop] = (interval_t*) malloc(sizeof(interval_t)*a->N);
     for( i=0; i<a->N; i++ )
     {
 		fprintf(out, "N=%d\n", a->N);

@@ -317,8 +317,8 @@ int SAT_IBBisection(IBDomains d, int Nobisect, int* completeProcess, int boxSize
     int isInner;
 
 	//interval_t** information = (interval_t**)malloc(sizeof(interval_t*)*IBPragmaMaxSolution); //new int[num];
-	for( int i=0; i <IBPragmaMaxSolution; i++)
-		information[i] = (interval_t*) malloc(sizeof(interval_t)*boxSize);
+	//for( int i=0; i <IBPragmaMaxSolution; i++)
+	//	information[i] = (interval_t*) malloc(sizeof(interval_t)*boxSize);
     
     IBDListRemoveSugar removeDomain;
     IBDListGetDomain   getDomain;
