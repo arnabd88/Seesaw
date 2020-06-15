@@ -68,6 +68,24 @@ def split_gelpia_format(msg):
 								 .split("[")[-1]\
 								 .split(",")
 
+def extract_input_dep(free_syms):
+	ret_list = list()
+	flist = [str(i) for i in free_syms]
+	flist.sort()
+	for fsyms in flist:
+		ret_list += [str(fsyms), " = ", str(Globals.inputVars[seng.var(fsyms)]["INTV"]), ";"]
+	return "".join(ret_list)
+
+def rpVariableStr( cond_free_symbols ):
+	ret_list = list()
+	flist = [str(i) for i in cond_free_symbols]
+	flist.sort()
+	for fsyms in flist:
+		ret_list += ["{Variable} in {intv}".format(Variable=fsyms, intv=str(Globals.inputVars[seng.var(fsyms)]["INTV"]))]
+		#ret_list += [str(fsyms), " in ", str(Globals.inputVars[seng.var(fsyms)]["INTV"]), ";"]
+	retStr = " ".join(["Variables", ", ".join(ret_list)+" ;"])
+	return [retStr, len(flist)]
+	
 
 # the two inputs provided are in compatible forms only requiring to be Anded together
 # hence process them together before sending pre-processing for RealPaver
@@ -82,6 +100,8 @@ def process_conditionals( innerConds, externConds ):
 	str_cond_expr = re.sub(r'Abs', "abs", str_cond_expr)
 	str_cond_expr = re.sub(r're\b', "", str_cond_expr)
 	str_cond_expr = re.sub(r'im\b', "0.0*", str_cond_expr)
+	str_cond_expr = re.sub(r'\<\<True\>\>', "<<(True)>>", str_cond_expr)
+	str_cond_expr = re.sub(r'\<\<False\>\>', "<<(False)>>", str_cond_expr)
 	#str_cond_expr = re.sub(r'\<\<', "(", str_cond_expr)
 	#str_cond_expr = re.sub(r'\>\>', ")", str_cond_expr)
 
@@ -287,7 +307,7 @@ def genSig(sym_expr):
 
 	return hashSig(strSig, "md5")
 
-def generate_signature(sym_expr, cond_expr, externConstraints, cond_free_symbols):
+def generate_signature(sym_expr, cond_expr, externConstraints, cond_free_symbols, inputStr=None):
 	try:
 		if(seng.count_ops(sym_expr)==0):
 			const_intv = float(str(sym_expr))
@@ -304,7 +324,8 @@ def generate_signature(sym_expr, cond_expr, externConstraints, cond_free_symbols
 	sig = genSig(sym_expr)
 	check = Globals.hashBank.get(sig, None)
 	if check is None:
-		inputStr = extract_input_dep(list(sym_expr.free_symbols.union(cond_free_symbols)))
+		inputStr = inputStr if inputStr is not None else \
+		            extract_input_dep(list(sym_expr.free_symbols.union(cond_free_symbols)))
 		#print("Gelpia input expr ops ->", seng.count_ops(sym_expr))
 		g1 = time.time()
 		Globals.hashBank[sig] = invoke_gelpia(sym_expr, cond_expr, externConstraints, inputStr)

@@ -12,8 +12,37 @@ import ops_def as ops
 
 import logging 
 
+import ctypes
+
 logger = logging.getLogger(__name__)
 from AnalyzeNode_Cond import AnalyzeNode_Cond as ANC
+
+
+
+class Cintervals(ctypes.Structure):
+	_fields_ = ("name", ctypes.c_char_p), ("x", ctypes.c_double), ("y", ctypes.c_double)
+
+
+def rpInterface(rpConstraint, numVars, numBoxes):
+
+	rp = ctypes.CDLL("RL1/build/libfoo.so")
+	rp.initializeRP.restype = ctypes.POINTER(ctypes.POINTER(Cintervals * numVars)*numBoxes)
+	rp.initializeRP.argtypes = [ctypes.c_char_p]
+
+	returnValue = rp.initializeRP(rpConstraint.encode())
+
+	print(rpConstraint)
+
+	#print("From RP:", returnValue)
+	#for box in returnValue.contents:
+	#	for var in box.contents:
+	#		print("==========")
+	#		print(var.name.decode())
+	#		print(var.x)
+	#		print(var.y)
+
+	return returnValue
+
 
 def getProbeList():
 	#print(Globals.GS[0]._symTab.keys())

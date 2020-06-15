@@ -15,6 +15,8 @@ import helper
 from functools import reduce
 from PredicatedSymbol import Sym, SymTup, SymConcat
 
+import bool_expression_analyzer as banalyzer
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -183,15 +185,7 @@ class AnalyzeNode_Cond(object):
 				constAcc.append(abs(expr))
 			elif seng.count_ops(expr) > lim:
 				#print("lim:", expr, lim, len(racc))
-				(cond_expr,free_symbols) = self.parse_cond(cond)
-				print("Query2: ", seng.count_ops(expr))
-				#print("COND-EXPR:", cond_expr)
-				res_avg_maxres = utils.get_statistics(expr)
-				print("Processed:", utils.process_conditionals(cond_expr, self.externConstraints))
-				errIntv = utils.generate_signature(expr,\
-												   cond_expr, \
-												   self.externConstraints, \
-												   free_symbols.union(self.externFreeSymbols))
+				[errIntv, res_avg_maxres] = self.process_expression( expr, cond, get_stats=True )
 				err = max([abs(i) for i in errIntv])
 				print("STAT: SP:{err}, maxres:{maxres}, avg={avg}".format(\
 					err = err, maxres = res_avg_maxres[1], avg = res_avg_maxres[0] \
@@ -352,6 +346,91 @@ class AnalyzeNode_Cond(object):
 		return ("(<<{tcond}>>)".format(tcond=tcond), set_free_symbols)
 
 
+	def analyze_box(self, box):
+		intv_dict = dict()
+		if box:
+			for var in box.contents:
+				if var.name.decode() != "Garbage":
+					name = var.name.decode()
+					x = var.x
+					y = var.y
+					intv_dict[name] = [x,y]
+				else:
+					return None
+
+		if len(intv_dict.keys())==0:
+			return None
+		flist = list(intv_dict.keys())
+		flist.sort()
+		ret_list = list()
+		for k,v in intv_dict.items():
+			ret_list += ["{fsym} = {intv}".format(fsym=k, intv=str(intv_dict[k]))]
+		return ";".join(ret_list)+";"
+			
+			
+
+
+	def extract_boxes(self, rpBoxes):
+		
+		boxIntervals =  []
+
+		for box in rpBoxes.contents:
+			retStr = self.analyze_box(box)
+			if retStr is not None:
+				boxIntervals.append(retStr)
+
+		return boxIntervals
+		
+
+	def process_expression(self, expr, cond, get_stats=False):
+		(cond_expr,free_symbols)	=	self.parse_cond(cond)
+		processConds				=	utils.process_conditionals(cond_expr,  self.externConstraints)
+		rpConstraint				=	banalyzer.bool_expression_analyzer( processConds ).start()
+		if "False" in rpConstraint:
+			print("Invalid constraint -> nothing to invoke, return None")
+			return [None, None]
+		elif "True" in rpConstraint :
+			print("Constraint true -> invoke gelpia on full box")
+			res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
+			Intv						=	utils.generate_signature(expr,\
+													   #cond_expr, \
+													   cond_expr, \
+													   self.externConstraints, \
+													   free_symbols.union(self.externFreeSymbols))
+		else:
+			res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
+			[rpVars, numVars]			=	utils.rpVariableStr(free_symbols.union(self.externFreeSymbols))
+			rpBoxes = helper.rpInterface(rpVars+"Constraints "+rpConstraint, numVars, 10) ;
+			boxIntervals				=	self.extract_boxes(rpBoxes)
+			if len(boxIntervals)>1:
+				Intv						=	utils.generate_signature(expr,\
+															   #cond_expr, \
+															   cond_expr, \
+															   self.externConstraints, \
+															   free_symbols.union(self.externFreeSymbols), boxIntervals[0])
+				print("INTV; ", Intv, boxIntervals[0], Globals.gelpiaID)
+				for box in boxIntervals[1:]:
+					currIntv						=	utils.generate_signature(expr,\
+																   #cond_expr, \
+																   cond_expr, \
+																   self.externConstraints, \
+																   free_symbols.union(self.externFreeSymbols), box)
+					Intv = [min(Intv[0], currIntv[0]), max(Intv[1], currIntv[1])]
+					print("INTV; ", Intv, box, Globals.gelpiaID)
+					
+
+			else:
+				Intv						=	utils.generate_signature(expr,\
+														   #cond_expr, \
+														   cond_expr, \
+														   self.externConstraints, \
+														   free_symbols.union(self.externFreeSymbols))
+
+		print("INTV-out; ", Intv)
+		return [Intv, res_avg_maxres]
+
+
+
 	def first_order_error(self):
 
 		for node in self.trimList:
@@ -366,24 +445,11 @@ class AnalyzeNode_Cond(object):
 			funcList = []
 			for els in tupleList:
 				expr, cond = els.exprCond
-				(cond_expr,free_symbols) = self.parse_cond(cond)
-				print("Query1: ", seng.count_ops(expr), cond_expr, type(cond_expr))
-				print("Free_symbols = ", free_symbols)
-				#print("COND-EXPR:", cond_expr)
-				res_avg_maxres = utils.get_statistics(expr)				
-				#print("cond_expr", cond_expr)
-				#errIntv = utils.generate_signature(expr,cond_expr, free_symbols)
-				print("Processed:", utils.process_conditionals(cond_expr, self.externConstraints))
-				errIntv = utils.generate_signature(expr,\
-												   #cond_expr, \
-												   cond_expr, \
-												   self.externConstraints, \
-												   free_symbols.union(self.externFreeSymbols))
-				err = max([abs(i) for i in errIntv])
+				[errIntv, res_avg_maxres] = self.process_expression( expr, cond, get_stats=True )
+				err = max([abs(i) for i in errIntv]) if errIntv is not None else 0
 				print("STAT: SP:{err}, maxres:{maxres}, avg:{avg}".format(\
-					err = err, maxres = res_avg_maxres[1], avg = res_avg_maxres[0] \
+					err = err, maxres = res_avg_maxres[1] if res_avg_maxres is not None else 0, avg = res_avg_maxres[0] if res_avg_maxres is not None else 0 \
 				))
-				print(type(err), res_avg_maxres[1]*pow(2,-53))
 				if(err == np.inf):
 					err = res_avg_maxres[1]
 				errList.append(err)
@@ -391,17 +457,9 @@ class AnalyzeNode_Cond(object):
 			ret_intv = None
 			for exprTup in node.f_expression:
 				expr, cond = exprTup.exprCond
-				#print("Query: ", seng.count_ops(expr), cond)
-				#print("f_expr", expr)
-				(cond_expr,free_symbols) = self.parse_cond(cond)
-				#print("COND-EXPR:", cond_expr)
-				#fintv = utils.generate_signature(expr,cond_expr, free_symbols)
-				print("Processed:", utils.process_conditionals(cond_expr, self.externConstraints))
-				fintv = utils.generate_signature(expr,\
-												   cond_expr, \
-												   self.externConstraints, \
-												   free_symbols.union(self.externFreeSymbols))
-				ret_intv = fintv if ret_intv is None else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
+				[fintv, res_avg_maxres] = self.process_expression( expr, cond, get_stats=False )
+				#ret_intv = fintv if ret_intv is None else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
+				ret_intv = None if fintv is None and ret_intv is None else fintv if ret_intv is None else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
 			#print(node.f_expression)
 			self.results[node] = {"ERR" : max(errList), \
 								  "SERR" : 0.0, \
