@@ -1183,7 +1183,7 @@ initialize()
 
 
 
-interval_t** initializeRP(char* namefile, int numVars)
+interval_t** initializeRP(char* namefile)
 /***************************************************************************
  *  The main function of the Software
  */
@@ -1242,11 +1242,11 @@ interval_t** initializeRP(char* namefile, int numVars)
     IBPragmaHullMode           = 0; /* default: union mode, returns the list of output boxes */
     IBPragmaMaxTime            = 1000000000;   /* default: 1 million seconds (11.57 days) */
     IBPragmaSubpaving          = 1; /* default: no subpaving */
-	IBnumVars				   = numVars ;
+	//IBnumVars				   = numVars ;
 
 	information = (interval_t**)malloc(sizeof(interval_t*)*IBPragmaMaxSolution);
 	IBInfoTop   = 0;
-	IBnumVars   = 20;
+	//IBnumVars   = 20;
     
     /* Initialization of other variables */
     IBComputableIntervalNewton = 0;
@@ -1631,7 +1631,8 @@ interval_t** initializeRP(char* namefile, int numVars)
         /* SOLVING */
         IBClockBegin(IBClockSolve);
         //if( nbsol=IBBisection(IBDomVars(variables),IBargBisectNo,&completeProcess) )
-        if( nbsol=SAT_IBBisection(IBDomVars(variables),IBargBisectNo,&completeProcess, IBnumVars) )
+        //if( nbsol=SAT_IBBisection(IBDomVars(variables),IBargBisectNo,&completeProcess, IBnumVars) )
+        if( nbsol=SAT_IBBisection(IBDomVars(variables),IBargBisectNo,&completeProcess) )
         {
             IBClockEnd(IBClockSolve);
             printf("\nEND OF SOLVING\n");

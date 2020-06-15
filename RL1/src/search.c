@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern int IBnumVars ; 					  /* number of variables coming in */
+//extern int IBnumVars ; 					  /* number of variables coming in */
 extern interval_t** information ;
 extern IBVariables   variables;           /* array of constrained variables */
 extern IBConstraints constraints;         /* global array of constraints */
@@ -303,7 +303,8 @@ void IBComputeHull(IBDomains dhull, IBDomains d, int nvar, int nsol, double *pre
 }
 
 
-int SAT_IBBisection(IBDomains d, int Nobisect, int* completeProcess, int boxSize)
+//int SAT_IBBisection(IBDomains d, int Nobisect, int* completeProcess, int boxSize)
+int SAT_IBBisection(IBDomains d, int Nobisect, int* completeProcess)
 /***************************************************************************
  *  Bisection algorithm
  */
@@ -317,8 +318,12 @@ int SAT_IBBisection(IBDomains d, int Nobisect, int* completeProcess, int boxSize
     int isInner;
 
 	//interval_t** information = (interval_t**)malloc(sizeof(interval_t*)*IBPragmaMaxSolution); //new int[num];
-	//for( int i=0; i <IBPragmaMaxSolution; i++)
-	//	information[i] = (interval_t*) malloc(sizeof(interval_t)*boxSize);
+	for( int i=0; i <IBPragmaMaxSolution; i++) {
+		information[i] = (interval_t*) malloc(sizeof(interval_t)*variables->N);
+		information[i]->name = "Garbage"; 
+		information[i]->x = 1.0; 
+		information[i]->y = -1.0; 
+	}
     
     IBDListRemoveSugar removeDomain;
     IBDListGetDomain   getDomain;
@@ -328,8 +333,8 @@ int SAT_IBBisection(IBDomains d, int Nobisect, int* completeProcess, int boxSize
     IBDMnb(dmodified) = IBVnb(variables);
     dold              = IBNewD(IBVnb(variables));  /* used in the strategy MAX REDUCTION */
     
-    printf("INITIAL BOX\n");
-    IBWriteVdom(stdout,d,variables,IBPragmaIntervalDigits,IBPragmaStyleInterval);
+    //printf("INITIAL BOX\n");
+    //IBWriteVdom(stdout,d,variables,IBPragmaIntervalDigits,IBPragmaStyleInterval);
     
     /* Only a filtering is enforced according to the user's demand */
     if( Nobisect )

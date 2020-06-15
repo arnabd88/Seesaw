@@ -147,7 +147,7 @@ void IBWriteVdom(FILE *out, IBDomains d, IBVariables a, int digits, int mode)
  */
 {
     int i, j;
-	information[IBInfoTop] = (interval_t*) malloc(sizeof(interval_t)*a->N);
+	//information[IBInfoTop] = (interval_t*) malloc(sizeof(interval_t)*a->N);
     for( i=0; i<a->N; i++ )
     {
 		fprintf(out, "N=%d\n", a->N);
@@ -165,7 +165,7 @@ void IBWriteVdom(FILE *out, IBDomains d, IBVariables a, int digits, int mode)
             IBWriteIverb(out,IBDomV(d,i),digits,mode);
 			IBInterval* itv = IBDomV(d,i);
             fprintf(out,"\n");
-			double lb = 0; //IBBasicMinI(itv) ;
+			double lb = IBBasicMinI(itv) ;
 			double ub = IBBasicMaxI(itv) ;
 			printf("Arnab:lb->%g, ub->%g\n", lb, ub);
 			information[IBInfoTop][i].name = (char *)name; //"Hello"; //name; //IBNameV(a,i);
