@@ -77,6 +77,8 @@ int    IBargBisectNo;              /* 1 if no biscetion */
 int    IBcompute3B;                /* 1 if 3B consistency is enforced */
 int    IBcomputeWeak3B;            /* 1 if weak 3B consistency is enforced */
 int    IBPragmaSubpaving;          /* 1 if a subpaving is computed */
+int	   IBnumVars ;				   /* Number of variables for the domain */
+int	   IBInfoTop ;			   /* Tracks the index of the current box in information
 
 /* Variables and functions used for parsing */
 extern FILE* yyin;                 /* input file */
@@ -84,7 +86,7 @@ int    IBNbParsingError = 0;       /* number of parsing errors */
 int    IByyline;                   /* current line in the input file */
 char   IBParsingError[100] = "";   /* error message */
 
-
+interval_t** information ;
 
 int yyerror(char* s)
 /***************************************************************************
@@ -1181,7 +1183,7 @@ initialize()
 
 
 
-void initializeRP(char* namefile)
+interval_t** initializeRP(char* namefile, int numVars)
 /***************************************************************************
  *  The main function of the Software
  */
@@ -1228,7 +1230,7 @@ void initializeRP(char* namefile)
     
     /* Initialization of pragmas */
     IBPragmaNbGeneratedDomains = 1;
-    IBPragmaMaxSolution        = 1024;
+    IBPragmaMaxSolution        = 10; /* 1024 */
     IBPragmaPrecision          = 1.0e-8;
     IBPragmaBisection          = IBBisectRoundRobin;
     IBPragmaNumberBisection    = 3;
@@ -1240,6 +1242,11 @@ void initializeRP(char* namefile)
     IBPragmaHullMode           = 0; /* default: union mode, returns the list of output boxes */
     IBPragmaMaxTime            = 1000000000;   /* default: 1 million seconds (11.57 days) */
     IBPragmaSubpaving          = 1; /* default: no subpaving */
+	IBnumVars				   = numVars ;
+
+	information = (interval_t**)malloc(sizeof(interval_t*)*IBPragmaMaxSolution);
+	IBInfoTop   = 0;
+	IBnumVars   = 20;
     
     /* Initialization of other variables */
     IBComputableIntervalNewton = 0;
@@ -1281,38 +1288,6 @@ void initializeRP(char* namefile)
 	IBinfile = namefile ;
 
     
-    //if( argHelp )
-    //{
-    //    IBhelp();
-    //    
-    //    IBFreeConstraints(constraints);
-    //    IBFreeV(variables);
-    //    IBOperationsFree(operations);
-    //    IBClockFree();
-    //    return 0;
-    //}
-    //
-    //if( argVerbose )
-    //{
-    //    printf("  !! sorry, no verbose mode...\n\n");
-    //}
-    //
-    //if( argFile==0 && argPred==0 )
-    //{
-    //    printf("  !! error: neither input file nor predicate found [use '%s -h' for help]\n\n",software_run);
-    //    return 0;
-    //} 
-	//else if (argFile==1 && argPred==1)
-	//{
-    //    printf("  !! error: Both input file and predicate cannot be active together [use '%s -h' for help]\n\n",software_run);
-    //    return 0;
-	//}
-    //
-    //if (strcmp(IBarguments,"")!=0) {
-    //	printf("  IBArgs: %s\n",IBarguments);
-    //    printf("  !! wrong arguments on the command line: %s\n\n",IBarguments);
-    //}
-    
     
     /* PARSING
      *------------------------------------------------------------------------*/
@@ -1324,19 +1299,7 @@ void initializeRP(char* namefile)
     printf("PARSING\n");
     printf("  File: %s\n",IBinfile);
 #endif
-		IBparsepred(IBinfile);
-        IBClockEnd(IBClockParse);
     
-    //if( IBparser(IBinfile) )
-//    if( argPred==1 || argFile==1 )
-//    {
-//		//if (argPred==1) IBparsepred(IBinfile);
-//		//else if (argFile==1) IBparser(IBinfile);
-//	    //else
-//    	//{
-//        //	printf("  !! l.%d: error: %s\n\n",IByyline,IBParsingError);
-//		//	return 0;
-//	    //}
 		IBparsepred(IBinfile);
         IBClockEnd(IBClockParse);
         
@@ -1667,7 +1630,8 @@ void initializeRP(char* namefile)
         
         /* SOLVING */
         IBClockBegin(IBClockSolve);
-        if( nbsol=IBBisection(IBDomVars(variables),IBargBisectNo,&completeProcess) )
+        //if( nbsol=IBBisection(IBDomVars(variables),IBargBisectNo,&completeProcess) )
+        if( nbsol=SAT_IBBisection(IBDomVars(variables),IBargBisectNo,&completeProcess, IBnumVars) )
         {
             IBClockEnd(IBClockSolve);
             printf("\nEND OF SOLVING\n");
@@ -1782,39 +1746,7 @@ void initializeRP(char* namefile)
         
         
         printf("\n");
-//    }
-//--    else
-//--    {
-//--        printf("  !! l.%d: error: %s\n\n",IByyline,IBParsingError);
-//--    }
-//--    
-//--    
-//--    /* the end: desallocation of global structures --*/
-//--    if( IBComputableIntervalNewton )
-//--    {
-//--        IBMIntervalFree(IBMIjacobian);
-//--        IBMIntervalFree(IBMIfinalsystem);
-//--        IBMIntervalFree(IBMIzero);
-//--        IBMDoubleFree(IBMDmidjacobian);
-//--        IBMDoubleFree(IBMDinverse);
-//--        IBMDoubleFree(IBMDzero);
-//--        IBMDoubleFree(IBMDidentity);
-//--        IBFreeD(IBdnwt1);
-//--        IBFreeD(IBdnwt2);
-//--        IBFreeD(IBdnwt3);
-//--        IBFreeD(IBdnwt4);
-//--    }
-//--    
-//--    if( IBpropaglist!=NULL )       IBPLfree(IBpropaglist);
-//--    if( IBpropaglistsave!=NULL )   IBPLfree(IBpropaglistsave);
-//--    if( IBpropaglistctr!=NULL )    IBPLCfree(IBpropaglistctr);
-//--    if( IBpropaglistglobal!=NULL ) IBPGlobalFree(IBpropaglistglobal);
-//--    
-//--    if( IBwidth3B!=NULL ) free(IBwidth3B);
-//--    
-//--    IBFreeConstraints(constraints);
-//--    IBFreeV(variables);
-//--    IBOperationsFree(operations);
-//--    IBClockFree();
+
+		return information ;
 }
 

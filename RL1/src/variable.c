@@ -17,6 +17,8 @@
 #include "variable.h"
 
 
+extern interval_t** information ;
+extern int IBInfoTop ;
 IBVariables IBNewV()
 /***************************************************************************
  *  Allocation of an array of variables
@@ -147,9 +149,12 @@ void IBWriteVdom(FILE *out, IBDomains d, IBVariables a, int digits, int mode)
     int i, j;
     for( i=0; i<a->N; i++ )
     {
+		fprintf(out, "N=%d\n", a->N);
         if( IBIsUserVar(a,i) )  /* user variable, not a fresh variable used in HC3 */
         {
-            fprintf(out,"  %s",IBNameV(a,i));
+			char* name = IBNameV(a,i);
+            //fprintf(out,"Identify-loc0  %s",IBNameV(a,i));
+            fprintf(out,"Identify-loc0  %s",name);
             for( j=0; j<a->maxname-strlen(a->a[i].name); j++ ) fprintf(out," ");
             
             if( IBIsDoubleI(IBDomV(d,i)) ) fprintf(out," = ");
@@ -157,9 +162,18 @@ void IBWriteVdom(FILE *out, IBDomains d, IBVariables a, int digits, int mode)
             else fprintf(out," = ");
             
             IBWriteIverb(out,IBDomV(d,i),digits,mode);
+			IBInterval* itv = IBDomV(d,i);
             fprintf(out,"\n");
+			double lb = 0; //IBBasicMinI(itv) ;
+			double ub = IBBasicMaxI(itv) ;
+			printf("Arnab:lb->%g, ub->%g\n", lb, ub);
+			information[IBInfoTop][i].name = (char *)name; //"Hello"; //name; //IBNameV(a,i);
+			information[IBInfoTop][i].x = lb;
+			information[IBInfoTop][i].y = ub;
         }
     }
+	printf("Updating top=%d\n", IBInfoTop);
+	IBInfoTop++ ;
 }
 
 

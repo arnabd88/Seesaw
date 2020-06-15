@@ -17,6 +17,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+extern int IBnumVars ; 					  /* number of variables coming in */
+extern interval_t** information ;
 extern IBVariables   variables;           /* array of constrained variables */
 extern IBConstraints constraints;         /* global array of constraints */
 
@@ -301,6 +303,227 @@ void IBComputeHull(IBDomains dhull, IBDomains d, int nvar, int nsol, double *pre
 }
 
 
+int SAT_IBBisection(IBDomains d, int Nobisect, int* completeProcess, int boxSize)
+/***************************************************************************
+ *  Bisection algorithm
+ */
+{
+    IBDList* dlist;
+    IBDmodified *dmodified;
+    IBDomains df, dold, dhull;
+    long nbsol = 0;
+    char info[20];
+    double maxWidthHull;
+    int isInner;
+
+	//interval_t** information = (interval_t**)malloc(sizeof(interval_t*)*IBPragmaMaxSolution); //new int[num];
+	for( int i=0; i <IBPragmaMaxSolution; i++)
+		information[i] = (interval_t*) malloc(sizeof(interval_t)*boxSize);
+    
+    IBDListRemoveSugar removeDomain;
+    IBDListGetDomain   getDomain;
+    
+    /* Initialization: all domains are declared modified */
+    dmodified         = IBDMnew(IBVnb(variables));
+    IBDMnb(dmodified) = IBVnb(variables);
+    dold              = IBNewD(IBVnb(variables));  /* used in the strategy MAX REDUCTION */
+    
+    printf("INITIAL BOX\n");
+    IBWriteVdom(stdout,d,variables,IBPragmaIntervalDigits,IBPragmaStyleInterval);
+    
+    /* Only a filtering is enforced according to the user's demand */
+    if( Nobisect )
+    {
+        if( (* IBfilter)(d,dmodified,IBfilter2B) )
+        /* Success of filtering */
+        {
+            if( IBSolutionInnerBox(d) )
+            {
+                printf("\nINNER BOX 1\n");
+            }
+            else
+            {
+                printf("\nOUTER BOX 1\n");
+            }
+            IBWriteVdom(stdout,d,variables,IBPragmaIntervalDigits,IBPragmaStyleInterval);
+            printf("\n  precision: %.3g, ",IBPrecisionSolution(d));
+            _IBprintlong(info,IBClockObserve(IBClockSolve),1);
+            printf("elapsed time: %s ms\n",info);
+            nbsol++;
+        }
+        IBDMfree(dmodified);
+        IBFreeD(dold);
+        *completeProcess = 1;
+        return( nbsol );
+    }
+    
+    if( IBPragmaHullMode )
+    {
+        dhull = IBNewD(IBVnb(variables));
+    }
+    
+    /* The list of domains */
+    dlist = IBDListNew();
+    IBDListAddLastSugar(dlist,-1,d);
+    
+    /* Two bisection modes:
+     - Subpaving: dlist is a queue (remove first, add last)
+     - Points: dlist is a stack (remove last, add last)
+     */
+    if( IBPragmaSubpaving )
+    {
+        removeDomain = IBDListRemoveFirstSugar;
+        getDomain    = IBDListGetFirstDomain;
+    }
+    else
+    {
+        removeDomain = IBDListRemoveLastSugar;
+        getDomain    = IBDListGetLastDomain;
+    }
+    
+    while( IBBisectIterate(IBPragmaSubpaving,
+                           nbsol,
+                           IBDListNbElements(dlist),
+                           IBPragmaNumberBisection,
+                           IBPragmaMaxSolution) &&
+          (IBClockObserve(IBClockSolve)<=IBPragmaMaxTime) )
+    {
+        df = getDomain(dlist);  /* the domain is not removed from dlist */
+        
+        if( IBPragmaBisection==IBBisectMaxNarrow )
+        {
+            IBCopyD(dold,df,IBVnb(variables));
+        }
+        
+        if( (* IBfilter)(df,dmodified,IBfilter2B) )
+        {
+            /* success of filtering */
+            if( (isInner=IBSolutionInnerBox(df)) || IBSolutionOuterBox(df) )
+            {
+                nbsol++;
+                if( IBPragmaHullMode )
+                {
+                    IBComputeHull(dhull,df,IBVnb(variables),nbsol,&maxWidthHull,isInner);
+                }
+                else
+                {
+                    if( isInner )
+                    {
+                        printf("\nINNER BOX %d\n",nbsol);
+                    }
+                    else
+                    {
+                        if( IBSafeSolutionIntervalNewton(df) ) printf("\nSAFE ");
+                        else printf("\n");
+                        printf("OUTER BOX %d\n",nbsol);
+                    }
+                    
+                    IBWriteVdom(stdout,df,variables,IBPragmaIntervalDigits,IBPragmaStyleInterval);
+                    printf("\n  precision: %.3g, ",IBPrecisionSolution(df));
+                    _IBprintlong(info,IBClockObserve(IBClockSolve),1);
+                    printf("elapsed time: %s ms\n",info);
+                }
+                
+                removeDomain(dlist); /* the domain is removed from dlist */
+            }
+            else
+            {
+                (* IBsplit)(dlist,
+                            (* IBbisect)(df,dold,IBDListGetLastVar(dlist)),
+                            &IBPragmaNbGeneratedDomains);
+            }
+        }
+        else
+        {
+            /* failure of filtering */
+            removeDomain(dlist); /* the domain is removed from dlist */
+        }
+        
+        /* Initialization of the next propagation step */
+        if( IBDListNbElements(dlist) )
+        {
+            /* Since the filtering is not idempotent then it is often more efficient
+             to propagate for the whole system rather than the subpart depending on
+             the bisected domain. Otherwise, propagation only wrt. the bisected domain:
+             IBDMnb(dmodified) = 1;
+             IBDMdom(dmodified,0) = IBStackDomFirstV(stack); */
+            IBDMnb(dmodified) = IBVnb(variables);
+        }
+    }
+    
+    if( IBPragmaSubpaving )
+    {
+		printf("Iddhar se chutiye %d\n", IBPragmaMaxSolution);
+		int boxID = 0;
+        while( IBDListNbElements(dlist) )
+        {
+            df = removeDomain(dlist);
+            nbsol++;
+            if( IBPragmaHullMode )
+            {
+                /* this is not an inner box */
+                IBComputeHull(dhull,df,IBVnb(variables),nbsol,&maxWidthHull,IBSolutionInnerBox(df));
+            }
+            else
+            {
+                if( IBSolutionInnerBox(df) )
+                {
+                    printf("\nIINNER BOX %d\n",nbsol);            
+                }
+                else
+                {
+                    if( IBSafeSolutionIntervalNewton(df) ) printf("\nSAFE ");
+                    else printf("\n");
+                    printf("OOUTER BOX %d\n",nbsol);
+                }
+                
+                IBWriteVdom(stdout,df,variables,IBPragmaIntervalDigits,IBPragmaStyleInterval);
+                printf("\n  precision: %.3g, ",IBPrecisionSolution(df));
+                _IBprintlong(info,IBClockObserve(IBClockSolve),1);
+                printf("elapsed time: %s ms\n",info);
+            }
+        }
+    }
+    
+    
+    if( IBDListNbElements(dlist) )
+    {
+        *completeProcess = 0;
+    }
+    else
+    {
+        *completeProcess = 1;
+    }
+    
+    
+    if( IBPragmaHullMode && (nbsol>0))
+    {
+        if( IBSolutionInnerBox(dhull) )
+        {
+            printf("\nINNER");            
+        }
+        else
+        {
+            printf("\nOUTER");
+        }
+        
+        printf(" BOX: HULL of %d boxes\n",nbsol);
+        IBWriteVdom(stdout,dhull,variables,IBPragmaIntervalDigits,IBPragmaStyleInterval);
+        printf("\n  precision: %.3g, ",IBPrecisionSolution(dhull));
+        _IBprintlong(info,IBClockObserve(IBClockSolve),1);
+        printf("elapsed time: %s ms\n",info);
+        printf("  precision of largest box: %.3g\n",maxWidthHull);
+        
+        IBFreeD(dhull);
+    }
+    
+    IBDMfree(dmodified);
+    IBDListFree(dlist);
+    IBFreeD(dold);
+	//return information ;
+    return( nbsol );
+}
+
 int IBBisection(IBDomains d, int Nobisect, int* completeProcess)
 /***************************************************************************
  *  Bisection algorithm
@@ -447,6 +670,7 @@ int IBBisection(IBDomains d, int Nobisect, int* completeProcess)
     
     if( IBPragmaSubpaving )
     {
+		printf("Iddhar se chutiye %d\n", IBPragmaMaxSolution);
         while( IBDListNbElements(dlist) )
         {
             df = removeDomain(dlist);
@@ -460,13 +684,13 @@ int IBBisection(IBDomains d, int Nobisect, int* completeProcess)
             {
                 if( IBSolutionInnerBox(df) )
                 {
-                    printf("\nINNER BOX %d\n",nbsol);            
+                    printf("\nIINNER BOX %d\n",nbsol);            
                 }
                 else
                 {
                     if( IBSafeSolutionIntervalNewton(df) ) printf("\nSAFE ");
                     else printf("\n");
-                    printf("OUTER BOX %d\n",nbsol);
+                    printf("OOUTER BOX %d\n",nbsol);
                 }
                 
                 IBWriteVdom(stdout,df,variables,IBPragmaIntervalDigits,IBPragmaStyleInterval);

@@ -2070,26 +2070,26 @@ void IBBasicWriteI(FILE *out, IBBasicItv i, int digits, int mode, int verbose)
             if( IBBasicMinI(i)>=0 )
             {
                 IBBasicRoundDown();
-                fprintf(out,"[%.*g , ",digits,IBBasicMinI(i));
+                fprintf(out,"H0[%.*g , ",digits,IBBasicMinI(i));
                 IBBasicRoundUp();
                 if( IBBasicMaxI(i)==IBBasicPosInfinity ) fprintf(out,"+oo[");
-                else fprintf(out,"%.*g]",digits,IBBasicMaxI(i));
+                else fprintf(out,"%.*g]H0",digits,IBBasicMaxI(i));
             }
             else
             {
                 IBBasicRoundDown();
                 if( IBBasicMinI(i)==IBBasicNegInfinity ) fprintf(out,"]-oo , ");
-                else fprintf(out,"[%+.*g , ",digits,IBBasicMinI(i));
+                else fprintf(out,"H1[%+.*g , ",digits,IBBasicMinI(i));
                 IBBasicRoundUp();
                 if( IBBasicMaxI(i)==IBBasicPosInfinity ) fprintf(out,"+oo[");
-                else fprintf(out,"%+.*g]",digits,IBBasicMaxI(i));
+                else fprintf(out,"%+.*g]H1",digits,IBBasicMaxI(i));
             }
         }
         else
         {
             if( (IBBasicMinI(i)==IBBasicNegInfinity) && (IBBasicMaxI(i)==IBBasicPosInfinity) )
             {
-                fprintf(out,"0.0 + ]-oo,+oo[");
+                fprintf(out,"H2  0.0 + ]-oo,+oo[  H2");
                 return;
             }
             if( IBBasicMinI(i)==IBBasicNegInfinity )
@@ -2128,19 +2128,19 @@ void IBBasicWriteI(FILE *out, IBBasicItv i, int digits, int mode, int verbose)
             
             if( minerror==IBBasicNegInfinity )
             {
-                fprintf(out,"]-oo,%+.4g]",maxerror);
+                fprintf(out,"H3  ]-oo,%+.4g]",maxerror);
             }
             else if( maxerror==IBBasicPosInfinity )
             {
                 IBBasicRoundDown();
-                fprintf(out,"[%+.4g,+oo[",minerror);
+                fprintf(out,"[%+.4g,+oo[  H3",minerror);
             }
             else
             {
                 IBBasicRoundDown();
-                fprintf(out,"[%+.4g,",minerror);
+                fprintf(out,"H4  [%+.4g,",minerror);
                 IBBasicRoundUp();
-                fprintf(out,"%+.4g]",maxerror);
+                fprintf(out,"%+.4g]  H4",maxerror);
             }
         }
     }
