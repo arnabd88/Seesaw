@@ -458,7 +458,7 @@ int SAT_IBBisection(IBDomains d, int Nobisect, int* completeProcess)
     
     if( IBPragmaSubpaving )
     {
-		printf("Iddhar se chutiye %d\n", IBPragmaMaxSolution);
+		printf("IBPragmaMaxSolution from here %d\n", IBPragmaMaxSolution);
 		int boxID = 0;
         while( IBDListNbElements(dlist) )
         {
@@ -473,19 +473,19 @@ int SAT_IBBisection(IBDomains d, int Nobisect, int* completeProcess)
             {
                 if( IBSolutionInnerBox(df) )
                 {
-                    printf("\nIINNER BOX %d\n",nbsol);            
+                   // printf("\nIINNER BOX %d\n",nbsol);            
                 }
                 else
                 {
                     if( IBSafeSolutionIntervalNewton(df) ) printf("\nSAFE ");
                     else printf("\n");
-                    printf("OOUTER BOX %d\n",nbsol);
+                 //   printf("OOUTER BOX %d\n",nbsol);
                 }
                 
                 IBWriteVdom(stdout,df,variables,IBPragmaIntervalDigits,IBPragmaStyleInterval);
-                printf("\n  precision: %.3g, ",IBPrecisionSolution(df));
+               // printf("\n  precision: %.3g, ",IBPrecisionSolution(df));
                 _IBprintlong(info,IBClockObserve(IBClockSolve),1);
-                printf("elapsed time: %s ms\n",info);
+               // printf("elapsed time: %s ms\n",info);
             }
         }
     }

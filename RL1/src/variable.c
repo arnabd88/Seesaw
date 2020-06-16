@@ -150,32 +150,79 @@ void IBWriteVdom(FILE *out, IBDomains d, IBVariables a, int digits, int mode)
 	//information[IBInfoTop] = (interval_t*) malloc(sizeof(interval_t)*a->N);
     for( i=0; i<a->N; i++ )
     {
-		fprintf(out, "N=%d\n", a->N);
+		//fprintf(out, "N=%d\n", a->N);
         if( IBIsUserVar(a,i) )  /* user variable, not a fresh variable used in HC3 */
         {
 			char* name = IBNameV(a,i);
             //fprintf(out,"Identify-loc0  %s",IBNameV(a,i));
-            fprintf(out,"Identify-loc0  %s",name);
-            for( j=0; j<a->maxname-strlen(a->a[i].name); j++ ) fprintf(out," ");
+            //fprintf(out,"Identify-loc0  %s",name);
+            //for( j=0; j<a->maxname-strlen(a->a[i].name); j++ ) fprintf(out," ");
+            //
+            //if( IBIsDoubleI(IBDomV(d,i)) ) fprintf(out," = ");
+            //else if( mode==IBPrintIntervalBounds ) fprintf(out," in ");
+            //else fprintf(out," = ");
             
-            if( IBIsDoubleI(IBDomV(d,i)) ) fprintf(out," = ");
-            else if( mode==IBPrintIntervalBounds ) fprintf(out," in ");
-            else fprintf(out," = ");
-            
-            IBWriteIverb(out,IBDomV(d,i),digits,mode);
-			IBInterval* itv = IBDomV(d,i);
-            fprintf(out,"\n");
-			double lb = IBBasicMinI(itv) ;
-			double ub = IBBasicMaxI(itv) ;
-			printf("Arnab:lb->%g, ub->%g\n", lb, ub);
-			information[IBInfoTop][i].name = (char *)name; //"Hello"; //name; //IBNameV(a,i);
-			information[IBInfoTop][i].x = lb;
-			information[IBInfoTop][i].y = ub;
+           // IBWriteIverb(out,IBDomV(d,i),digits,mode);
+			information[IBInfoTop][i].name = name ;
+            SAT_IBBasicWriteI((IBInterval *)IBDomV(d,i),digits,mode, &(information[IBInfoTop][i]));
+			 IBInterval* itv = IBDomV(d,i);
+            // fprintf(out,"\n");
+			 double lb = IBBasicMinI(itv) ;
+			 double ub = IBBasicMaxI(itv) ;
+			// printf("Arnab:lb->%g, ub->%g\n", lb, ub);
+			// information[IBInfoTop][i].name = (char *)name; //"Hello"; //name; //IBNameV(a,i);
+			 //information[IBInfoTop][i].x = lb;
+			 //information[IBInfoTop][i].y = ub;
         }
     }
-	printf("Updating top=%d\n", IBInfoTop);
+	//printf("Updating top=%d\n", IBInfoTop);
 	IBInfoTop++ ;
 }
+
+void SAT_IBBasicWriteI( IBBasicItv i, int digits, int mode, interval_t* info )
+{
+	double mid, minerror, maxerror ;
+	if( IBBasicEmptyI(i)) return ;
+	if( IBBasicIsDoubleI(i)) {
+		info->x = IBBasicMinI(i);
+		info->y = IBBasicMinI(i);
+	}
+	else {
+		if ( mode == IBBasicPrintIntervalBounds ) {
+			if ( IBBasicMinI(i) >= 0 )
+			{
+				IBBasicRoundDown();
+				info->x = IBBasicMinI(i);
+				IBBasicRoundUp();
+				info->y = IBBasicMaxI(i);
+			} else {
+				IBBasicRoundDown();
+				if ( IBBasicMinI(i)==IBBasicNegInfinity ) {
+					info->x = DBL_MIN ;
+				} else info->x = IBBasicMinI(i);
+				if ( IBBasicMaxI(i)==IBBasicPosInfinity ) {
+					info->y = DBL_MAX ;
+				} else info->y = IBBasicMaxI(i);
+			}
+		}
+	}
+}
+
+// void IBWriteVdom(FILE* out, IBDomains d, IBVariables a,  int digits, int mode)
+// {
+// 
+// 	int i, j ;
+// 
+// 	for (i=0; i<a->N; i++)
+// 	{
+// 		if ( IBIsUserVar(a,i) )
+// 		{
+// 			char* name = IBNameV(a,i);
+// 
+// 		}
+// 	}
+// 
+// }
 
 
 void IBReallocV(IBVariables a)
