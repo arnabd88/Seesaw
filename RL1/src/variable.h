@@ -17,6 +17,13 @@
 
 #include "domain.h"
 
+/*------ Interval datatype to communicate with python --------*/
+typedef struct {
+	char* name ;
+	double x ;
+	double y ;
+} interval_t ;
+
 
 /*------ definition of variables dependencies
  
@@ -118,6 +125,10 @@ void        IBWriteV      (FILE *out, IBVariables a);
 
 /* output of variables and domains on 'out */
 void        IBWriteVdom   (FILE *out, IBDomains d, IBVariables a, int digits, int mode);
+
+void		SAT_IBBasicWriteI ( IBBasicItv i, int digits, int mode, interval_t* info ) ;
+
+
 
 /* destruction of unused memory, needed after parsing */
 void        IBReallocV    (IBVariables a);

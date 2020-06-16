@@ -24,6 +24,16 @@
 (!IBCanonicalI(IBDomV(d,i))) && \
 (IBWidthI(IBDomV(d,i))>p) )
 
+///*------ Interval datatype to communicate with python --------*/
+//typedef struct {
+//	char* name ;
+//	double x ;
+//	double y ;
+//} interval_t ;
+
+
+//int SAT_IBBisection(IBDomains d, int Nobisect, int* completeProcess, int  boxSize);
+int SAT_IBBisection(IBDomains d, int Nobisect, int* completeProcess);
 
 /*------ Bisection functions */
 typedef void (* IBBisectArity)(IBDList *, int, long*);
