@@ -188,7 +188,11 @@ class bool_parser(object):
 
 	def arith_factor(self):
 		token = self.current_token
-		if token.type in (INTEGER, FLOAT):
+		if token.type in (PLUS, MINUS):
+			self.consume(token.type)
+			node = arith_UnaryOp(token=token, right=self.arith_factor())
+			return node
+		elif token.type in (INTEGER, FLOAT):
 			self.consume(token.type)
 			return bool_Num(token)
 		elif token.type == LPAREN:

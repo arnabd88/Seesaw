@@ -108,6 +108,23 @@ class bool_BinOp(bool_ast):
 
 
 
+class arith_UnaryOp(bool_ast):
+
+	__slots__ = ['token']
+
+	def __init__(self, token, right):
+		super().__init__()
+		self.token=token
+		self.depth = right.depth+1
+		self.children = (right, )
+		self.f_expression = self.eval(self)
+
+	@staticmethod
+	def eval(obj, inv=False):
+		if obj.token.type == MINUS:
+			return (-1)*obj.children[0].f_expression
+		if obj.token.type == PLUS:
+			return (+1)*obj.children[0].f_expression
 
 
 
