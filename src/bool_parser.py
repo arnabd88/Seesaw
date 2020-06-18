@@ -199,6 +199,10 @@ class bool_parser(object):
 			self.consume(LPAREN)
 			node = self.arith_expr()
 			self.consume(RPAREN)
+			if self.current_token.type in (POW1, POW2):
+				local_token = self.current_token
+				self.consume(local_token.type)
+				node = arith_BinOp(left=node, token=local_token, right=self.arith_factor())
 			return node
 		else:
 			node = bool_Var(token)
