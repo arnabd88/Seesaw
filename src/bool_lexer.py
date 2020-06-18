@@ -38,7 +38,7 @@ class bool_lexer(Lexer):
 	GEQ			=	r'\>='
 	GT			=	r'\>'
 
-	ID			=	r'[a-zA-Z][a-zA-Z0-9_]*'
+	ID			=	r'[a-zA-Z_][a-zA-Z0-9_]*'
 	ID['TRUE']	=	BTRUE
 	ID['True']	=	BTRUE
 	ID['true']	=	BTRUE
@@ -58,7 +58,8 @@ class bool_lexer(Lexer):
 		t.value = float(t.value)
 		return t
 
-	@_(r'[\-]?\d+')
+	#@_(r'[\-]?\d+')
+	@_(r'[\-]?\d+([eE][-+]?\d+)?')
 	def INTEGER(self, t):
 		t.value = int(t.value)
 		t.type = INTEGER

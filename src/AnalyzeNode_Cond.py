@@ -50,11 +50,12 @@ class AnalyzeNode_Cond(object):
 		self.cond_syms = set()
 		self.truthTable = set()
 
-	def __init__(self, probeNodeList, argList, maxdepth):
+	def __init__(self, probeNodeList, argList, maxdepth, paving=False):
 		self.initialize()
 		self.probeList = probeNodeList
 		self.trimList = probeNodeList
 		self.argList = argList
+		self.paving = paving
 		self.maxdepth = maxdepth
 		(self.parent_dict, self.cond_syms) = helper.expression_builder(probeNodeList)
 		print("Expression builder condsyms:", self.cond_syms)
@@ -191,7 +192,7 @@ class AnalyzeNode_Cond(object):
 					err = err, maxres = res_avg_maxres[1], avg = res_avg_maxres[0] \
 				))
 				print(type(err), res_avg_maxres[1]*pow(2,-53))
-				if(err == np.inf):
+				if(err == np.inf and Globals.argList.stat):
 					err = res_avg_maxres[1]
 				temp_racc.append(Sym(err, cond))
 			else:
@@ -384,49 +385,58 @@ class AnalyzeNode_Cond(object):
 
 	def process_expression(self, expr, cond, get_stats=False):
 		(cond_expr,free_symbols)	=	self.parse_cond(cond)
-		processConds				=	utils.process_conditionals(cond_expr,  self.externConstraints)
-		rpConstraint				=	banalyzer.bool_expression_analyzer( processConds ).start()
-		if "False" in rpConstraint:
-			print("Invalid constraint -> nothing to invoke, return None")
-			return [None, None]
-		elif "True" in rpConstraint :
-			print("Constraint true -> invoke gelpia on full box")
+		if self.paving:
+			processConds				=	utils.process_conditionals(cond_expr,  self.externConstraints)
+			rpConstraint				=	banalyzer.bool_expression_analyzer( processConds ).start()
+			if "False" in rpConstraint:
+				print("Invalid constraint -> nothing to invoke, return None")
+				return [None, None]
+			elif "True" in rpConstraint :
+				print("Constraint true -> invoke gelpia on full box")
+				res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
+				Intv						=	utils.generate_signature(expr,\
+														   #cond_expr, \
+														   cond_expr, \
+														   self.externConstraints, \
+														   free_symbols.union(self.externFreeSymbols))
+			else:
+				res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
+				[rpVars, numVars]			=	utils.rpVariableStr(free_symbols.union(self.externFreeSymbols))
+				rpBoxes = helper.rpInterface(rpVars+"Constraints "+rpConstraint, numVars, 10) ;
+				boxIntervals				=	self.extract_boxes(rpBoxes)
+				if len(boxIntervals)>1:
+					Intv						=	utils.generate_signature(expr,\
+																   #cond_expr, \
+																   cond_expr, \
+																   self.externConstraints, \
+																   free_symbols.union(self.externFreeSymbols), boxIntervals[0])
+					print("INTV; ", Intv, boxIntervals[0], Globals.gelpiaID)
+					for box in boxIntervals[1:]:
+						currIntv						=	utils.generate_signature(expr,\
+																	   #cond_expr, \
+																	   cond_expr, \
+																	   self.externConstraints, \
+																	   free_symbols.union(self.externFreeSymbols), box)
+						Intv = [min(Intv[0], currIntv[0]), max(Intv[1], currIntv[1])]
+						print("INTV; ", Intv, box, Globals.gelpiaID)
+						
+
+				else:
+					Intv						=	utils.generate_signature(expr,\
+															   #cond_expr, \
+															   cond_expr, \
+															   self.externConstraints, \
+															   free_symbols.union(self.externFreeSymbols))
+
+			print("INTV-out; ", Intv)
+		else:
+			print("Paving disabled -> invoke gelpia on full box")
 			res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
 			Intv						=	utils.generate_signature(expr,\
 													   #cond_expr, \
 													   cond_expr, \
 													   self.externConstraints, \
 													   free_symbols.union(self.externFreeSymbols))
-		else:
-			res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
-			[rpVars, numVars]			=	utils.rpVariableStr(free_symbols.union(self.externFreeSymbols))
-			rpBoxes = helper.rpInterface(rpVars+"Constraints "+rpConstraint, numVars, 10) ;
-			boxIntervals				=	self.extract_boxes(rpBoxes)
-			if len(boxIntervals)>1:
-				Intv						=	utils.generate_signature(expr,\
-															   #cond_expr, \
-															   cond_expr, \
-															   self.externConstraints, \
-															   free_symbols.union(self.externFreeSymbols), boxIntervals[0])
-				print("INTV; ", Intv, boxIntervals[0], Globals.gelpiaID)
-				for box in boxIntervals[1:]:
-					currIntv						=	utils.generate_signature(expr,\
-																   #cond_expr, \
-																   cond_expr, \
-																   self.externConstraints, \
-																   free_symbols.union(self.externFreeSymbols), box)
-					Intv = [min(Intv[0], currIntv[0]), max(Intv[1], currIntv[1])]
-					print("INTV; ", Intv, box, Globals.gelpiaID)
-					
-
-			else:
-				Intv						=	utils.generate_signature(expr,\
-														   #cond_expr, \
-														   cond_expr, \
-														   self.externConstraints, \
-														   free_symbols.union(self.externFreeSymbols))
-
-		print("INTV-out; ", Intv)
 		return [Intv, res_avg_maxres]
 
 
@@ -450,7 +460,7 @@ class AnalyzeNode_Cond(object):
 				print("STAT: SP:{err}, maxres:{maxres}, avg:{avg}".format(\
 					err = err, maxres = res_avg_maxres[1] if res_avg_maxres is not None else 0, avg = res_avg_maxres[0] if res_avg_maxres is not None else 0 \
 				))
-				if(err == np.inf):
+				if(err == np.inf and Globals.argList.stat):
 					err = res_avg_maxres[1]
 				errList.append(err)
 

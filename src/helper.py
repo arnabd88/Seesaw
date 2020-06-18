@@ -84,8 +84,8 @@ def dfs_expression_builder(node, reachable, parent_dict, free_syms, cond_syms, c
 	if type(node).__name__ == "ExprComp":
 		#print("ExprComp line:", node.token.lineno)
 		if etype:
-			res0 = ANC([node.children[0]], [], node.children[0].depth).start()
-			res1 = ANC([node.children[1]], [], node.children[1].depth).start()
+			res0 = ANC([node.children[0]], [], node.children[0].depth, Globals.argList.realpaver).start()
+			res1 = ANC([node.children[1]], [], node.children[1].depth, Globals.argList.realpaver).start()
 		## an exprComp node as a modified evaluation ops to include extra error terms
 			(fexpr,fsyms) = node.mod_eval(node, inv, res0[node.children[0]]["ERR"]*pow(2,-53), \
 								   res1[node.children[1]]["ERR"]*pow(2,-53) )

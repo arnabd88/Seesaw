@@ -326,7 +326,7 @@ def generate_signature(sym_expr, cond_expr, externConstraints, cond_free_symbols
 	if check is None:
 		inputStr = inputStr if inputStr is not None else \
 		            extract_input_dep(list(sym_expr.free_symbols.union(cond_free_symbols)))
-		#print("Gelpia input expr ops ->", seng.count_ops(sym_expr))
+		print("Gelpia input expr ops ->", seng.count_ops(sym_expr))
 		g1 = time.time()
 		Globals.hashBank[sig] = invoke_gelpia(sym_expr, cond_expr, externConstraints, inputStr)
 		g2 = time.time()
