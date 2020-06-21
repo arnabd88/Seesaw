@@ -57,7 +57,7 @@ class AnalyzeNode_Cond(object):
 		self.argList = argList
 		self.paving = paving
 		self.maxdepth = maxdepth
-		self.numBoxes = 50
+		self.numBoxes = 100
 		(self.parent_dict, self.cond_syms) = helper.expression_builder(probeNodeList)
 		print("Expression builder condsyms:", self.cond_syms)
 
@@ -195,7 +195,7 @@ class AnalyzeNode_Cond(object):
 				))
 				print(type(err), res_avg_maxres[1]*pow(2,-53))
 				if(err == np.inf and Globals.argList.stat):
-					sys.exit()
+					#sys.exit()
 					err = res_avg_maxres[1]
 				temp_racc.append(Sym(err, cond))
 			else:
@@ -214,6 +214,7 @@ class AnalyzeNode_Cond(object):
 				
 	def add_instability_error(self, expr_solve):
 		temp_list = [0]
+		print("Came here for instability", expr_solve)
 		if len(expr_solve) > 1:
 			print("INSTABILITY COMPRESSION LIST:", len(expr_solve))
 			unstable_cands = list(filter(lambda x: bool(helper.freeCondSymbols(x).difference(self.truthTable)), \
@@ -329,7 +330,7 @@ class AnalyzeNode_Cond(object):
 				print("Handling Condtional {symID}".format(symID=fsym))
 				logger.info("Handling Condtional {symID}".format(symID=fsym))
 				dict_element = Globals.condExprBank.get(fsym) 
-				print("DICT_EL:", dict_element)
+				#print("DICT_EL:", dict_element)
 				assert(dict_element is not None)
 				(subcond,free_symbols, cond_symbols) =  dict_element[0], dict_element[1], dict_element[2]
 				#(subcond,free_symbols, cond_symbols) =  Globals.condExprBank.get(fsym) if fsym in Globals.condExprBank.keys()\
@@ -342,7 +343,7 @@ class AnalyzeNode_Cond(object):
 			symDict = {fsym: Globals.condExprBank[fsym][0] for fsym in free_syms}
 			inv_symDict = {~fsym: Globals.condExprBank[~fsym][0] for fsym,v in symDict.items() if v not in ('(True)', 'True', '(False)', 'False', True, False)}
 			#inv_symDict.update(symDict)
-			print("Inside parsing conditionals -> cond sub dict : {sdict}".format(sdict=inv_symDict))
+			#print("Inside parsing conditionals -> cond sub dict : {sdict}".format(sdict=inv_symDict))
 			#print("Inside parsing conditionals -> total cond : {total_cond}".format(total_cond=tcond))
 			#tcond = str(tcond.subs(inv_symDict))
 			tcond = self.subsitute(tcond, symDict, inv_symDict)
@@ -396,10 +397,10 @@ class AnalyzeNode_Cond(object):
 			processConds				=	utils.process_conditionals(cond_expr,  self.externConstraints)
 			rpConstraint				=	banalyzer.bool_expression_analyzer( processConds ).start()
 			if "False" in rpConstraint:
-				print("Invalid constraint -> nothing to invoke, return None")
+				#print("Invalid constraint -> nothing to invoke, return None")
 				return [None, None]
 			elif "True" in rpConstraint :
-				print("Constraint true -> invoke gelpia on full box")
+				#print("Constraint true -> invoke gelpia on full box")
 				res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
 				Intv						=	utils.generate_signature(expr,\
 														   #cond_expr, \
@@ -435,9 +436,9 @@ class AnalyzeNode_Cond(object):
 															   self.externConstraints, \
 															   free_symbols.union(self.externFreeSymbols))
 
-			print("INTV-out; ", Intv)
+			#print("INTV-out; ", Intv)
 		else:
-			print("Paving disabled -> invoke gelpia on full box")
+			#print("Paving disabled -> invoke gelpia on full box")
 			res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
 			Intv						=	utils.generate_signature(expr,\
 													   #cond_expr, \
@@ -469,11 +470,18 @@ class AnalyzeNode_Cond(object):
 					err = err, maxres = res_avg_maxres[1] if res_avg_maxres is not None else 0, avg = res_avg_maxres[0] if res_avg_maxres is not None else 0 \
 				))
 				if(err == np.inf and Globals.argList.stat):
-					sys.exit()
+				#ys.exit()
 					err = res_avg_maxres[1]
 				errList.append(err)
 
 			ret_intv = None
+			print("Debug:", node.f_expression)
+			##-------- Evaluate the instability at the output ----------------
+			instability_error = 0 if not Globals.argList.report_instability \
+			                    else self.add_instability_error(node.f_expression)
+			self.InstabilityAccumulator[node] = self.InstabilityAccumulator.get(node, 0.0) + instability_error
+			##----------------------------------------------------------------
+			print("Inside top:", instability_error)
 			for exprTup in node.f_expression:
 				expr, cond = exprTup.exprCond
 				(cond_expr,free_symbols)	=	self.parse_cond(cond)
@@ -490,7 +498,8 @@ class AnalyzeNode_Cond(object):
 			#print("MaxError:", max(errList)*pow(2,-53), fintv)
 			logger.info(" > MaxError:\n {error} ; {fintv}\n".format(error=max(errList)*pow(2,-53), fintv=ret_intv))
 			print(" > MaxError:\n {error} ; {fintv}\n".format(error=max(errList)*pow(2,-53), fintv=ret_intv))
-			print(" > Instability:\n {instab} ;".format(instab=self.InstabilityAccumulator[node]))
+			if self.InstabilityAccumulator[node]!= 0.0:
+				print(" > Instability:\n {instab} ;".format(instab=self.InstabilityAccumulator[node]))
 
 		return self.results
 
