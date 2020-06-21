@@ -15,7 +15,7 @@ import Globals
 import time
 
 import copy
-
+from sympy.plotting.intervalmath import interval
 
 class Sparser(object):
 
@@ -483,11 +483,33 @@ class Sparser(object):
 			node = self.intv_expr()
 			self.consume(RPAREN)
 			return node
+		elif token.type == ID:
+			node = FreeVar(token)
+			dep_var = Globals.inputVars.get(token.value)
+			self.consume(ID)
+			if dep_var is None:
+				print("Undefined Variable in input declaration expression")
+				self.error()
+			else:
+				return node
 		else :
 			self.error()
 
 
 	##---------------------------------------------------------------------
+
+	def intv_eval(self, expr, lower=False):
+		free_syms = list(expr.free_symbols)
+		if len(free_syms)==1:
+			fsym = free_syms[0]
+			f = sympy.lambdify(fsym, expr)
+			intv = f ( interval(Globals.inputVars[fsym]["INTV"][0], Globals.inputVars[fsym]["INTV"][1]) )
+		else:
+			f = sympy.lambdify([tuple(free_syms)], expr)
+			intv = f( [ tuple( interval(Globals.inputVars[var]["INTV"][0], Globals.inputVars[var]["INTV"][1])   for var in free_syms ) ] )
+	
+		return intv.mid-intv.width/2 if lower else intv.mid+intv.width/2
+
 
 
 	def interval(self):
@@ -502,13 +524,18 @@ class Sparser(object):
 			## check bater later here for expressions
 			n = self.intv_expr()
 			left = n.rec_eval(n)
+			lexpr = left[0].exprCond[0]
+			lexpr = lexpr if seng.count_ops(lexpr)==0 else self.intv_eval(lexpr, lower=True)
 			#left = self.current_token.value
 			#self.consume(FLOAT)
 			self.consume(COMMA)
 
 			n = self.intv_expr()
 			right = n.rec_eval(n)
+			rexpr = right[0].exprCond[0]
+			rexpr = rexpr if seng.count_ops(rexpr)==0 else self.intv_eval(rexpr)
 
+			#print("Interval:", lexpr, rexpr)
 			#self.consume(COMMA)
 			#right = self.current_token.value
 			#self.consume(FLOAT)
@@ -518,8 +545,8 @@ class Sparser(object):
 			#symVar.set_rounding(fptype)
 			#self.current_symtab.insert(var_token.value, [[symVar,Globals.__T__]])
 			self.current_symtab.insert(var_token.value, ((symVar,Globals.__T__),)   )
-			Globals.inputVars[var_token.value] = {"INTV" : [left[0].exprCond[0], \
-															right[0].exprCond[0]]}
+			Globals.inputVars[var_token.value] = {"INTV" : [lexpr, \
+															rexpr]}
 
 	def parse(self, text):
 		self.lexer.create_token_generator(text)

@@ -13,8 +13,8 @@ INPUTS {
 }
 
 OUTPUTS {
-	#off; #rot_a_2_1 ; #jta_0_0 ; #J_2_2; #rot_a_2_1 ;
-	c ; #J_2_2 ;
+	off; #rot_a_2_1 ; #jta_0_0 ; #J_2_2; #rot_a_2_1 ;
+	#c ; #J_2_2 ;
 }
 
 EXPRS {

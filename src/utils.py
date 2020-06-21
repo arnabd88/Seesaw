@@ -94,6 +94,8 @@ def process_conditionals( innerConds, externConds ):
 	str_inner = str(innerConds)
 	str_outer = str(externConds)
 	str_cond_expr = " & ".join([str_inner]+([] if externConds is None or len(str_outer)==0 else [str_outer]))
+	str_cond_expr = re.sub(r'\&\&', "&", str_cond_expr)
+	str_cond_expr = re.sub(r'\|\|', "|", str_cond_expr)
 	str_cond_expr = re.sub(r'\&', "&&", str_cond_expr)
 	str_cond_expr = re.sub(r'\|', "||", str_cond_expr)
 	str_cond_expr = re.sub(r'\*\*', "^", str_cond_expr)
@@ -125,7 +127,10 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	if cond_expr == Globals.__T__ :
 		str_cond_expr = "(1 <= 1)"
 	else:
-		str_cond_expr = re.sub(r'\&', "&&", str(cond_expr))
+		str_cond_expr = str(cond_expr)
+		str_cond_expr = re.sub(r'\&\&', "&", str_cond_expr)
+		str_cond_expr = re.sub(r'\|\|', "|", str_cond_expr)
+		str_cond_expr = re.sub(r'\&', "&&", str_cond_expr)
 		str_cond_expr = re.sub(r'\|', "||", str_cond_expr)
 		str_cond_expr = re.sub(r'\*\*', "^", str_cond_expr)
 		str_cond_expr = re.sub(r'Abs', "abs", str_cond_expr)
@@ -133,9 +138,13 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 		str_cond_expr = re.sub(r'im\b', "0.0*", str_cond_expr)
 		str_cond_expr = re.sub(r'\<\<', "(", str_cond_expr)
 		str_cond_expr = re.sub(r'\>\>', ")", str_cond_expr)
+		str_cond_expr = re.sub(r'True', "1<=1", str_cond_expr)
 
 	#str_extc_expr = str(externConstraints)
-	str_extc_expr = re.sub(r'\&', "&&", str(externConstraints))
+	str_extc_expr = str(externConstraints)
+	str_extc_expr = re.sub(r'\&\&', "&", str_extc_expr)
+	str_extc_expr = re.sub(r'\|\|', "|", str_extc_expr)
+	str_extc_expr = re.sub(r'\&', "&&", str_extc_expr)
 	str_extc_expr = re.sub(r'\|', "||", str_extc_expr)
 	str_extc_expr = re.sub(r'\*\*', "^", str_extc_expr)
 	str_extc_expr = re.sub(r'Abs', "abs", str_extc_expr)
@@ -143,6 +152,7 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	str_extc_expr = re.sub(r'im\b', "0.0*", str_extc_expr)
 	str_extc_expr = re.sub(r'\<\<', "(", str_extc_expr)
 	str_extc_expr = re.sub(r'\>\>', ")", str_extc_expr)
+	str_extc_expr = re.sub(r'True', "1<=1", str_extc_expr)
 	#print("Pass conversion gelpia")
 	gstr_expr = inputStr + str_expr  ## without the constraints
 	Globals.gelpiaID += 1

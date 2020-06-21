@@ -13,7 +13,7 @@ enable_constr = False
 
 deps = seng.var('eps')
 
-inputVars = {eps : {"INTV" : [pow(2,53), pow(2,53)]}}
+inputVars = {eps : {"INTV" : [pow(2,53), pow(2,53)], "EPS": [0.0, 0.0]}}
 outVars = []
 
 ## SymbolTable Hierarchy Tracker
