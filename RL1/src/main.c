@@ -1230,7 +1230,7 @@ interval_t** initializeRP(char* namefile)
     
     /* Initialization of pragmas */
     IBPragmaNbGeneratedDomains = 1;
-    IBPragmaMaxSolution        = 10; /* 1024 */
+    IBPragmaMaxSolution        = 100; /* 1024 */
     IBPragmaPrecision          = 1.0e-8;
     IBPragmaBisection          = IBBisectRoundRobin;
     IBPragmaNumberBisection    = 3;
