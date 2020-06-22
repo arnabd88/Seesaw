@@ -31,7 +31,7 @@ def rpInterface(rpConstraint, numVars, numBoxes):
 
 	returnValue = rp.initializeRP(rpConstraint.encode())
 
-	print(rpConstraint)
+	#print(rpConstraint)
 
 	#print("From RP:", returnValue)
 	#for box in returnValue.contents:
@@ -140,10 +140,10 @@ def expression_builder(probeList, etype=False, ctype=False, inv=False):
 	if ctype:
 		return (free_syms, cond_syms)
 	else:
-		for k,v in Globals.GS[0]._symTab.items():
-			print("\n*******Symbol Name:", k)
-			for vi in v:
-				print(vi[0].f_expression)
+		#for k,v in Globals.GS[0]._symTab.items():
+		#	print("\n*******Symbol Name:", k)
+		#	for vi in v:
+		#		print(vi[0].f_expression)
 		return (parent_dict, cond_syms)
 
 #etype = to analyze error within the conditional expressions
@@ -390,6 +390,7 @@ def writeToFile(results, fout, argList):
 		SecondmaxError = num_ulp_SecondmaxError*pow(2, -53)
 		outIntv = [funcIntv[0]-maxError-SecondmaxError, funcIntv[1]+maxError+SecondmaxError]
 		abserror = (maxError + SecondmaxError)
+		instability = results[Globals.GS[0]._symTab[outVar][0][0]]["INSTABILITY"] if argList.report_instability else "UNDEF"
 
 		#print("//-------------------------------------")
 		#print("Ouput Variable -> ", outVar)
@@ -406,6 +407,7 @@ def writeToFile(results, fout, argList):
 		dumpStr += "First-order Error : "+str(maxError)+"\n"
 		if sound:
 			dumpStr += "Higher-order Error : "+str(SecondmaxError)+"\n"
+		dumpStr += "INSTABILITY : "+str(instability)+"\n"
 		dumpStr += "REAL_INTERVAL : "+str(funcIntv)+"\n"
 		dumpStr += "FP_INTERVAL : "+str(outIntv)+"\n"
 		dumpStr += "//-------------------------------------\n"

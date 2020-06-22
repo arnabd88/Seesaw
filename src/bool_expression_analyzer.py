@@ -27,7 +27,7 @@ class bool_expression_analyzer(object):
 	def __init__(self, constraintStr):
 		lexer = bool_lexer()
 		parser = bool_parser(lexer)
-		print("Bool_expr_ans:", constraintStr)
+		#print("Bool_expr_ans:", constraintStr)
 		self.root = parser.parse(constraintStr)
 
 	def error(self):
@@ -55,7 +55,7 @@ class bool_expression_analyzer(object):
 	def traverse(self, cnf_expression):
 
 		# reached a leaf boolean node
-		print(cnf_expression)
+		#print(cnf_expression)
 		if cnf_expression==True or cnf_expression==False or len(cnf_expression.args)==0 or type(cnf_expression).__name__ == "Not":
 			node = bool_Globals.ConstraintToObject.get(cnf_expression)
 			#print(cnf_expression)
