@@ -307,17 +307,17 @@ def filterCandidate(bdmin, bdmax, dmax):
 def filterCandidate(bdmin, bdmax, dmax):
 	
 	workList = []
-	opList = get_opList(DIV, bdmax)
-	D = find_common_dependence(opList,5, bdmax)
-	workList = list(reduce(lambda x,y : x.union(y), [v for k,v in D.items()], set()))
-	if len(workList)==0:
-		print("Empty WorkList!")
-		pass
-	else:
-		maxdepth = max([n.depth for n in workList])
-		print("1:From Filter Cands:", len(workList), len(opList))
-		workList = [n for n in workList if n.depth == maxdepth]
-		print("2:From Filter Cands:", len(workList), len(opList), [n.token.lineno for n in workList], maxdepth)
+	#opList = get_opList(DIV, bdmax)
+	#D = find_common_dependence(opList,5, bdmax)
+	#workList = list(reduce(lambda x,y : x.union(y), [v for k,v in D.items()], set()))
+	#if len(workList)==0:
+	#	print("Empty WorkList!")
+	#	pass
+	#else:
+	#	maxdepth = max([n.depth for n in workList])
+	#	print("1:From Filter Cands:", len(workList), len(opList))
+	#	workList = [n for n in workList if n.depth == maxdepth]
+	#	print("2:From Filter Cands:", len(workList), len(opList), [n.token.lineno for n in workList], maxdepth)
 
 	if(len(workList) == 0):
 		workList =  [[v for v in nodeList if v.depth!=0 and v.depth>=bdmin and v.depth<=bdmax]\
