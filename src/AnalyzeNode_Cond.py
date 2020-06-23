@@ -365,33 +365,23 @@ class AnalyzeNode_Cond(object):
 
 
 	def analyze_box(self, box, expr):
-		print(expr)
 		try:
 			intv_dict = {str(var) : Globals.inputVars[var]["INTV"] for var in expr.free_symbols}
 		except:
 			intv_dict = dict()
-		print("Here1:", intv_dict)
+		#intv_dict = dict()
 		intv_dict = self.boxify(box, intv_dict)
-		#if box:
-		#	for var in box.contents:
-		#		if var.name.decode() != "Garbage":
-		#			name = var.name.decode()
-		#			x = var.x
-		#			y = var.y
-		#			intv_dict[name] = [x,y]
-		#		else:
-		#			print(var.name.decode())
-		#			return None
-
-		print("Here2:", intv_dict)
 		if len(intv_dict.keys())==0:
 			return None
 		flist = list(intv_dict.keys())
 		flist.sort()
 		ret_list = list()
-		for k,v in intv_dict.items():
+		#for k,v in intv_dict.items():
+		for k in flist:
+			v = intv_dict[k]
 			ret_list += ["{fsym} = {intv}".format(fsym=k, intv=str(intv_dict[k]))]
-		return ";".join(ret_list)+";"
+		retStr = ";".join(ret_list)+";"
+		return retStr
 			
 			
 
