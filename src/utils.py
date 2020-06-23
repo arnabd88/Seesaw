@@ -212,7 +212,11 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	#print(str_expr)
 	#print(label, end_time - start_time, "  , FSYM: ", len(symExpr.free_symbols))
 	
-	return [min_lower, max_upper.value]
+	#return [min_lower, max_upper.value]
+	print("min_lower", min_lower, type(min_lower))
+	print("max_upper", max_upper.value, type(max_upper.value))
+	return [min_lower if min_lower!="Overconstrained" else 0.0, \
+	        max_upper.value if max_upper.value!="Overconstrained" else 0.0]
 
 
 def invoke_gelpia_herror(symExpr, inputStr, label="Func-> Dur:"):
@@ -271,8 +275,11 @@ def invoke_gelpia_herror(symExpr, inputStr, label="Func-> Dur:"):
 	
 	#print(str_expr)
 	#print(label, end_time - start_time, "  , FSYM: ", len(symExpr.free_symbols))
-	
-	return [min_lower, max_upper.value]
+	#return [min_lower, max_upper.value]
+	print("min_lower", min_lower, type(min_lower))
+	print("max_upper", max_upper.value, type(max_upper.value))
+	return [min_lower if min_lower!="Overconstrained" else 0.0, \
+	        max_upper.value if max_upper.value!="Overconstrained" else 0.0]
 
 	
 #def extract_input_dep(free_syms):

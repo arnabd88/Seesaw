@@ -236,7 +236,8 @@ class AnalyzeNode_Cond(object):
 					#								   cond_expr, \
 					#								   self.externConstraints, \
 					#								   free_symbols.union(self.externFreeSymbols))
-					err = max([abs(i) for i in errIntv])
+					print("Debug:", errIntv)
+					err = max([abs(i) for i in errIntv if i is not None] if errIntv is not None else [0])
 					temp_list.append(err)
 					
 
@@ -260,6 +261,7 @@ class AnalyzeNode_Cond(object):
 			self.InstabilityAccumulator[outVar] = self.InstabilityAccumulator.get(outVar, 0.0) +\
 													instability_error
 			expr_solve = self.merge_discontinuities(expr_solve, 1000)
+			print("Local instability errors:", instability_error)
 			#expr_solve = self.merge_discontinuities(self.condmerge(expr_solve), 1000)
 			#else:
 			#acc = self.merge_discontinuities(acc)
@@ -360,16 +362,23 @@ class AnalyzeNode_Cond(object):
 			return intv_dict
 
 		else:
+			print("No valid box")
 			return intv_dict
 
 
 
-	def analyze_box(self, box, expr):
+	def analyze_box(self, box, expr, cond_free_symbols):
+		print("EXPR:", expr, cond_free_symbols)
 		try:
-			intv_dict = {str(var) : Globals.inputVars[var]["INTV"] for var in expr.free_symbols}
+			FREE_SYMS = expr.free_symbols.union(cond_free_symbols)
+			intv_dict = {str(var) : Globals.inputVars[var]["INTV"] for var in FREE_SYMS}
 		except:
-			intv_dict = dict()
+			try:
+				intv_dict = {str(var) : Globals.inputVars[var]["INTV"] for var in cond_free_symbols}
+			except:
+				intv_dict = dict()
 		#intv_dict = dict()
+		print("What:", intv_dict)
 		intv_dict = self.boxify(box, intv_dict)
 		if len(intv_dict.keys())==0:
 			return None
@@ -381,19 +390,20 @@ class AnalyzeNode_Cond(object):
 			v = intv_dict[k]
 			ret_list += ["{fsym} = {intv}".format(fsym=k, intv=str(intv_dict[k]))]
 		retStr = ";".join(ret_list)+";"
+		print("RETSTR:", retStr)
 		return retStr
 			
 			
 
 
-	def extract_boxes(self, rpBoxes, expr):
+	def extract_boxes(self, rpBoxes, expr, cond_free_symbols):
 		
 		boxIntervals =  []
 		
 		fsym_set = set()
 
 		for box in rpBoxes.contents:
-			retStr = self.analyze_box(box, expr)
+			retStr = self.analyze_box(box, expr, cond_free_symbols)
 			if retStr is not None:
 				boxIntervals.append(retStr)
 
@@ -420,7 +430,7 @@ class AnalyzeNode_Cond(object):
 				res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
 				[rpVars, numVars]			=	utils.rpVariableStr(free_symbols.union(self.externFreeSymbols))
 				rpBoxes = helper.rpInterface(rpVars+"Constraints "+rpConstraint, numVars, self.numBoxes) ;
-				boxIntervals				=	self.extract_boxes(rpBoxes, expr)
+				boxIntervals				=	self.extract_boxes(rpBoxes, expr, free_symbols.union(self.externFreeSymbols))
 				if len(boxIntervals)>1:
 					Intv						=	utils.generate_signature(expr,\
 																   #cond_expr, \
@@ -496,7 +506,10 @@ class AnalyzeNode_Cond(object):
 				(cond_expr,free_symbols)	=	self.parse_cond(cond)
 				[fintv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=False )
 				#ret_intv = fintv if ret_intv is None else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
-				ret_intv = None if fintv is None and ret_intv is None else fintv if ret_intv is None else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
+				print("1:", fintv, ret_intv)
+				ret_intv = None if fintv is None and ret_intv is None else fintv if ret_intv is None \
+						   else ret_intv if fintv is None \
+				           else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
 			#print(node.f_expression)
 			self.results[node] = {"ERR" : max(errList), \
 								  "SERR" : 0.0, \
