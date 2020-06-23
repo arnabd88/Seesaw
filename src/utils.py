@@ -68,13 +68,17 @@ def split_gelpia_format(msg):
 								 .split("[")[-1]\
 								 .split(",")
 
-def extract_input_dep(free_syms):
-	ret_list = list()
-	flist = [str(i) for i in free_syms]
-	flist.sort()
-	for fsyms in flist:
-		ret_list += [str(fsyms), " = ", str(Globals.inputVars[seng.var(fsyms)]["INTV"]), ";"]
-	return "".join(ret_list)
+
+
+
+#def extract_input_dep(free_syms):
+#	ret_list = list()
+#	flist = [str(i) for i in free_syms]
+#	flist.sort()
+#	print("Flist:", flist)
+#	for fsyms in flist:
+#		ret_list += [str(fsyms), " = ", str(Globals.inputVars[seng.var(fsyms)]["INTV"]), ";"]
+#	return "".join(ret_list)
 
 def rpVariableStr( cond_free_symbols ):
 	ret_list = list()
@@ -337,6 +341,9 @@ def generate_signature(sym_expr, cond_expr, externConstraints, cond_free_symbols
 		inputStr = inputStr if inputStr is not None else \
 		            extract_input_dep(list(sym_expr.free_symbols.union(cond_free_symbols)))
 		print("Gelpia input expr ops ->", seng.count_ops(sym_expr))
+		print("InputStr({gelpiaid}):".format(gelpiaid=Globals.gelpiaID+1), inputStr)
+		print("expression symbols :", sym_expr.free_symbols)
+		print("cond symbols :", cond_free_symbols)
 		g1 = time.time()
 		Globals.hashBank[sig] = invoke_gelpia(sym_expr, cond_expr, externConstraints, inputStr)
 		g2 = time.time()

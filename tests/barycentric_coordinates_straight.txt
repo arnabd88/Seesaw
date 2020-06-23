@@ -1,0 +1,39 @@
+
+
+INPUTS {
+	ax	fl64 : (-3.657 - 0.5, -3.657 + 0.5); ay	fl64 : (5.43 - 0.5, 5.43 + 0.5); az	fl64 : (-6.23 - 0.5, -6.23 + 0.5);
+	bx	fl64 : (7.893 - 0.5, 7.893 + 0.5); by	fl64 : (-6.67 - 0.5, -6.67 + 0.5); bz	fl64 : (8.92 - 0.5, 8.92 + 0.5);
+	cx	fl64 : (4.441 - 0.5, 4.441 + 0.5); cy	fl64 : (8.34 - 0.5, 8.34 + 0.5); cz	fl64 : (-3.35 - 0.5, -3.35 + 0.5);
+
+	px	fl64 : (-2 , -2); py	fl64 : (3  , 3 ); pz	fl64 : (5  , 5 );
+}
+
+OUTPUTS {
+	#ood; 
+	#nu ;
+	u ;
+	#w ;
+	#w ;
+	#mz ;
+}
+
+
+EXPRS {
+
+	v0_x = bx - ax ; v0_y = by - ay ; v0_z = bz - az ;
+	v1_x = cx - ax ; v1_y = cy - ay ; v1_z = cz - az ;
+	v2_x = px - ax ; v2_y = py - ay ; v2_z = pz - az ;
+
+	d00 = v0_x*v0_x + v0_y*v0_y + v0_z*v0_z ;
+	d01 = v0_x*v1_x + v0_y*v1_y + v0_z*v1_z ;
+	d11 = v1_x*v1_x + v1_y*v1_y + v1_z*v1_z ;
+	d20 = v2_x*v0_x + v2_y*v0_y + v2_z*v0_z ;
+	d21 = v2_x*v1_x + v2_y*v1_y + v2_z*v1_z ;
+
+	denom = d00*d11 - d01*d01 ;
+
+	v = (d11 * d20 - d01 * d21) / denom ;
+	w = (d00 * d21 - d01 * d20) / denom ;
+	u = 1.0 - v - w;
+
+}

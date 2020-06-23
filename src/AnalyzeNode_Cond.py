@@ -345,9 +345,8 @@ class AnalyzeNode_Cond(object):
 			return (tcond, set_free_symbols)
 		return ("(<<{tcond}>>)".format(tcond=tcond), set_free_symbols)
 
+	def boxify(self, box, intv_dict):
 
-	def analyze_box(self, box):
-		intv_dict = dict()
 		if box:
 			for var in box.contents:
 				if var.name.decode() != "Garbage":
@@ -356,8 +355,35 @@ class AnalyzeNode_Cond(object):
 					y = var.y
 					intv_dict[name] = [x,y]
 				else:
-					return None
+					print(var.name.decode())
+					return intv_dict
+			return intv_dict
 
+		else:
+			return intv_dict
+
+
+
+	def analyze_box(self, box, expr):
+		print(expr)
+		try:
+			intv_dict = {str(var) : Globals.inputVars[var]["INTV"] for var in expr.free_symbols}
+		except:
+			intv_dict = dict()
+		print("Here1:", intv_dict)
+		intv_dict = self.boxify(box, intv_dict)
+		#if box:
+		#	for var in box.contents:
+		#		if var.name.decode() != "Garbage":
+		#			name = var.name.decode()
+		#			x = var.x
+		#			y = var.y
+		#			intv_dict[name] = [x,y]
+		#		else:
+		#			print(var.name.decode())
+		#			return None
+
+		print("Here2:", intv_dict)
 		if len(intv_dict.keys())==0:
 			return None
 		flist = list(intv_dict.keys())
@@ -370,12 +396,14 @@ class AnalyzeNode_Cond(object):
 			
 
 
-	def extract_boxes(self, rpBoxes):
+	def extract_boxes(self, rpBoxes, expr):
 		
 		boxIntervals =  []
+		
+		fsym_set = set()
 
 		for box in rpBoxes.contents:
-			retStr = self.analyze_box(box)
+			retStr = self.analyze_box(box, expr)
 			if retStr is not None:
 				boxIntervals.append(retStr)
 
@@ -402,7 +430,7 @@ class AnalyzeNode_Cond(object):
 				res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
 				[rpVars, numVars]			=	utils.rpVariableStr(free_symbols.union(self.externFreeSymbols))
 				rpBoxes = helper.rpInterface(rpVars+"Constraints "+rpConstraint, numVars, self.numBoxes) ;
-				boxIntervals				=	self.extract_boxes(rpBoxes)
+				boxIntervals				=	self.extract_boxes(rpBoxes, expr)
 				if len(boxIntervals)>1:
 					Intv						=	utils.generate_signature(expr,\
 																   #cond_expr, \

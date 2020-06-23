@@ -27,7 +27,7 @@ class bool_expression_analyzer(object):
 	def __init__(self, constraintStr):
 		lexer = bool_lexer()
 		parser = bool_parser(lexer)
-		#print("Bool_expr_ans:", constraintStr)
+		print("Bool_expr_ans:", constraintStr)
 		self.root = parser.parse(constraintStr)
 
 	def error(self):
