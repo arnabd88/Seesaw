@@ -1,0 +1,30 @@
+
+
+EXPRS {
+
+	ap_x = ax - px; ap_y = ay - py; ap_z = az - pz;
+	bp_x = bx - px; bp_y = by - py; bp_z = bz - pz;
+	cp_x = cx - px; cp_y = cy - py; cp_z = cz - pz;
+
+	ab = ap_x*bp_x + ap_y*bp_y + ap_z*bp_z ;
+	ac = ap_x*cp_x + ap_y*cp_y + ap_z*cp_z ;
+	bc = bp_x*cp_x + bp_y*cp_y + bp_z*cp_z ;
+	cc = cp_x*cp_x + cp_y*cp_y + cp_z*cp_z ;
+	bb = bp_x*bp_x + bp_y*bp_y + bp_z*bp_z ;
+
+	res1 = bc*ac - cc*ab ;
+	res2 = ab*bc - ac*bb ;
+
+	res3 = 0;
+
+	if ( res1 < 0.0 ) then
+		res3 = 0;
+	else
+		if ( res2 < 0.0 )  then
+			res3 = 0;
+		else
+			res3 = 1;
+		endif
+	endif
+
+}

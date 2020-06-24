@@ -1,3 +1,4 @@
+#ExtremePointsAlongDirection(Vector dir, Point pt[], int n, int *imin, int *imax)
 
 INPUTS {
 	
