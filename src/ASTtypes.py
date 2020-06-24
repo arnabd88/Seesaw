@@ -413,7 +413,7 @@ class ExprComp(AST):
 		else:
 			l1 = list(filter(lambda x: x!="(False)", cexpr))
 			#free_syms = reduce(lambda x, y: x.union(y), [el.exprCond[0].free_symbols for el in l1 if (seng.count_ops(el.exprCond[0]) > 0)], set())
-			return ("<<False>>",set()) if len(l1)==0 else ("<<{comp_expr}>>".format( comp_expr = "|".join(l1)), free_syms)
+			return ("<<False>>",set()) if len(l1)==0 else ("<<{comp_expr}>>".format( comp_expr = ">> | <<".join(l1)), free_syms)
 
 
 		return "|".join(cexpr)
@@ -429,6 +429,7 @@ class ExprComp(AST):
 											 for fl in lstrTup \
 										     for sl in rstrTup))
 
+		print("Never should be here")
 		return "|".join(cexpr)
 
 	@staticmethod

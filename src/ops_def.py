@@ -106,6 +106,8 @@ _BOPS = { \
 }
 
 
+DFOPS_LIST = [PLUS, MINUS, MUL, DIV, SQRT, EXP, SIN, ASIN, COS, TAN, IF]
+
 # derivatives
 _DFOPS = { \
 			PLUS	:	[lambda L : SymTup((Sym(1.0,Globals.__T__),)), \

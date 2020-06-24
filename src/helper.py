@@ -84,6 +84,7 @@ def dfs_expression_builder(node, reachable, parent_dict, free_syms, cond_syms, c
 	if type(node).__name__ == "ExprComp":
 		#print("ExprComp line:", node.token.lineno)
 		if etype:
+			print("HIDDEN CONDITIONAL DEPTH:", node.children[0].depth, node.children[1].depth)
 			res0 = ANC([node.children[0]], [], node.children[0].depth, Globals.argList.realpaver).start()
 			res1 = ANC([node.children[1]], [], node.children[1].depth, Globals.argList.realpaver).start()
 		## an exprComp node as a modified evaluation ops to include extra error terms
@@ -309,6 +310,7 @@ def filterCandidate(bdmin, bdmax, dmax):
 	workList = []
 	opList = get_opList(DIV, bdmax)
 	D = find_common_dependence(opList,5, bdmax)
+	print(bdmin, bdmax, dmax, D)
 	workList = list(reduce(lambda x,y : x.union(y), [v for k,v in D.items()], set()))
 	if len(workList)==0:
 		print("Empty WorkList!")
@@ -319,9 +321,14 @@ def filterCandidate(bdmin, bdmax, dmax):
 		workList = [n for n in workList if n.depth == maxdepth]
 		print("2:From Filter Cands:", len(workList), len(opList), [n.token.lineno for n in workList], maxdepth)
 
+	for k, nodeList in Globals.depthTable.items():
+		print("FC:", k, [n.depth for n in nodeList])
 	if(len(workList) == 0):
-		workList =  [[v for v in nodeList if v.depth!=0 and v.depth>=bdmin and v.depth<=bdmax]\
+		workList =  [[v for v in nodeList if v.depth!=0 and v.token.type in ops.DFOPS_LIST and v.depth>=bdmin and v.depth<=bdmax]\
 	            for k,nodeList in Globals.depthTable.items()]
+
+		print("WorkList:", [[type(n).__name__ for n in m] for m in workList])
+		#workList = list(filter(lambda v : type(v).__name__ in ("TransOp", "BinOp", "Num", "LiftedOp"), workList))
 		workList = list(set(reduce(lambda x,y : x+y, workList, [])))
 
 	print("Final WorkList!", workList)

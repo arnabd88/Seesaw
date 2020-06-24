@@ -576,4 +576,10 @@ if __name__ == "__main__":
 		print(k, v.token.lineno, v.rec_eval(v))
 		#if "True" in v.rec_eval(v):
 		#	print(k, v.token.lineno, v.rec_eval(v))
-			
+		
+
+	for k,v in Globals.GS[0]._symTab.items():
+		print(k,v)
+
+	for k,v in Globals.depthTable.items():
+		print(k, len(v))

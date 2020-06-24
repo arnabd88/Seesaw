@@ -14,6 +14,7 @@ import helper
 
 from functools import reduce
 from PredicatedSymbol import Sym, SymTup, SymConcat
+from ASTtypes import *
 
 import bool_expression_analyzer as banalyzer
 
@@ -59,6 +60,7 @@ class AnalyzeNode_Cond(object):
 		self.maxdepth = maxdepth
 		self.numBoxes = 100
 		(self.parent_dict, self.cond_syms) = helper.expression_builder(probeNodeList)
+		#print("ROOT EXPRESSION SIZE:", [node.f_expression.__countops__() for node in probeNodeList])
 		#print("Expression builder condsyms:", self.cond_syms)
 
 	def __setup_condexpr__(self):
@@ -188,6 +190,7 @@ class AnalyzeNode_Cond(object):
 			elif seng.count_ops(expr) > lim:
 				#print("lim:", expr, lim, len(racc))
 				(cond_expr,free_symbols)	=	self.parse_cond(cond)
+				print("PROCESS_EXPRESSION_LOC3")
 				[errIntv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=True )
 				err = max([abs(i) for i in errIntv])
 				print("STAT: SP:{err}, maxres:{maxres}, avg={avg}".format(\
@@ -222,20 +225,13 @@ class AnalyzeNode_Cond(object):
 			for i in range(0, len(unstable_cands)):
 				for j in range(i+1, len(unstable_cands)):
 					expr_diff = (unstable_cands[i].exprCond[0] - unstable_cands[j].exprCond[0]).__abs__()
-					#cond = (unstable_cands[i].exprCond[1] & unstable_cands[j].exprCond[1]).simplify()
 					(cond1_expr, free_symbols1) = self.parse_cond(unstable_cands[i].exprCond[1])
 					(cond2_expr, free_symbols2) = self.parse_cond(unstable_cands[j].exprCond[1])
-					#cond_expr =  cond1_expr  & cond2_expr 
 					cond_expr =	utils.process_conditionals(cond1_expr,  cond2_expr)
 					free_symbols = free_symbols1.union(free_symbols2)
-					#(cond_expr, free_symbols) = self.parse_cond(cond)
-					#(cond_expr,free_symbols)	=	self.parse_cond(cond)
 					free_symbols = free_symbols1.union(free_symbols2)
+					print("PROCESS_EXPRESSION_LOC3")
 					[errIntv, res_avg_maxres] = self.process_expression( expr_diff, cond_expr, free_symbols, get_stats=False )
-					#errIntv = utils.generate_signature(expr_diff, \
-					#								   cond_expr, \
-					#								   self.externConstraints, \
-					#								   free_symbols.union(self.externFreeSymbols))
 					print("Debug:", errIntv)
 					err = max([abs(i) for i in errIntv if i is not None] if errIntv is not None else [0])
 					temp_list.append(err)
@@ -247,36 +243,20 @@ class AnalyzeNode_Cond(object):
 
 	def propagate_symbolic(self, node):
 		for outVar in self.bwdDeriv[node].keys():
-			#print(node.depth)
 			expr_solve = self.condmerge(\
 							((self.bwdDeriv[node][outVar]) * \
 							(node.get_noise(node)) * node.get_rounding())\
 							).__abs__()
 			acc = self.Accumulator.get(outVar, SymTup((Sym(0.0, Globals.__T__),)))
-			#print("ACC:", len(acc), acc.__countops__())
 			if(len(acc) > 10):
-				acc = self.merge_discontinuities(self.condmerge(acc), 4000)
+				acc = self.merge_discontinuities(self.condmerge(acc), 1000)
 
 			instability_error = 0 if not Globals.argList.report_instability else self.add_instability_error(expr_solve)
 			self.InstabilityAccumulator[outVar] = self.InstabilityAccumulator.get(outVar, 0.0) +\
 													instability_error
 			expr_solve = self.merge_discontinuities(expr_solve, 1000)
 			print("Local instability errors:", instability_error)
-			#expr_solve = self.merge_discontinuities(self.condmerge(expr_solve), 1000)
-			#else:
-			#acc = self.merge_discontinuities(acc)
-			#print("RACC:", len(acc), acc.__countops__())
-			#print("\n------------------------")
-			#print(expr_solve)
-			#print(node.get_noise(node))
-			#print((self.bwdDeriv[node][outVar]))
-			#print("------------------------\n")
 			val = acc.__concat__(expr_solve, trim=True)
-			#print("==========================")
-			#print("expr_solve:", expr_solve)
-			#print("val:", val)
-			#print("Merge:", self.condmerge(val))
-			#print("\n==========================\n\n")
 
 			self.Accumulator[outVar] = val
 
@@ -285,7 +265,6 @@ class AnalyzeNode_Cond(object):
 
 	def visit_node_ferror(self, node):
 
-		#print(node.depth, type(node).__name__, "Out of there\n")
 		for child in node.children:
 			if not self.completed2[child.depth].__contains__(child):
 				self.visit_node_ferror(child)
@@ -483,6 +462,7 @@ class AnalyzeNode_Cond(object):
 			for els in tupleList:
 				expr, cond = els.exprCond
 				(cond_expr,free_symbols)	=	self.parse_cond(cond)
+				print("PROCESS_EXPRESSION_LOC1")
 				[errIntv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=True )
 				err = max([abs(i) for i in errIntv]) if errIntv is not None else 0
 				print("STAT: SP:{err}, maxres:{maxres}, avg:{avg}".format(\
@@ -504,6 +484,7 @@ class AnalyzeNode_Cond(object):
 			for exprTup in node.f_expression:
 				expr, cond = exprTup.exprCond
 				(cond_expr,free_symbols)	=	self.parse_cond(cond)
+				print("PROCESS_EXPRESSION_LOC2")
 				[fintv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=False )
 				#ret_intv = fintv if ret_intv is None else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
 				print("1:", fintv, ret_intv)
@@ -527,7 +508,93 @@ class AnalyzeNode_Cond(object):
 		return self.results
 
 
-	def start(self):
+	def rebuildASTNode(self, node, local_completed):
+		
+		for child in node.children:
+			if not local_completed.__contains__(child):
+				self.rebuildASTNode(child, local_completed)
+		node.depth = 0 if len(node.children)==0 or type(node).__name__ == "FreeVar" \
+						else max([child.depth for child in node.children]) +1
+
+		if node.token.type in ops.DFOPS_LIST:
+			local_completed[node] = node.depth
+
+
+	def rebuildAST(self, probeList):
+		
+		local_completed = defaultdict(int)
+		Globals.simplify = True
+		## rebuild AST for cond sym nodes
+		for csym, symNode in Globals.predTable.items():
+			print("Ever came here1?")
+			self.rebuildASTNode(symNode, local_completed)
+			print("CSYM:", csym, symNode.depth)
+				
+
+		## rebuild AST for regular nodes
+		for node in probeList:
+			print("Ever came here2?")
+			if not local_completed.__contains__(node):
+				self.rebuildASTNode(node, local_completed)
+
+		maxdepth = max([node.depth for node in probeList])
+		Globals.depthTable = {depth : set([node for node in local_completed.keys() if node.depth==depth]) for depth in range(maxdepth+1)}
+
+		return maxdepth
+		
+
+	def abstractNodes(self, results):
+		
+		for node, res in results.items():
+			Globals.FID += 1
+			name = seng.var("_F"+str(Globals.FID))
+			node.__class__ = FreeVar
+			node.children = ()
+			node.depth = 0
+
+			node.set_noise(node, (res["ERR"], res["ERR"]))
+			node.mutate_to_abstract(name, ID)
+
+			Globals.inputVars[name] = {"INTV" : res["INTV"]}
+			Globals.GS[0]._symTab[name] = ((node, Globals.__T__),)
+
+	def simplify_with_abstraction(self, sel_candidate_list, argList, MaxDepth, bound_min, bound_max):
+		Globals.condExprBank.clear()
+		obj = AnalyzeNode_Cond(sel_candidate_list, self.argList, MaxDepth, paving=Globals.argList.realpaver)
+		results = obj.start(bound_min=bound_min, bound_max=bound_max)
+
+		print("Ever came here3?")
+		self.abstractNodes(results)
+		return self.rebuildAST(self.trimList)
+
+	def abstractAnalysis(self, MaxDepth, MaxOps, bound_min, bound_max):
+		[abs_depth, sel_candidate_list] = helper.selectCandidateNodes(MaxDepth, bound_min, bound_max)
+
+		while abs_depth == MaxDepth and bound_min < bound_max +1:
+			bound_max = bound_max - 1
+			[abs_depth, sel_candidate_list] = helper.selectCandidateNodes(MaxDepth, bound_min, bound_max)
+
+		if ( len(sel_candidate_list) > 0):
+			return self.simplify_with_abstraction(sel_candidate_list, self.argList, MaxDepth, bound_min, bound_max)
+		else:
+			print("Something is wrong ... sorry! investigate depth table")
+			sys.exit()
+			
+
+# Build the expression
+# If too large depth : apply abstraction 
+
+	#def start(self, bound_min=Globals.argList.mindepth, bound_max=Globals.argList.maxdepth ):
+	def start(self, bound_min=10, bound_max=20 ):
+	
+		MaxDepth = max([node.depth for node in self.trimList])
+
+		while (MaxDepth >= bound_min and MaxDepth >= bound_max):
+			MaxOps = max([node.f_expression.__countops__() for node in self.trimList])
+			print("MAXDEPTH:{MaxDepth}, MAXOPS:{MaxOps}".format(MaxDepth=MaxDepth, MaxOps=MaxOps))
+			MaxDepth = self.abstractAnalysis(MaxDepth, MaxOps, bound_min, bound_max)
+
+		(self.parent_dict, self.cond_syms) = helper.expression_builder(self.trimList)
 		self.__init_workStack__()
 		self.__setup_outputs__()
 		self.__externConstraints__()

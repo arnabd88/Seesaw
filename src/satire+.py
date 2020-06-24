@@ -59,7 +59,9 @@ def rebuildASTNode(node, completed):
 
 	node.depth = 0 if len(node.children)==0 or type(node).__name__ == "FreeVar" \
 				   else max([child.depth for child in node.children]) +1
-	completed[node] = node.depth
+
+	if node.token.type in ops.DFOPS_LIST:
+		completed[node] = node.depth
 
 
 def rebuildAST():
@@ -72,6 +74,10 @@ def rebuildAST():
 	completed = defaultdict(int)
 
 	Globals.simplify=True  ## Enable simplify to begin
+	for csym, symNode in Globals.predTable.items():
+		print("OUT:Ever came here1?")
+		rebuildASTNode(symNode, completed)
+		print("OUT:CSYM:", csym, symNode.depth)
 
 	for node in probeList:
 		if not completed.__contains__(node):
@@ -264,7 +270,7 @@ if __name__ == "__main__":
 	#print("Before:", Globals.GS[0]._symTab.keys())
 	#------ PreProcess to eliminate all redundant nodes ---------
 	pr1 = time.time()
-	helper.PreProcessAST()
+	#helper.PreProcessAST()
 	pr2 = time.time()
 	print("\nAfter:", Globals.GS[0]._symTab.keys(),"\n\n")
 	#opList = helper.get_opList(DIV)
