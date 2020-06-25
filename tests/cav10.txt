@@ -1,0 +1,19 @@
+
+INPUTS {
+	x fl64 : (0.0, 10.0);
+}
+
+
+OUTPUTS {
+	temp ;
+}
+
+EXPRS {
+	
+	if ( x*x - x >= 0.0 ) then
+		temp = x/10.0 ;
+	else
+		temp = ((x*x) + 2.0) ;
+	endif
+
+}

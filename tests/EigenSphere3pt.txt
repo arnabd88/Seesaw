@@ -14,22 +14,11 @@ INPUTS {
 	px2 fl64  :	(1.5 - 0.1, 1.5 + 0.1);
 	py2 fl64  :	(1.5 - 0.1, 1.5 + 0.1);
 	pz2 fl64  :	(1.5 - 0.1, 1.5 + 0.1);
-	px3 fl64  :	(3.2 - 0.1, 3.2 + 0.1);
-	py3 fl64  :	(3.2 - 0.1, 3.2 + 0.1);
-	pz3 fl64  :	(3.2 - 0.1, 3.2 + 0.1);
-	px4 fl64  :	(2.1, 2.3);
-	py4 fl64  :	(2.1, 2.3);
-	pz4 fl64  :	(2.1, 2.3);
 
 }
 
 OUTPUTS {
-	#off; #m_2_1; #c; #m_2_1 ;
-	#proj0 ;
 	eigen_radius ;
-	#DX ;
-	#dist ;
-	#minPt_x ;
 }
 
 
@@ -38,9 +27,9 @@ EXPRS {
 	numPts int = 5 ;
 
 	## Covariance matrix block : Covariance(m, pt, numPts)
-		cx = (px0 + px1 + px2 + px3 + px4)/numPts ;
-		cy = (py0 + py1 + py2 + py3 + py4)/numPts ;
-		cz = (pz0 + pz1 + pz2 + pz3 + pz4)/numPts ;
+		cx = (px0 + px1 + px2 )/numPts ;
+		cy = (py0 + py1 + py2 )/numPts ;
+		cz = (pz0 + pz1 + pz2 )/numPts ;
 
 
 		e00 = 0.0 ; e11 = 0.0 ; e22 = 0.0 ; e01 = 0.0 ; e02 = 0.0 ; e12 = 0.0 ;
@@ -75,25 +64,6 @@ EXPRS {
 		e02 = e02 + px*pz ;
 		e12 = e12 + py*pz ;
 
-		px = px3 - cx ;
-		py = py3 - cy ;
-		pz = pz3 - cz ;
-		e00 = e00 + px*px ;
-		e11 = e11 + py*py ;
-		e22 = e22 + pz*pz ;
-		e01 = e01 + px*py ;
-		e02 = e02 + px*pz ;
-		e12 = e12 + py*pz ;
-
-		px = px4 - cx ;
-		py = py4 - cy ;
-		pz = pz4 - cz ;
-		e00 = e00 + px*px ;
-		e11 = e11 + py*py ;
-		e22 = e22 + pz*pz ;
-		e01 = e01 + px*py ;
-		e02 = e02 + px*pz ;
-		e12 = e12 + py*pz ;
 
 		## Fill the covariance matrix elements
 		m_0_0 = e00 / numPts ;
@@ -279,34 +249,6 @@ EXPRS {
 		endif
 
 
-		#ii = ii+1;
-		#proj3 = (px3 * e_0) + (py3 * e_1) + (pz3 * e_2) ;
-
-		#if ( proj3 < minproj ) then
-		#	minproj = proj3 ;
-		#	#imin = ii ;
-		#	minPt_x = px3 ; minPt_y = py3 ; minPt_z = pz3 ;
-		#endif
-		#if (proj3 > maxproj) then
-		#	maxproj = proj3 ;
-		#	#imax = ii ;
-		#	maxPt_x = px3 ; maxPt_y = py3 ; maxPt_z = pz3 ;
-		#endif
-
-
-		#ii = ii+1;
-		#proj4 = (px4 * e_0) + (py4 * e_1) + (pz4 * e_2) ;
-
-		#if ( proj4 < minproj ) then
-		#	minproj = proj4 ;
-		#	#imin = ii ;
-		#	minPt_x = px4 ; minPt_y = py4 ; minPt_z = pz4 ;
-		#endif
-		#if (proj4 > maxproj) then
-		#	maxproj = proj4 ;
-		#	#imax = ii ;
-		#	maxPt_x = px4 ; maxPt_y = py4 ; maxPt_z = pz4 ;
-		#endif
 
 		DX = (maxPt_x - minPt_x)	;
 		DY = (maxPt_y - minPt_y)	;
