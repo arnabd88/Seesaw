@@ -1,0 +1,44 @@
+
+
+INPUTS {
+
+	a fl64 : (3.0,3.0);
+	b fl64 : (3.5,3.5);
+	c fl64 : (-2.0, 2.0);
+}
+
+
+OUTPUTS {
+	temp ;
+}
+
+REQUIRES {
+
+	RSC1 :  (b*b - 4.0*a*c > 0.1) ;
+
+}
+
+EXPRS {
+
+	discr = ((b * b) - ((a * c) * 4.0));
+
+	temp = 0.0 ;
+	if (b * b - a * c > 10.0) then
+		
+		temp_1 = 0.0 ;
+		if ( b > 0.0 ) then
+			temp_1 = ((c * 2.0) / (-1*b - sqrt(discr))) ;
+		else 
+			if (( b < 0.0)) then
+				temp_2 = ((-1*b + sqrt(discr)) / (a * 2.0));
+			else
+				temp_2 = ((-1*b + sqrt(discr)) / (a * 2.0));
+			endif
+			temp_1 = temp_2 ;
+		endif
+		temp = temp_1 ;
+	else
+		temp = ((-1*b + sqrt(discr)) / (a * 2.0));
+	endif
+
+}
