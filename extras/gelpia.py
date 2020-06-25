@@ -214,8 +214,9 @@ def find_max(function, epsilons, timeout, grace, update, iters, seed, debug,
                                                    grace, update, iters, seed, debug, src_dir,
                                                    executable)
     if max_lower is not None:
-        max_lower.value = my_max_lower
-        max_upper.value = my_max_upper
+     #   print("FIND_MAX:", my_max_lower, max_lower, my_max_upper, max_upper)
+        max_lower.value = my_max_lower if my_max_lower != "Overconstrained" else 0.0
+        max_upper.value = my_max_upper if my_max_upper != "Overconstrained" else 0.0
 
     return my_max_lower, my_max_upper
 
@@ -230,11 +231,13 @@ def find_min(function, epsilons, timeout, grace, update, iters, seed, debug,
 	                                         interp_function, smt2, file_id, epsilons, timeout,
 	                                         grace, update, iters, seed, debug, src_dir,
 	                                         executable)
-	print(max_upper, type(max_upper).__name__)
-	print(max_lower, type(max_lower).__name__)
+	#print("1: MAX_UPPER", max_upper, type(max_upper).__name__)
+	#print("2: MAX_LOWER", max_lower, type(max_lower).__name__)
 	#assert(type(max_upper) == type(max_lower))
 	min_lower = -max_upper if not type(max_upper).__name__ == 'str' else max_upper
 	min_upper = -max_lower if not type(max_lower).__name__ == 'str' else max_lower
+	#print("3: MIN_UPPER", min_lower, type(min_lower).__name__)
+	#print("4: MIN_LOWER", min_upper, type(min_upper).__name__)
 	return min_lower, min_upper
 
 
