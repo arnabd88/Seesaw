@@ -78,6 +78,20 @@ class AnalyzeNode_Cond(object):
 			Globals.condExprBank[~csym] = Globals.condExprBank.get(~csym) if ~csym in Globals.condExprBank.keys()\
 			else helper.handleConditionals([symNode], etype=True, inv=True)
 
+#	def __setup_condexpr__(self):
+#		for csym in Globals.predTable.keys():
+#			# Fill in both csym and ~csym for delta substitution
+#			symNode = Globals.predTable[csym]
+#			Globals.condExprBank[csym] = Globals.condExprBank.get(csym) if csym in Globals.condExprBank.keys()\
+#			else helper.handleConditionals([symNode], etype=True, inv=False)
+#			# debug prints
+#			(expr, FSYM, CSYM) = Globals.condExprBank[csym]
+#			if "True" in expr or "False" in expr:
+#				#print("SETUP_CONDEXPR:", expr, type(expr), csym)
+#				self.truthTable.add(csym)
+#
+#			Globals.condExprBank[~csym] = Globals.condExprBank.get(~csym) if ~csym in Globals.condExprBank.keys()\
+#			else helper.handleConditionals([symNode], etype=True, inv=True)
 
 	def __setup_outputs__(self):
 		for node in self.trimList:
@@ -567,7 +581,7 @@ class AnalyzeNode_Cond(object):
 		self.abstractNodes(results)
 		return self.rebuildAST(self.trimList)
 
-	def abstractAnalysis(self, MaxDepth, MaxOps, bound_min, bound_max):
+	def abstractAnalysis(self, MaxDepth, bound_min, bound_max):
 		[abs_depth, sel_candidate_list] = helper.selectCandidateNodes(MaxDepth, bound_min, bound_max)
 
 		while abs_depth == MaxDepth and bound_min < bound_max +1:
@@ -589,16 +603,17 @@ class AnalyzeNode_Cond(object):
 	
 		MaxDepth = max([node.depth for node in self.trimList])
 
+		print("MAXDEPTH:{MaxDepth}".format(MaxDepth=MaxDepth))
 		while (MaxDepth >= bound_min and MaxDepth >= bound_max):
-			MaxOps = max([node.f_expression.__countops__() for node in self.trimList])
-			print("MAXDEPTH:{MaxDepth}, MAXOPS:{MaxOps}".format(MaxDepth=MaxDepth, MaxOps=MaxOps))
-			MaxDepth = self.abstractAnalysis(MaxDepth, MaxOps, bound_min, bound_max)
-
+			#MaxOps = max([node.f_expression.__countops__() for node in self.trimList])
+			print("MAXDEPTH:{MaxDepth}".format(MaxDepth=MaxDepth))
+			MaxDepth = self.abstractAnalysis(MaxDepth, bound_min, bound_max)
+		print("out of while")
+		self.__setup_condexpr__()
 		(self.parent_dict, self.cond_syms) = helper.expression_builder(self.trimList)
 		self.__init_workStack__()
 		self.__setup_outputs__()
 		self.__externConstraints__()
-		self.__setup_condexpr__()
 		#print("CondExpr:", Globals.condExprBank.keys())
 
 		dt1 = time.time()

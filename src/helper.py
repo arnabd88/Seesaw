@@ -82,7 +82,7 @@ def dfs_expression_builder(node, reachable, parent_dict, free_syms, cond_syms, c
 		parent_dict[child].append(node)
 
 	if type(node).__name__ == "ExprComp":
-		#print("ExprComp line:", node.token.lineno)
+		print("ExprComp line:", node.token.lineno)
 		if etype:
 			print("HIDDEN CONDITIONAL DEPTH:", node.children[0].depth, node.children[1].depth)
 			res0 = ANC([node.children[0]], [], node.children[0].depth, Globals.argList.realpaver).start()
@@ -124,9 +124,11 @@ def expression_builder(probeList, etype=False, ctype=False, inv=False):
 	reachable = defaultdict(set)
 	free_syms = set()
 	cond_syms = set()
+	print("Begin enter")
 
 	for node in probeList:
 		if not reachable[node.depth].__contains__(node):
+			print(node.depth)
 			(free_syms, cond_syms) = dfs_expression_builder(node, reachable, parent_dict, free_syms, cond_syms, cond=Globals.__T__,etype=etype, ctype=ctype, inv=inv)
 
 		#print(node.f_expression)
@@ -138,6 +140,7 @@ def expression_builder(probeList, etype=False, ctype=False, inv=False):
 
 	#print("Inside expression builder :", cond_syms)
 	
+	print("Begin exit")
 	if ctype:
 		return (free_syms, cond_syms)
 	else:

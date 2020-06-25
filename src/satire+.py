@@ -121,6 +121,7 @@ def simplify_with_abstraction(sel_candidate_list, argList, maxdepth, final=False
 
 	Globals.condExprBank.clear()
 	obj = AnalyzeNode_Cond(sel_candidate_list, argList, maxdepth, paving=argList.realpaver)
+	print("Start!")
 	results = obj.start()
 
 	if "flag" in results.keys():

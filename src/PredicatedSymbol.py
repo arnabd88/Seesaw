@@ -1,5 +1,5 @@
 import symengine as seng
-import sympy as sym
+import sympy 
 import Globals
 import numbers
 
@@ -231,6 +231,9 @@ class Sym(object):
 	def __countops__(self):
 		return seng.count_ops(self.exprCond[0])
 
+	def __Bcountops__(self):
+		return sympy.count_ops(self.exprCond[1])
+
 
 	def __freeSyms__(self):
 		try:
@@ -366,6 +369,9 @@ class SymTup(tuple):
 
 	def __countops__(self):
 		return max([fl.__countops__() for fl in self]+[0])
+
+	def __Bcountops__(self):
+		return max([fl.__Bcountops__() for fl in self]+[0])
 
 	
 	def __concat__(self, other, trim=False):
