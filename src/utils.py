@@ -143,6 +143,7 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 		str_cond_expr = re.sub(r'\<\<', "(", str_cond_expr)
 		str_cond_expr = re.sub(r'\>\>', ")", str_cond_expr)
 		str_cond_expr = re.sub(r'True', "1<=1", str_cond_expr)
+		str_cond_expr = re.sub(r'False', "1<=0", str_cond_expr)
 
 	#str_extc_expr = str(externConstraints)
 	str_extc_expr = str(externConstraints)
@@ -157,6 +158,7 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	str_extc_expr = re.sub(r'\<\<', "(", str_extc_expr)
 	str_extc_expr = re.sub(r'\>\>', ")", str_extc_expr)
 	str_extc_expr = re.sub(r'True', "1<=1", str_extc_expr)
+	str_extc_expr = re.sub(r'False', "1<=0", str_extc_expr)
 	#print("Pass conversion gelpia")
 	gstr_expr = inputStr + str_expr  ## without the constraints
 	Globals.gelpiaID += 1
