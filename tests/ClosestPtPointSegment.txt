@@ -27,7 +27,7 @@ INPUTS {
 	#cy fl64 : (3.0, 7.0);
 	#cz fl64 : (3.0, 7.0);
 
-	er fl64 : (-0.2 , 0.2);
+	er fl64 : (-0.2 , 0.1);
 	bx fl64 : (-4.0  - er, -4.0  + er);
 	by fl64 : (4.0   - er, 4.0   + er);
 	bz fl64 : (3.0   - er, 3.0   + er);
@@ -42,7 +42,7 @@ INPUTS {
 OUTPUTS {
 	#dx; dy; dz; #t; #Dot_ac_ab; #Dot_ab_ab; #t ;
 	#t ;
-	dx ;
+	dx ; dy; dz
 }
 
 EXPRS {
@@ -63,7 +63,7 @@ EXPRS {
 	if (t < 0.0) then
 		t = 0.0;
 	endif
-	if(t > 1.0) then
+	if(t >= 1.0) then
 		t = 1.0;
 	endif
 
