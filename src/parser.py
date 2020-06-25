@@ -35,7 +35,7 @@ class Sparser(object):
 		raise Exception('Invalid syntax while parsing')
 
 	def consume(self, token_type):
-		#print(self.current_token.type, token_type, self.current_token.value)
+		print(self.current_token.type, token_type, self.current_token.value)
 		if self.current_token.type == token_type:
 			self.current_token = self.lexer.get_next_token()
 		else:
@@ -367,7 +367,7 @@ class Sparser(object):
 			self.assign_constraint_expr()
 
 	def assign_constraint_expr(self):
-		""" assign_constraint_expr : ID COLON cond_expr """
+		print(""" assign_constraint_expr : ID COLON cond_expr """)
 		if self.current_token.type == ID:
 			name = str(self.current_token.value)
 			nameToken = self.current_token

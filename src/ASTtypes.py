@@ -21,6 +21,12 @@ class CToken(object):
 		self.lineno = None
 		self.derived_token = FLOAT
 
+	def __str__(self):
+		return '(Token.type = {ttype}, Token.value={value}, Token.lineno=Lifted(cannot trace origin))'.format(ttype=self.type, value=self.value)
+
+	def __repr__(self):
+		return self.__str__()
+
 
 ##-- Base AST class
 class AST(object):

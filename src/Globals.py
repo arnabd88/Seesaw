@@ -38,6 +38,8 @@ condExprBank = dict()
 
 externPredTable = dict()
 
+InstabID = dict()
+InstabDict = dict()
 
 
 ## ID variables 
