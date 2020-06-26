@@ -38,9 +38,13 @@ gelpia_rust_executable = gelpia.setup_rust_env(gelpia.GIT_DIR, False)
 gelpia_input_epsilon = 1e-4
 gelpia_output_epsilon = 1e-4
 gelpia_output_epsilon_relative = 1e-4
+gelpia_dreal_epsilon = 1e-8
+gelpia_dreal_epsilon_relative = 1e-8
 gelpia_epsilons = (gelpia_input_epsilon,
                    gelpia_output_epsilon,
-                   gelpia_output_epsilon_relative)
+                   gelpia_output_epsilon_relative,
+				   gelpia_dreal_epsilon,
+				   gelpia_dreal_epsilon_relative)
 gelpia_timeout = 10
 gelpia_grace = 0
 gelpia_update = 0
@@ -177,6 +181,7 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 		gstr_expr = inputStr + str_constraint +"; " + str_expr
 	#fout.write(str_expr)
 	fout.close()
+	print(gstr_expr)
 
 	#print(str_expr)
 	start_time = time.time()

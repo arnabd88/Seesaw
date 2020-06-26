@@ -6,6 +6,7 @@ import copy
 import Globals
 from gtokens import *
 import symengine as seng
+import sympy
 import ops_def as ops
 
 from collections import defaultdict
@@ -300,10 +301,18 @@ class AnalyzeNode_Cond(object):
 		#symDict = {fsym: Globals.condExprBank[fsym][0] for fsym in free_syms}
 		#inv_symDict = {~fsym: Globals.condExprBank[~fsym][0] for fsym,v in symDict.items() if v not in ('(True)', 'True', '(False)', 'False', True, False)}
 		str_tcond = str(tcond)
-		for k in inv_symDict.keys():
-			str_tcond = str_tcond.replace(str(k), inv_symDict[k])
-		for k in symDict.keys():
-			str_tcond = str_tcond.replace(str(k), symDict[k])
+		inv_keys = list([str(k) for k in inv_symDict.keys()])
+		inv_keys.sort(reverse=True)
+		for k in inv_keys:
+			str_tcond = str_tcond.replace(k, inv_symDict[sympy.sympify(k)])
+		#for k in inv_symDict.keys():
+		#	str_tcond = str_tcond.replace(str(k), inv_symDict[k])
+		fwd_keys = list([str(k) for k in symDict.keys()])
+		fwd_keys.sort(reverse=True)
+		for k in fwd_keys:
+			str_tcond = str_tcond.replace(k, symDict[sympy.sympify(k)])
+		#for k in symDict.keys():
+		#	str_tcond = str_tcond.replace(str(k), symDict[k])
 
 		return str_tcond
 
@@ -323,7 +332,7 @@ class AnalyzeNode_Cond(object):
 				assert(dict_element is not None)
 				(subcond,free_symbols, cond_symbols) =  dict_element[0], dict_element[1], dict_element[2]
 				#subcond = subcondList[0]
-				#print("SubCond: {symID} : {SubCond}\n\n".format(symID=fsym, SubCond=subcond))
+				print("SubCond: {symID} : {SubCond}\n\n".format(symID=fsym, SubCond=subcond))
 				logger.info("SubCond:{symID} : {SubCond}\n\n".format(symID=fsym, SubCond=subcond))
 				Globals.condExprBank[fsym] = (subcond,free_symbols, cond_symbols)
 				set_free_symbols = set_free_symbols.union(free_symbols)
@@ -366,7 +375,7 @@ class AnalyzeNode_Cond(object):
 			except:
 				intv_dict = dict()
 		#intv_dict = dict()
-		print("What:", intv_dict)
+		#print("What:", intv_dict)
 		intv_dict = self.boxify(box, intv_dict)
 		if len(intv_dict.keys())==0:
 			return None
@@ -378,7 +387,7 @@ class AnalyzeNode_Cond(object):
 			v = intv_dict[k]
 			ret_list += ["{fsym} = {intv}".format(fsym=k, intv=str(intv_dict[k]))]
 		retStr = ";".join(ret_list)+";"
-		print("RETSTR:", retStr)
+		#print("RETSTR:", retStr)
 		return retStr
 			
 			
@@ -414,6 +423,7 @@ class AnalyzeNode_Cond(object):
 														   cond_expr, \
 														   self.externConstraints, \
 														   free_symbols.union(self.externFreeSymbols))
+				print("INTV-out1; ", Intv)
 			else:
 				res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
 				[rpVars, numVars]			=	utils.rpVariableStr(free_symbols.union(self.externFreeSymbols))
@@ -436,6 +446,7 @@ class AnalyzeNode_Cond(object):
 						#print("INTV; ", Intv, box, Globals.gelpiaID)
 						
 
+					print("INTV-out2; ", Intv)
 				else:
 					Intv						=	utils.generate_signature(expr,\
 															   #cond_expr, \
@@ -443,7 +454,7 @@ class AnalyzeNode_Cond(object):
 															   self.externConstraints, \
 															   free_symbols.union(self.externFreeSymbols))
 
-			#print("INTV-out; ", Intv)
+					print("INTV-out3; ", Intv)
 		else:
 			#print("Paving disabled -> invoke gelpia on full box")
 			res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
@@ -452,6 +463,7 @@ class AnalyzeNode_Cond(object):
 													   cond_expr, \
 													   self.externConstraints, \
 													   free_symbols.union(self.externFreeSymbols))
+			print("INTV-out4; ", Intv)
 		return [Intv, res_avg_maxres]
 
 
@@ -472,6 +484,7 @@ class AnalyzeNode_Cond(object):
 				expr, cond = els.exprCond
 				(cond_expr,free_symbols)	=	self.parse_cond(cond)
 				print("PROCESS_EXPRESSION_LOC1")
+				print("Outside:", cond_expr)
 				[errIntv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=True )
 				err = max([abs(i) for i in errIntv]) if errIntv is not None else 0
 				print("STAT: SP:{err}, maxres:{maxres}, avg:{avg}".format(\

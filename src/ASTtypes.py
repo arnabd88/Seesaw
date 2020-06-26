@@ -118,9 +118,11 @@ class FreeVar(AST):
 		name = str(obj.token.value)
 		obj.depth = 0
 		intv = Globals.inputVars.get(obj.token.value, None)
-		if intv is not None and (intv["INTV"][0]==intv["INTV"][1]):
+		print(intv)
+		if intv is not None and intv["INTV"] is None:
+			return SymTup((Sym(0.0, Globals.__F__),))
+		elif intv is not None and (intv["INTV"][0]==intv["INTV"][1]):
 			return SymTup((Sym( intv["INTV"][0], Globals.__T__),))
-			#return intv["INTV"][0]
 		else:
 			return SymTup((Sym(obj.token.value, Globals.__T__),))
 
