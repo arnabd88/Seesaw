@@ -13,6 +13,7 @@ from collections import defaultdict
 import utils
 import helper
 
+import ctypes
 from functools import reduce
 from PredicatedSymbol import Sym, SymTup, SymConcat
 from ASTtypes import *
@@ -354,7 +355,8 @@ class AnalyzeNode_Cond(object):
 					y = var.y
 					intv_dict[name] = [x,y]
 				else:
-					print(var.name.decode())
+					Globals.garbageCount += 1
+					print(var.name.decode(), Globals.garbageCount)
 					return intv_dict
 			return intv_dict
 
@@ -374,7 +376,7 @@ class AnalyzeNode_Cond(object):
 				intv_dict = {str(var) : Globals.inputVars[var]["INTV"] for var in cond_free_symbols}
 			except:
 				intv_dict = dict()
-		#intv_dict = dict()
+		intv_dict = dict()
 		#print("What:", intv_dict)
 		intv_dict = self.boxify(box, intv_dict)
 		if len(intv_dict.keys())==0:
@@ -387,7 +389,7 @@ class AnalyzeNode_Cond(object):
 			v = intv_dict[k]
 			ret_list += ["{fsym} = {intv}".format(fsym=k, intv=str(intv_dict[k]))]
 		retStr = ";".join(ret_list)+";"
-		#print("RETSTR:", retStr)
+		print("RETSTR:", retStr)
 		return retStr
 			
 			
@@ -406,7 +408,6 @@ class AnalyzeNode_Cond(object):
 
 		return boxIntervals
 		
-
 	def process_expression(self, expr, cond_expr, free_symbols, get_stats=False):
 		#(cond_expr,free_symbols)	=	self.parse_cond(cond)
 		if self.paving:
@@ -427,8 +428,10 @@ class AnalyzeNode_Cond(object):
 			else:
 				res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
 				[rpVars, numVars]			=	utils.rpVariableStr(free_symbols.union(self.externFreeSymbols))
-				rpBoxes = helper.rpInterface(rpVars+"Constraints "+rpConstraint, numVars, self.numBoxes) ;
+				[rpBoxes, fhand] = helper.rpInterface(rpVars+"Constraints "+rpConstraint, numVars, self.numBoxes) ;
 				boxIntervals				=	self.extract_boxes(rpBoxes, expr, free_symbols.union(self.externFreeSymbols))
+				ctypes.cdll.LoadLibrary('libdl.so').dlclose(fhand)
+				print("RPCONSTR:", rpConstraint)
 				if len(boxIntervals)>1:
 					Intv						=	utils.generate_signature(expr,\
 																   #cond_expr, \

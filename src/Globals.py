@@ -41,6 +41,8 @@ externPredTable = dict()
 InstabID = dict()
 InstabDict = dict()
 
+garbageCount = 0
+
 
 ## ID variables 
 CSID = 0   ## branch identifiers

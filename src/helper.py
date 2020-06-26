@@ -27,6 +27,7 @@ def rpInterface(rpConstraint, numVars, numBoxes):
 
 	rp = ctypes.CDLL("RL1/build/libfoo.so")
 	rp.initializeRP.restype = ctypes.POINTER(ctypes.POINTER(Cintervals * numVars)*numBoxes)
+	print("@D BOX size -> ", numVars * numBoxes)
 	rp.initializeRP.argtypes = [ctypes.c_char_p]
 
 	returnValue = rp.initializeRP(rpConstraint.encode())
@@ -41,7 +42,7 @@ def rpInterface(rpConstraint, numVars, numBoxes):
 	#		print(var.x)
 	#		print(var.y)
 
-	return returnValue
+	return [returnValue, rp._handle]
 
 
 def getProbeList():
