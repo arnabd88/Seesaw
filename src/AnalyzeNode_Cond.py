@@ -354,7 +354,9 @@ class AnalyzeNode_Cond(object):
 					x = var.x
 					y = var.y
 					intv_dict[name] = [x,y]
+					print("Valid:", [name,x,y])
 				else:
+					intv_dict.clear()
 					Globals.garbageCount += 1
 					print(var.name.decode(), Globals.garbageCount)
 					return intv_dict
@@ -362,12 +364,12 @@ class AnalyzeNode_Cond(object):
 
 		else:
 			print("No valid box")
+			intv_dict.clear()
 			return intv_dict
 
 
 
 	def analyze_box(self, box, expr, cond_free_symbols):
-		print("EXPR:", expr, cond_free_symbols)
 		try:
 			FREE_SYMS = expr.free_symbols.union(cond_free_symbols)
 			intv_dict = {str(var) : Globals.inputVars[var]["INTV"] for var in FREE_SYMS}
@@ -389,7 +391,6 @@ class AnalyzeNode_Cond(object):
 			v = intv_dict[k]
 			ret_list += ["{fsym} = {intv}".format(fsym=k, intv=str(intv_dict[k]))]
 		retStr = ";".join(ret_list)+";"
-		print("RETSTR:", retStr)
 		return retStr
 			
 			
@@ -405,6 +406,8 @@ class AnalyzeNode_Cond(object):
 			retStr = self.analyze_box(box, expr, cond_free_symbols)
 			if retStr is not None:
 				boxIntervals.append(retStr)
+			else:
+				return boxIntervals
 
 		return boxIntervals
 		
@@ -430,9 +433,8 @@ class AnalyzeNode_Cond(object):
 				[rpVars, numVars]			=	utils.rpVariableStr(free_symbols.union(self.externFreeSymbols))
 				[rpBoxes, fhand] = helper.rpInterface(rpVars+"Constraints "+rpConstraint, numVars, self.numBoxes) ;
 				boxIntervals				=	self.extract_boxes(rpBoxes, expr, free_symbols.union(self.externFreeSymbols))
-				#ctypes.cdll.LoadLibrary('libdl.so').dlclose(fhand)
-				print("RPCONSTR:", rpConstraint)
-				if len(boxIntervals)>1:
+				ctypes.cdll.LoadLibrary('libdl.so').dlclose(fhand)
+				if len(boxIntervals)>=1:
 					Intv						=	utils.generate_signature(expr,\
 																   #cond_expr, \
 																   cond_expr, \

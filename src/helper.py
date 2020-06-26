@@ -25,6 +25,7 @@ class Cintervals(ctypes.Structure):
 
 def rpInterface(rpConstraint, numVars, numBoxes):
 
+	print("IN-RPCONSTR:", rpConstraint)
 	rp = ctypes.CDLL("RL1/build/libfoo.so")
 	rp.initializeRP.restype = ctypes.POINTER(ctypes.POINTER(Cintervals * numVars)*numBoxes)
 	print("@D BOX size -> ", numVars * numBoxes)
