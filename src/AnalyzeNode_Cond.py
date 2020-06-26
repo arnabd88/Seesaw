@@ -433,7 +433,7 @@ class AnalyzeNode_Cond(object):
 				[rpVars, numVars]			=	utils.rpVariableStr(free_symbols.union(self.externFreeSymbols))
 				[rpBoxes, fhand] = helper.rpInterface(rpVars+"Constraints "+rpConstraint, numVars, self.numBoxes) ;
 				boxIntervals				=	self.extract_boxes(rpBoxes, expr, free_symbols.union(self.externFreeSymbols))
-				ctypes.cdll.LoadLibrary('libdl.so').dlclose(fhand)
+				#ctypes.cdll.LoadLibrary('libdl.so').dlclose(fhand)
 				if len(boxIntervals)>=1:
 					Intv						=	utils.generate_signature(expr,\
 																   #cond_expr, \
