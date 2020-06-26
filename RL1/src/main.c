@@ -1636,6 +1636,7 @@ interval_t** initializeRP(char* namefile)
         {
             IBClockEnd(IBClockSolve);
             printf("\nEND OF SOLVING\n");
+			printf("IBInfoTop : %d\n", IBInfoTop);
         }
         else
         {

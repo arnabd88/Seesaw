@@ -344,11 +344,11 @@ int SAT_IBBisection(IBDomains d, int Nobisect, int* completeProcess)
         {
             if( IBSolutionInnerBox(d) )
             {
-                printf("\nINNER BOX 1\n");
+                printf("\n1. INNER BOX 1\n");
             }
             else
             {
-                printf("\nOUTER BOX 1\n");
+                printf("\n1. OUTER BOX 1\n");
             }
             IBWriteVdom(stdout,d,variables,IBPragmaIntervalDigits,IBPragmaStyleInterval);
             printf("\n  precision: %.3g, ",IBPrecisionSolution(d));
@@ -414,13 +414,13 @@ int SAT_IBBisection(IBDomains d, int Nobisect, int* completeProcess)
                 {
                     if( isInner )
                     {
-                        printf("\nINNER BOX %d\n",nbsol);
+                        printf("\n2. INNER BOX %d\n",nbsol);
                     }
                     else
                     {
                         if( IBSafeSolutionIntervalNewton(df) ) printf("\nSAFE ");
                         else printf("\n");
-                        printf("OUTER BOX %d\n",nbsol);
+                        printf("2. OUTER BOX %d\n",nbsol);
                     }
                     
                     IBWriteVdom(stdout,df,variables,IBPragmaIntervalDigits,IBPragmaStyleInterval);
@@ -473,13 +473,13 @@ int SAT_IBBisection(IBDomains d, int Nobisect, int* completeProcess)
             {
                 if( IBSolutionInnerBox(df) )
                 {
-                   // printf("\nIINNER BOX %d\n",nbsol);            
+                    printf("\n3. IINNER BOX %d\n",nbsol);            
                 }
                 else
                 {
                     if( IBSafeSolutionIntervalNewton(df) ) printf("\nSAFE ");
                     else printf("\n");
-                 //   printf("OOUTER BOX %d\n",nbsol);
+                    printf("3. OOUTER BOX %d\n",nbsol);
                 }
                 
                 IBWriteVdom(stdout,df,variables,IBPragmaIntervalDigits,IBPragmaStyleInterval);
