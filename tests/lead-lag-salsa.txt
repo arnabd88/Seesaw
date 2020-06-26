@@ -75,7 +75,35 @@ EXPRS {
 			else
 				e_2 = xc1_2 - yc_2 ;
 			endif
-			temp_3 = xc1_2 ;
+			temp_6 = 0.0;
+			if ( e_2 > eps ) then
+				v_2 = (y-yd) ;
+				temp_7 = 0.0;
+				if ( v_2 < -1.0) then
+					temp_7 = 01.0;
+				else
+					temp_8 = 0.0;
+					if (v_2 > 1.0) then
+						temp_8 = 1.0;
+					else
+						temp_8 = v_2 ;
+					endif
+					temp_7 = temp_8;
+				endif
+				yc_3 = temp_7 ;
+				u_3 = ((Cc0 * xc0_2) + ((Cc1 * xc1_2) + (Dc * yc_3)));
+				xc0_3 = ((Ac00 * xc0_2) + ((Ac01 * xc1_2) + (Bc0 * yc_3)));
+				xc1_3 = ((Ac10 * xc0_3) + ((Ac11 * xc1_2) + (Bc1 * yc_3)));
+				if ( yc_3 - xc1_3 >= 0.0 ) then
+					e_3 = yc_3 - xc1_3 ;
+				else
+					e_3 = xc1_3 - yc_3 ;
+				endif
+				temp_6 = temp_7 ;
+			else
+				temp_6 = xc1_2 ;
+			endif
+			temp_3 = temp_6 ; 
 		else
 			temp_3 = xc1_1 ;
 		endif

@@ -40,11 +40,8 @@ gelpia_output_epsilon = 1e-4
 gelpia_output_epsilon_relative = 1e-4
 gelpia_dreal_epsilon = 1e-8
 gelpia_dreal_epsilon_relative = 1e-8
-gelpia_epsilons = (gelpia_input_epsilon,
-                   gelpia_output_epsilon,
-                   gelpia_output_epsilon_relative,
-				   gelpia_dreal_epsilon,
-				   gelpia_dreal_epsilon_relative)
+#gelpia_epsilons = (gelpia_input_epsilon, gelpia_output_epsilon, gelpia_output_epsilon_relative)
+gelpia_epsilons = (gelpia_input_epsilon, gelpia_output_epsilon, gelpia_output_epsilon_relative, gelpia_dreal_epsilon, gelpia_dreal_epsilon_relative)
 gelpia_timeout = 10
 gelpia_grace = 0
 gelpia_update = 0

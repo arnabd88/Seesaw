@@ -103,7 +103,7 @@ class AnalyzeNode_Cond(object):
 		
 	def converge_parents(self, node):
 		#print(node.depth, len(node.f_expression))
-		#print(type(node).__name__, node.depth, self.parentTracker[node], len(node.parents) , len(self.parent_dict[node]))#, node.f_expression)
+		print(type(node).__name__, node.depth, self.parentTracker[node], len(node.parents) , len(self.parent_dict[node]))#, node.f_expression)
 		return True if self.parentTracker[node] >= len(self.parent_dict[node]) else False
 
 
@@ -258,7 +258,7 @@ class AnalyzeNode_Cond(object):
 							).__abs__()
 			acc = self.Accumulator.get(outVar, SymTup((Sym(0.0, Globals.__T__),)))
 			if(len(acc) > 10):
-				acc = self.merge_discontinuities(self.condmerge(acc), 1000)
+				acc = self.merge_discontinuities(self.condmerge(acc), 4000)
 
 			instability_error = 0 if not Globals.argList.report_instability else self.add_instability_error(expr_solve)
 			self.InstabilityAccumulator[outVar] = self.InstabilityAccumulator.get(outVar, 0.0) +\
