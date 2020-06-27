@@ -1,13 +1,14 @@
 
 INPUTS {
-	TC_00	fl64	:	(27.05, 27.05) ; 
-	TC_01	fl64	:	(1.5137, 1.5137) ; 
-	TC_02	fl64	:	(63.6, 63.6) ; 
-	TC_03	fl64	:	(0.52, 0.52) ; 
-	TC_10	fl64	: 	(-16.68, -16.68) ;
-	TC_11	fl64	: 	(1.0, 1.0) ;
-	TC_12	fl64	: 	(1.0, 1.0) ;
-	TC_13	fl64	: 	(0.138, 0.138) ;
+	err		fl64	:	(-0.1, 0.1);
+	TC_00	fl64	:	(27.05	- err, 27.05	+ err) ; 
+	TC_01	fl64	:	(1.5137	- err, 1.5137+ err) ; 
+	TC_02	fl64	:	(63.6	- err, 63.6	+ err) ; 
+	TC_03	fl64	:	(0.52	- err, 0.52	+ err) ; 
+	TC_10	fl64	: 	(-16.68	- err, -16.68+ err) ;
+	TC_11	fl64	: 	(1.0	- err, 1.0	+ err) ;
+	TC_12	fl64	: 	(1.0	- err, 1.0	+ err) ;
+	TC_13	fl64	: 	(0.138	- err, 0.138	+ err) ;
 	#
 	SPC_0	fl64	:	(0.0,0.0);
 	SPC_1	fl64	:	(7621.0,7621.0);
@@ -42,7 +43,7 @@ EXPRS {
 
 		# iter0
 
-		iter  = 0;
+		iter int = 0;
 		radc  = TC_00 ;
 		to_index rnd64 = TC_01 ;
 
@@ -50,7 +51,7 @@ EXPRS {
 			to_index  = to_index + ((SPC_4 - SPC_4) / (SPC_3 - SPC_6)) * ((TC_01 - 1.0)/(TC_02));
 		endif
 
-		if (radc != 0) then
+		if (radc >= 0.01 || radc <= -0.01) then
 			if (object_distance == 0) then
 				axis_slope_angle = 0.0 ;
 				iang_sin = ray_height / radc ;
@@ -85,7 +86,7 @@ EXPRS {
 			to_index = to_index + ((SPC_4 - SPC_4)/(SPC_3 - SPC_6)) * ((TC_11 - 1.0) / (TC_12)) ;
 		endif
         #
-		if (radc != 0) then
+		if (radc >= 0.01 || radc <= -0.01) then
 			if (object_distance == 0) then
 				axis_slope_angle = 0.0 ;
 				iang_sin = ray_height / radc ;
