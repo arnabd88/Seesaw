@@ -1,5 +1,5 @@
 ## for execution inside build
-\rm libfoo.so ; make clean ; find . -name "*.o" | xargs rm -rf
+\rm libsatrp.so ; make clean ; find . -name "*.o" | xargs rm -rf
 gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.   -O2 -ffloat-store -funroll-loops -c ../src/parser.c
                     -fPIC               -Isrc/.
 gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.   -O2 -ffloat-store -funroll-loops -c ../src/lexer.c
@@ -30,10 +30,10 @@ gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-lo
 gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-loops -c ../src/search.c
 gcc -DHAVE_CONFIG_H -fPIC -I../src -I./ -Isrc/.    -O2 -ffloat-store -funroll-loops -c ../src/main.c
 
-gcc  -O2 -ffloat-store -funroll-loops -shared -o libfoo.so  parser.o lexer.o profile.o interval.o union_interval.o domain.o default_interval.o constant.o variable.o constraint.o evaluator.o narrowing_hullbox.o narrowing_newton.o propagation_local.o propagation_strong.o list_domains.o search.o main.o -lm -lfl
+gcc  -O2 -ffloat-store -funroll-loops -shared -o libsatrp.so  parser.o lexer.o profile.o interval.o union_interval.o domain.o default_interval.o constant.o variable.o constraint.o evaluator.o narrowing_hullbox.o narrowing_newton.o propagation_local.o propagation_strong.o list_domains.o search.o main.o -lm -lfl
 
-# \rm libfoo.so ; make clean ; find . -name "*.o" | xargs rm -rf
+# \rm libsatrp.so ; make clean ; find . -name "*.o" | xargs rm -rf
 # 
-# source ../ArnabMake.txt; gcc  -O2 -ffloat-store -funroll-loops -shared -o libfoo.so  parser.o lexer.o profile.o interval.o union_interval.o domain.o default_interval.o constant.o variable.o constraint.o evaluator.o narrowing_hullbox.o narrowing_newton.o propagation_local.o propagation_strong.o list_domains.o search.o main.o -lm -lfl
+# source ../ArnabMake.txt; gcc  -O2 -ffloat-store -funroll-loops -shared -o libsatrp.so  parser.o lexer.o profile.o interval.o union_interval.o domain.o default_interval.o constant.o variable.o constraint.o evaluator.o narrowing_hullbox.o narrowing_newton.o propagation_local.o propagation_strong.o list_domains.o search.o main.o -lm -lfl
 # 
 # p3 interface.py
