@@ -258,7 +258,7 @@ class AnalyzeNode_Cond(object):
 							).__abs__()
 			acc = self.Accumulator.get(outVar, SymTup((Sym(0.0, Globals.__T__),)))
 			if(len(acc) > 10):
-				acc = self.merge_discontinuities(self.condmerge(acc), 4000)
+				acc = self.merge_discontinuities(self.condmerge(acc), 1000)
 
 			instability_error = 0 if not Globals.argList.report_instability else self.add_instability_error(expr_solve)
 			self.InstabilityAccumulator[outVar] = self.InstabilityAccumulator.get(outVar, 0.0) +\
@@ -370,6 +370,7 @@ class AnalyzeNode_Cond(object):
 
 
 	def analyze_box(self, box, expr, cond_free_symbols):
+		#print("AnayzeBox:", expr.free_symbols, cond_free_symbols)
 		try:
 			FREE_SYMS = expr.free_symbols.union(cond_free_symbols)
 			intv_dict = {str(var) : Globals.inputVars[var]["INTV"] for var in FREE_SYMS}
@@ -378,7 +379,7 @@ class AnalyzeNode_Cond(object):
 				intv_dict = {str(var) : Globals.inputVars[var]["INTV"] for var in cond_free_symbols}
 			except:
 				intv_dict = dict()
-		intv_dict = dict()
+		#intv_dict = dict()
 		#print("What:", intv_dict)
 		intv_dict = self.boxify(box, intv_dict)
 		if len(intv_dict.keys())==0:
