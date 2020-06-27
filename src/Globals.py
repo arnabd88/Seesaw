@@ -5,6 +5,8 @@ import symengine as seng
 from collections import OrderedDict, defaultdict
 
 argList = []
+ROOT_DIR = ''
+LIBFILE = ''
 # Global Flag, disable when expand seems to misbehave
 simplify = True
 

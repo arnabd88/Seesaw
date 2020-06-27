@@ -489,6 +489,8 @@ class AnalyzeNode_Cond(object):
 
 		## Placeholder for gelpia invocation
 		res_avg_maxres = (0,0)
+
+		print("Final Solving stage")
 		for node, tupleList in self.Accumulator.items():
 			errList = []
 			funcList = []
@@ -516,10 +518,11 @@ class AnalyzeNode_Cond(object):
 			self.InstabilityAccumulator[node] = self.InstabilityAccumulator.get(node, 0.0) + instability_error
 			##----------------------------------------------------------------
 			#print("Inside top:", instability_error)
+			print("NODE-EXPR:", node.f_expression)
 			for exprTup in node.f_expression:
 				expr, cond = exprTup.exprCond
 				(cond_expr,free_symbols)	=	self.parse_cond(cond)
-				print("PROCESS_EXPRESSION_LOC2")
+				print("PROCESS_EXPRESSION_LOC2", expr)
 				[fintv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=False )
 				#ret_intv = fintv if ret_intv is None else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
 				print("1:", fintv, ret_intv)

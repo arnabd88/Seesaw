@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 from AnalyzeNode_Cond import AnalyzeNode_Cond as ANC
 
 
-
 class Cintervals(ctypes.Structure):
 	_fields_ = ("name", ctypes.c_char_p), ("x", ctypes.c_double), ("y", ctypes.c_double)
 
@@ -26,7 +25,8 @@ class Cintervals(ctypes.Structure):
 def rpInterface(rpConstraint, numVars, numBoxes):
 
 	print("IN-RPCONSTR:", rpConstraint)
-	rp = ctypes.CDLL("RL1/build/libfoo.so")
+	#rp = ctypes.CDLL("RL1/build/libsatrp.so")
+	rp = ctypes.CDLL(Globals.LIBFILE)
 	rp.initializeRP.restype = ctypes.POINTER(ctypes.POINTER(Cintervals * numVars)*numBoxes)
 	print("@D BOX size -> ", numVars * numBoxes)
 	rp.initializeRP.argtypes = [ctypes.c_char_p]

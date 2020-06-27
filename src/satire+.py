@@ -1,5 +1,6 @@
-
+#!/usr/bin/python3
 import  sys
+import os
 import time
 import argparse
 import symengine as seng
@@ -252,6 +253,13 @@ if __name__ == "__main__":
 					level = logging.INFO,
 					filemode = 'w')
 	logger = logging.getLogger()
+
+	##-------- Check if realpaver is available -----------------
+	Globals.ROOT_DIR = os.getenv("SAT_ROOT")
+	assert ( os.path.isdir(Globals.ROOT_DIR) )
+	if argList.realpaver:
+		Globals.LIBFILE = Globals.ROOT_DIR+"/RL1/build/"+"libsatrp.so"
+		assert ( os.path.isfile(Globals.LIBFILE) )
 
 
 
