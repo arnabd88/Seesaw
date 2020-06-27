@@ -16,7 +16,7 @@ OUTPUTS {
 	temp ;
 }
 
-EXPRS {
+EXPRS  {
 	eps = 0.000005;
 	h1 = 0.0;
 	h2 = 0.0;
@@ -93,17 +93,191 @@ EXPRS {
 					e_3 = -1*res3 ;
 				endif
 				rold_3 = rjj_3;
-				temp_2 = qj1_3;
-			 else 
+				temp_3 = 0.0;
+				if (e_3 > eps) then
+					h1_4 = (((Q11 * qj1_3) + (Q21 * qj2_3)) + (Q31 * qj3_3));
+					h2_4 = (((Q12 * qj1_3) + (Q22 * qj2_3)) + (Q32 * qj3_3));
+					h3_4 = (((Q13 * qj1_3) + (Q23 * qj2_3)) + (Q33 * qj3_3));
+					qj1_4 = (qj1_3 - (((Q11 * h1_4) + (Q12 * h2_4)) + (Q13 * h3_4)));
+					qj2_4 = (qj2_3 - (((Q21 * h1_4) + (Q22 * h2_4)) + (Q23 * h3_4)));
+					qj3_4 = (qj3_3 - (((Q31 * h1_4) + (Q32 * h2_4)) + (Q33 * h3_4)));
+					r1_4 = (r1_3 + h1_4);
+					r2_4 = (r2_3 + h2_4);
+					r3_4 = (r3_3 + h3_4);
+					r_4 = (((qj1_4 * qj1_4) + (qj2_4 * qj2_4)) + (qj3_4 * qj3_4));
+					rjj_4 = sqrt(r_4);
+					#e_4 = fabsf((1.0 - (rjj_4 / rold_3)));
+					res4 = (1.0 - (rjj_4 / rold_3));
+					if (res4 >= 0.0) then
+						e_4 = res4 ;
+					else
+						e_4 = -1*res4 ;
+					endif
+					rold_4 = rjj_4;
+					temp_4 = 0.0;
+					if (e_4 > eps) then
+						h1_5 = (((Q11 * qj1_4) + (Q21 * qj2_4)) + (Q31 * qj3_4));
+						h2_5 = (((Q12 * qj1_4) + (Q22 * qj2_4)) + (Q32 * qj3_4));
+						h3_5 = (((Q13 * qj1_4) + (Q23 * qj2_4)) + (Q33 * qj3_4));
+						qj1_5 = (qj1_4 - (((Q11 * h1_5) + (Q12 * h2_5)) + (Q13 * h3_5)));
+						qj2_5 = (qj2_4 - (((Q21 * h1_5) + (Q22 * h2_5)) + (Q23 * h3_5)));
+						qj3_5 = (qj3_4 - (((Q31 * h1_5) + (Q32 * h2_5)) + (Q33 * h3_5)));
+						r1_5 = (r1_4 + h1_5);
+						r2_5 = (r2_4 + h2_5);
+						r3_5 = (r3_4 + h3_5);
+						r_5 = (((qj1_5 * qj1_5) + (qj2_5 * qj2_5)) + (qj3_5 * qj3_5));
+						rjj_5 = sqrt(r_5);
+						#e_5 = fabsf((1.0 - (rjj_5 / rold_4)));
+						res5 = (1.0 - (rjj_5 / rold_4)) ;
+						if (res5 >= 0.0) then
+							e_5 = res5 ;
+						else
+							e_5 = -1*res5 ;
+						endif
+						rold_5 = rjj_5;
+						temp_5 = 0.0;
+						if (e_5 > eps) then
+							h1_6 = (((Q11 * qj1_5) + (Q21 * qj2_5)) + (Q31 * qj3_5));
+							h2_6 = (((Q12 * qj1_5) + (Q22 * qj2_5)) + (Q32 * qj3_5));
+							h3_6 = (((Q13 * qj1_5) + (Q23 * qj2_5)) + (Q33 * qj3_5));
+							qj1_6 = (qj1_5 - (((Q11 * h1_6) + (Q12 * h2_6)) + (Q13 * h3_6)));
+							qj2_6 = (qj2_5 - (((Q21 * h1_6) + (Q22 * h2_6)) + (Q23 * h3_6)));
+							qj3_6 = (qj3_5 - (((Q31 * h1_6) + (Q32 * h2_6)) + (Q33 * h3_6)));
+							r1_6 = (r1_5 + h1_6);
+							r2_6 = (r2_5 + h2_6);
+							r3_6 = (r3_5 + h3_6);
+							r_6 = (((qj1_6 * qj1_6) + (qj2_6 * qj2_6)) + (qj3_6 * qj3_6));
+							rjj_6 = sqrt(r_6);
+							#e_6 = fabsf((1.0 - (rjj_6 / rold_5)));
+							res6 = (1.0 - (rjj_6 / rold_5));
+							if ( res6 >= 0.0) then
+								e_6 = res6 ;
+							else
+								e_6 = -1*res6 ;
+							endif
+							rold_6 = rjj_6;
+							temp_6 = qj1_6 ;
+#							if ((e_6 > eps)) {
+#								float h1_7 = (((Q11 * qj1_6) + (Q21 * qj2_6)) + (Q31 * qj3_6));
+#								float h2_7 = (((Q12 * qj1_6) + (Q22 * qj2_6)) + (Q32 * qj3_6));
+#								float h3_7 = (((Q13 * qj1_6) + (Q23 * qj2_6)) + (Q33 * qj3_6));
+#								float qj1_7 = (qj1_6 - (((Q11 * h1_7) + (Q12 * h2_7)) + (Q13 * h3_7)));
+#								float qj2_7 = (qj2_6 - (((Q21 * h1_7) + (Q22 * h2_7)) + (Q23 * h3_7)));
+#								float qj3_7 = (qj3_6 - (((Q31 * h1_7) + (Q32 * h2_7)) + (Q33 * h3_7)));
+#								float r1_7 = (r1_6 + h1_7);
+#								float r2_7 = (r2_6 + h2_7);
+#								float r3_7 = (r3_6 + h3_7);
+#								float r_7 = (((qj1_7 * qj1_7) + (qj2_7 * qj2_7)) + (qj3_7 * qj3_7));
+#								float rjj_7 = sqrtf(r_7);
+#								float e_7 = fabsf((1.0f - (rjj_7 / rold_6)));
+#								float i_7 = (i_6 + 1.0f);
+#								float rold_7 = rjj_7;
+#								float temp_7;
+#								if ((e_7 > eps)) {
+#									float h1_8 = (((Q11 * qj1_7) + (Q21 * qj2_7)) + (Q31 * qj3_7));
+#									float h2_8 = (((Q12 * qj1_7) + (Q22 * qj2_7)) + (Q32 * qj3_7));
+#									float h3_8 = (((Q13 * qj1_7) + (Q23 * qj2_7)) + (Q33 * qj3_7));
+#									float qj1_8 = (qj1_7 - (((Q11 * h1_8) + (Q12 * h2_8)) + (Q13 * h3_8)));
+#									float qj2_8 = (qj2_7 - (((Q21 * h1_8) + (Q22 * h2_8)) + (Q23 * h3_8)));
+#									float qj3_8 = (qj3_7 - (((Q31 * h1_8) + (Q32 * h2_8)) + (Q33 * h3_8)));
+#									float r1_8 = (r1_7 + h1_8);
+#									float r2_8 = (r2_7 + h2_8);
+#									float r3_8 = (r3_7 + h3_8);
+#									float r_8 = (((qj1_8 * qj1_8) + (qj2_8 * qj2_8)) + (qj3_8 * qj3_8));
+#									float rjj_8 = sqrtf(r_8);
+#									float e_8 = fabsf((1.0f - (rjj_8 / rold_7)));
+#									float i_8 = (i_7 + 1.0f);
+#									float rold_8 = rjj_8;
+#									float temp_8;
+#									if ((e_8 > eps)) {
+#										float h1_9 = (((Q11 * qj1_8) + (Q21 * qj2_8)) + (Q31 * qj3_8));
+#										float h2_9 = (((Q12 * qj1_8) + (Q22 * qj2_8)) + (Q32 * qj3_8));
+#										float h3_9 = (((Q13 * qj1_8) + (Q23 * qj2_8)) + (Q33 * qj3_8));
+#										float qj1_9 = (qj1_8 - (((Q11 * h1_9) + (Q12 * h2_9)) + (Q13 * h3_9)));
+#										float qj2_9 = (qj2_8 - (((Q21 * h1_9) + (Q22 * h2_9)) + (Q23 * h3_9)));
+#										float qj3_9 = (qj3_8 - (((Q31 * h1_9) + (Q32 * h2_9)) + (Q33 * h3_9)));
+#										float r1_9 = (r1_8 + h1_9);
+#										float r2_9 = (r2_8 + h2_9);
+#										float r3_9 = (r3_8 + h3_9);
+#										float r_9 = (((qj1_9 * qj1_9) + (qj2_9 * qj2_9)) + (qj3_9 * qj3_9));
+#										float rjj_9 = sqrtf(r_9);
+#										float e_9 = fabsf((1.0f - (rjj_9 / rold_8)));
+#										float i_9 = (i_8 + 1.0f);
+#										float rold_9 = rjj_9;
+#										float temp_9;
+#										if ((e_9 > eps)) {
+#											float h1_10 = (((Q11 * qj1_9) + (Q21 * qj2_9)) + (Q31 * qj3_9));
+#											float h2_10 = (((Q12 * qj1_9) + (Q22 * qj2_9)) + (Q32 * qj3_9));
+#											float h3_10 = (((Q13 * qj1_9) + (Q23 * qj2_9)) + (Q33 * qj3_9));
+#											float qj1_10 = (qj1_9 - (((Q11 * h1_9) + (Q12 * h2_9)) + (Q13 * h3_9)));
+#											float qj2_10 = (qj2_9 - (((Q21 * h1_9) + (Q22 * h2_9)) + (Q23 * h3_9)));
+#											float qj3_10 = (qj3_9 - (((Q31 * h1_9) + (Q32 * h2_9)) + (Q33 * h3_9)));
+#											float r1_10 = (r1_9 + h1_9);
+#											float r2_10 = (r2_9 + h2_9);
+#											float r3_10 = (r3_9 + h3_9);
+#											float r_10 = (((qj1_9 * qj1_9) + (qj2_9 * qj2_9)) + (qj3_9 * qj3_9));
+#											float rjj_10 = sqrtf(r_9);
+#											float e_10 = fabsf((1.0f - (rjj_9 / rold_9)));
+#											float i_10 = (i_9 + 1.0f);
+#											float rold_10 = rjj_9;
+#											int test = (e_10 > eps);
+#											while (test) {
+#												h1_10 = (((Q11 * qj1_10) + (Q21 * qj2_10)) + (Q31 * qj3_10));
+#												h2_10 = (((Q12 * qj1_10) + (Q22 * qj2_10)) + (Q32 * qj3_10));
+#												h3_10 = (((Q13 * qj1_10) + (Q23 * qj2_10)) + (Q33 * qj3_10));
+#												qj1_10 = (qj1_10 - (((Q11 * h1_10) + (Q12 * h2_10)) + (Q13 * h3_10)));
+#												qj2_10 = (qj2_10 - (((Q21 * h1_10) + (Q22 * h2_10)) + (Q23 * h3_10)));
+#												qj3_10 = (qj3_10 - (((Q31 * h1_10) + (Q32 * h2_10)) + (Q33 * h3_10)));
+#												r1_10 = (r1_10 + h1_10);
+#												r2_10 = (r2_10 + h2_10);
+#												r3_10 = (r3_10 + h3_10);
+#												r_10 = (((qj1_10 * qj1_10) + (qj2_10 * qj2_10)) + (qj3_10 * qj3_10));
+#												rjj_10 = sqrtf(r_10);
+#												e_10 = fabsf((1.0f - (rjj_10 / rold_10)));
+#												i_10 = (i_10 + 1.0f);
+#												rold_10 = rjj_10;
+#												test = (e_10 > eps);
+#											}
+#											temp_9 = qj1_10;
+#										} else {
+#											temp_9 = qj1_9;
+#										}
+#										temp_8 = temp_9;
+#									} else {
+#										temp_8 = qj1_8;
+#									}
+#									temp_7 = temp_8;
+#								} else {
+#									temp_7 = qj1_7;
+#								}
+#								temp_6 = temp_7;
+#							} else {
+#								temp_6 = qj1_6;
+#							}
+							temp_5 = temp_6;
+						 else
+							temp_5 = qj1_5;
+						endif
+						temp_4 = temp_5;
+					 else
+						temp_4 = qj1_4;
+					endif
+					temp_3 = temp_4;
+				 else
+					temp_3 = qj1_3;
+				endif
+				temp_2 = temp_3;
+			 else
 				temp_2 = qj1_2;
 			endif
 			temp_1 = temp_2;
-		 else 
+		 else
 			temp_1 = qj1_1;
 		endif
 		temp = temp_1;
-	 else 
+	 else
 		temp = qj1;
 	endif
 	#return temp;
 }
+

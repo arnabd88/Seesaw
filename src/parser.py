@@ -35,7 +35,7 @@ class Sparser(object):
 		raise Exception('Invalid syntax while parsing')
 
 	def consume(self, token_type):
-		print(self.current_token.type, token_type, self.current_token.value, self.current_token.lineno)
+		#print(self.current_token.type, token_type, self.current_token.value, self.current_token.lineno)
 		if self.current_token.type == token_type:
 			self.current_token = self.lexer.get_next_token()
 		else:
@@ -572,14 +572,14 @@ if __name__ == "__main__":
 #	for k,v in Globals.progTrace.items():
 #		print("Line {num} , val = {expr}".format(num=k, expr=v.rec_eval(v)))
 
-	for k,v in Globals.predTable.items():
-		print(k, v.token.lineno, v.rec_eval(v))
-		#if "True" in v.rec_eval(v):
-		#	print(k, v.token.lineno, v.rec_eval(v))
-		
-
-	for k,v in Globals.GS[0]._symTab.items():
-		print(k,v)
-
-	for k,v in Globals.depthTable.items():
-		print(k, len(v))
+#	for k,v in Globals.predTable.items():
+#		print(k, v.token.lineno, v.rec_eval(v))
+#		#if "True" in v.rec_eval(v):
+#		#	print(k, v.token.lineno, v.rec_eval(v))
+#		
+#
+#	for k,v in Globals.GS[0]._symTab.items():
+#		print(k,v)
+#
+#	for k,v in Globals.depthTable.items():
+#		print(k, len(v))
