@@ -397,9 +397,11 @@ def writeToFile(results, fout, argList):
 		num_ulp_maxError = results[Globals.GS[0]._symTab[outVar][0][0]]["ERR"]
 		num_ulp_SecondmaxError = results[Globals.GS[0]._symTab[outVar][0][0]]["SERR"]
 		funcIntv = results[Globals.GS[0]._symTab[outVar][0][0]]["INTV"]
+
 		#num_ulp_maxError = max([abs(i) for i in errIntv])
 		maxError = num_ulp_maxError*pow(2, -53)
 		SecondmaxError = num_ulp_SecondmaxError*pow(2, -53)
+		print("FuncIntv:", funcintv)
 		outIntv = [funcIntv[0]-maxError-SecondmaxError, funcIntv[1]+maxError+SecondmaxError]
 		abserror = (maxError + SecondmaxError)
 		instability = results[Globals.GS[0]._symTab[outVar][0][0]]["INSTABILITY"] if argList.report_instability else "UNDEF"

@@ -221,29 +221,35 @@ class AnalyzeNode_Cond(object):
 		temp_list = []
 		if len(expr_solve) > 1:
 			#print("INSTABILITY COMPRESSION LIST:", len(expr_solve))
+			print("expr_solve:", expr_solve)
 			unstable_cands = list(filter(lambda x: bool(helper.freeCondSymbols(x).difference(self.truthTable)), \
 							  expr_solve))
-			#print("Candidates for instability:", len(unstable_cands))
-			for i in range(0, len(unstable_cands)):
-				for j in range(i+1, len(unstable_cands)):
-					expr_diff = (unstable_cands[i].exprCond[0] - unstable_cands[j].exprCond[0]).__abs__()
-					(cond1_expr, free_symbols1) = self.parse_cond(unstable_cands[i].exprCond[1])
-					(cond2_expr, free_symbols2) = self.parse_cond(unstable_cands[j].exprCond[1])
-					cond_expr =	utils.process_conditionals(cond1_expr,  cond2_expr)
-					free_symbols = free_symbols1.union(free_symbols2)
-					free_symbols = free_symbols1.union(free_symbols2)
-					print("PROCESS_EXPRESSION_LOC3")
-					[errIntv, res_avg_maxres] = self.process_expression( expr_diff, cond_expr, free_symbols, get_stats=False )
-					print("Debug:", errIntv)
-					err = max([abs(i) for i in errIntv if i is not None] if errIntv is not None else [0])
-					temp_list += [(err, (unstable_cands[i], unstable_cands[j]))]
-					
-			temp_list.sort(key=lambda tup: -tup[0]) # reverse sort
-			if temp_list[0][0] > 0.0 and out and Globals.argList.report_instability:
-				Globals.InstabDict[temp_list[0][1]] = temp_list[0][0]
-				print("DETECTING UNSTABLE PAIRS:{pair}\t VARIATION:{instab}".format(pair=temp_list[0][1], \
-				                                                    instab=temp_list[0][0]))
-			return temp_list[0][0]
+			if len(unstable_cands) > 1:
+				#print("Candidates for instability:", len(unstable_cands))
+				for i in range(0, len(unstable_cands)):
+					for j in range(i+1, len(unstable_cands)):
+						expr_diff = (unstable_cands[i].exprCond[0] - unstable_cands[j].exprCond[0]).__abs__()
+						(cond1_expr, free_symbols1) = self.parse_cond(unstable_cands[i].exprCond[1])
+						(cond2_expr, free_symbols2) = self.parse_cond(unstable_cands[j].exprCond[1])
+						cond_expr =	utils.process_conditionals(cond1_expr,  cond2_expr)
+						free_symbols = free_symbols1.union(free_symbols2)
+						free_symbols = free_symbols1.union(free_symbols2)
+						print("PROCESS_EXPRESSION_LOC3")
+						[errIntv, res_avg_maxres] = self.process_expression( expr_diff, cond_expr, free_symbols, get_stats=False )
+						print("Debug:", errIntv)
+						err = max([abs(i) for i in errIntv if i is not None] if errIntv is not None else [0])
+						temp_list += [(err, (unstable_cands[i], unstable_cands[j]))]
+						
+				temp_list.sort(key=lambda tup: -tup[0]) # reverse sort
+				print("temp_list:", temp_list)
+				print("unstable-conds:", unstable_cands)
+				if temp_list[0][0] > 0.0 and out and Globals.argList.report_instability:
+					Globals.InstabDict[temp_list[0][1]] = temp_list[0][0]
+					print("DETECTING UNSTABLE PAIRS:{pair}\t VARIATION:{instab}".format(pair=temp_list[0][1], \
+					                                                    instab=temp_list[0][0]))
+				return temp_list[0][0]
+			else:
+				return 0
 		else:
 			return 0
 		#return max(temp_list)
