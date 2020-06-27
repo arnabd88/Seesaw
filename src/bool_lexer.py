@@ -5,7 +5,7 @@ from sly import Lexer
 
 class bool_lexer(Lexer):
 
-	tokens = { INTEGER, FLOAT, PLUS, MINUS, POW1, POW2, \
+	tokens = { INTEGER, FLOAT, PLUS, MINUS, POW1, POW2, SQRT,\
 			   MUL, DIV, EQ, NEQ, ASSIGN, LPAREN, RPAREN, \
 			   SEMICOLON, ID, AND, OR, NOT, \
 			   LEQ, LT, GEQ, GT, \
@@ -45,6 +45,7 @@ class bool_lexer(Lexer):
 	ID['FALSE'] =	BFALSE
 	ID['False'] =	BFALSE
 	ID['false'] =	BFALSE
+	ID['sqrt']	=	SQRT
 
 	current_token = None
 	tok = None

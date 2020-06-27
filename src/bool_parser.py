@@ -192,6 +192,10 @@ class bool_parser(object):
 			self.consume(token.type)
 			node = arith_UnaryOp(token=token, right=self.arith_factor())
 			return node
+		elif token.type in (SQRT):
+			self.consume(token.type)
+			node = arith_TransOp(token=token, right=self.arith_factor())
+			return node
 		elif token.type in (INTEGER, FLOAT):
 			self.consume(token.type)
 			return bool_Num(token)

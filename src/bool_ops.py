@@ -12,8 +12,8 @@ _ARITH_OPS = { PLUS : lambda L : L[0]+L[1]	,\
 		  MUL :	lambda L : L[0]*L[1]	,\
 		  DIV : lambda L : L[0]/L[1]	,\
 		  POW1	:	lambda L : L[0]**L[1], \
+		  SQRT: lambda L : sqrt(L[0])	,\
 		  POW2	:	lambda L : L[0]**L[1] \
-		  #SQRT: lambda L : sqrt(L[0])	,\
 		  #SIN : lambda L : sin(L[0]),\
 		  #COS : lambda L : cos(L[0]),\
 		  #LOG :	lambda L : log(L[0]),\
