@@ -44,8 +44,17 @@ class AnalyzeNode_Cond(object):
 		self.completed1 = defaultdict(set)
 		self.completed2 = defaultdict(set)
 		#self.Accumulator = defaultdict(int)
+		## ------- Various Accumulator Types -------------
+		##		// Err
 		self.Accumulator = {} 
+		self.StatAccumulator = {}
+		self.MixedAccumulator = {}
+		##		// Instability
 		self.InstabilityAccumulator = {}
+		self.StatInstabilityAccumulator = {}
+		self.MixedInstabilityAccumulator = {}
+		##------------------------------------------------
+
 		self.results = {}
 		self.bwdDeriv = {}
 		self.externConstraints = ""
@@ -193,12 +202,25 @@ class AnalyzeNode_Cond(object):
 				#print("lim:", expr, lim, len(racc))
 				(cond_expr,free_symbols)	=	self.parse_cond(cond)
 				print("PROCESS_EXPRESSION_LOC3")
-				[errIntv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=True )
+				[errIntv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=Globals.argList.stat_err_enable )
 				err = max([abs(i) for i in errIntv])
-				print("STAT: SP:{err}, maxres:{maxres}, avg={avg}".format(\
-					err = err, maxres = res_avg_maxres[1], avg = res_avg_maxres[0] \
-				))
-				print(type(err), res_avg_maxres[1]*pow(2,-53))
+				maxres = res_avg_maxres[1]
+				avg_res = res_avg_maxres[0]
+				if Globals.argList.get_stats:
+					print("STAT Enabled: SP:{err}, maxres:{maxres}, avg={avg}".format(\
+						err = err, maxres = res_avg_maxres[1], avg = res_avg_maxres[0] \
+					))
+					#print(type(err), res_avg_maxres[1]*pow(2,-53))
+				print("Came here")
+				if Globals.argList.stat_err_enable:
+					print("Never Came here")
+					frac = Globals.argList.stat_err_fraction
+					ratio = 0 if err < 0.01 else (err - maxres)/err ;
+					if ratio > frac :
+						err = maxres
+					print("Selected error = {full_val}( {normalized} )".format(full_val=err, \
+														normalized = err*pow(2,-53)))
+					
 				if(err == np.inf and Globals.argList.stat):
 					#sys.exit()
 					err = res_avg_maxres[1]
@@ -234,7 +256,7 @@ class AnalyzeNode_Cond(object):
 						cond_expr =	utils.process_conditionals(cond1_expr,  cond2_expr)
 						free_symbols = free_symbols1.union(free_symbols2)
 						free_symbols = free_symbols1.union(free_symbols2)
-						print("PROCESS_EXPRESSION_LOC3")
+						print("PROCESS_EXPRESSION_LOC4")
 						[errIntv, res_avg_maxres] = self.process_expression( expr_diff, cond_expr, free_symbols, get_stats=False )
 						print("Debug:", errIntv)
 						err = max([abs(i) for i in errIntv if i is not None] if errIntv is not None else [0])
@@ -389,7 +411,7 @@ class AnalyzeNode_Cond(object):
 		#print("What:", intv_dict)
 		intv_dict = self.boxify(box, intv_dict)
 		if len(intv_dict.keys())==0:
-			return None
+			return (None, None)
 		flist = list(intv_dict.keys())
 		flist.sort()
 		ret_list = list()
@@ -398,10 +420,11 @@ class AnalyzeNode_Cond(object):
 			v = intv_dict[k]
 			ret_list += ["{fsym} = {intv}".format(fsym=k, intv=str(intv_dict[k]))]
 		retStr = ";".join(ret_list)+";"
-		return retStr
+		return (retStr, intv_dict)
 			
 			
 
+	## list of boxes = [(inputStr, intv_dict), ...]
 
 	def extract_boxes(self, rpBoxes, expr, cond_free_symbols):
 		
@@ -410,14 +433,18 @@ class AnalyzeNode_Cond(object):
 		fsym_set = set()
 
 		for box in rpBoxes.contents:
-			retStr = self.analyze_box(box, expr, cond_free_symbols)
-			if retStr is not None:
-				boxIntervals.append(retStr)
+			retTup = self.analyze_box(box, expr, cond_free_symbols)
+			if retTup[0] is not None:
+				boxIntervals.append(retTup)
 			else:
 				return boxIntervals
 
 		return boxIntervals
 		
+	## return type -> [el0, el1]
+	## el0 -> the widest interval from all the sub-bozes
+	## el1 -> the statistical information due to sampling from the error function --> extended over all the bozes
+
 	def process_expression(self, expr, cond_expr, free_symbols, get_stats=False):
 		#(cond_expr,free_symbols)	=	self.parse_cond(cond)
 		if self.paving:
@@ -428,15 +455,15 @@ class AnalyzeNode_Cond(object):
 				return [None, None]
 			elif "True" in rpConstraint :
 				#print("Constraint true -> invoke gelpia on full box")
-				res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
 				Intv						=	utils.generate_signature(expr,\
 														   #cond_expr, \
 														   cond_expr, \
 														   self.externConstraints, \
 														   free_symbols.union(self.externFreeSymbols))
+				res_avg_maxres 				=	Intv if not get_stats else utils.get_statistics(expr)
 				print("INTV-out1; ", Intv)
 			else:
-				res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
+				res_avg_maxres 				=	[0,0] if not get_stats else utils.get_statistics(expr)
 				[rpVars, numVars]			=	utils.rpVariableStr(free_symbols.union(self.externFreeSymbols))
 				[rpBoxes, fhand] = helper.rpInterface(rpVars+"Constraints "+rpConstraint, numVars, self.numBoxes) ;
 				boxIntervals				=	self.extract_boxes(rpBoxes, expr, free_symbols.union(self.externFreeSymbols))
@@ -446,15 +473,19 @@ class AnalyzeNode_Cond(object):
 																   #cond_expr, \
 																   cond_expr, \
 																   self.externConstraints, \
-																   free_symbols.union(self.externFreeSymbols), boxIntervals[0])
+																   free_symbols.union(self.externFreeSymbols), boxIntervals[0][0])
+					res_avg_maxres 				=	Intv if not get_stats else utils.get_statistics(expr, boxIntervals[0][1])
 					#print("INTV; ", Intv, boxIntervals[0], Globals.gelpiaID)
 					for box in boxIntervals[1:]:
 						currIntv						=	utils.generate_signature(expr,\
 																	   #cond_expr, \
 																	   cond_expr, \
 																	   self.externConstraints, \
-																	   free_symbols.union(self.externFreeSymbols), box)
+																	   free_symbols.union(self.externFreeSymbols), box[0])
+						curr_res_avg_maxres 				=	currIntv if not get_stats else utils.get_statistics(expr, box[1])
 						Intv = [min(Intv[0], currIntv[0]), max(Intv[1], currIntv[1])]
+						res_avg_maxres = [max(res_avg_maxres[0], curr_res_avg_maxres[0]), \
+						                  max(res_avg_maxres[1], curr_res_avg_maxres[1])]
 						#print("INTV; ", Intv, box, Globals.gelpiaID)
 						
 
@@ -494,18 +525,20 @@ class AnalyzeNode_Cond(object):
 		for node, tupleList in self.Accumulator.items():
 			errList = []
 			funcList = []
+			statList = []
 			for els in tupleList:
 				expr, cond = els.exprCond
 				(cond_expr,free_symbols)	=	self.parse_cond(cond)
 				print("PROCESS_EXPRESSION_LOC1")
 				print("Outside:", cond_expr)
-				[errIntv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=True )
+				[errIntv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=Globals.argList.stat_err_enable )
 				err = max([abs(i) for i in errIntv]) if errIntv is not None else 0
 				print("STAT: SP:{err}, maxres:{maxres}, avg:{avg}".format(\
 					err = err, maxres = res_avg_maxres[1] if res_avg_maxres is not None else 0, avg = res_avg_maxres[0] if res_avg_maxres is not None else 0 \
 				))
+				max_stat_err = res_avg_maxres[1] if res_avg_maxres is not None else 0
+				statList.append(max_stat_err)
 				if(err == np.inf and Globals.argList.stat):
-				#ys.exit()
 					err = res_avg_maxres[1]
 				errList.append(err)
 
@@ -523,14 +556,24 @@ class AnalyzeNode_Cond(object):
 				expr, cond = exprTup.exprCond
 				(cond_expr,free_symbols)	=	self.parse_cond(cond)
 				print("PROCESS_EXPRESSION_LOC2", expr)
-				[fintv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=False )
+				[fintv, dumdum] = self.process_expression( expr, cond_expr, free_symbols, get_stats=False )
 				#ret_intv = fintv if ret_intv is None else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
 				print("1:", fintv, ret_intv)
 				ret_intv = None if fintv is None and ret_intv is None else fintv if ret_intv is None \
 						   else ret_intv if fintv is None \
 				           else [min(ret_intv[0],fintv[0]), max(ret_intv[1], fintv[1])]
 			#print(node.f_expression)
-			self.results[node] = {"ERR" : max(errList), \
+
+			## ---- Pick and choose which error to keep
+			node_err = max(errList)
+			if Globals.argList.stat_err_enable:
+				frac = Globals.argList.stat_err_fraction
+				ratio = 0 if node_err <= 0.01 else (max(errList) - max(statList))/max(errList)
+				if ratio > frac:
+					node_err = max(statList)
+
+
+			self.results[node] = {"ERR" : node_err, \
 								  "SERR" : 0.0, \
 								  "INSTABILITY": self.InstabilityAccumulator[node], \
 								  "INTV" : ret_intv \

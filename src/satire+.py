@@ -46,6 +46,9 @@ def parseArguments():
 	parser.add_argument('--force', help='Sideline additional tricks used for non-linear examples. Use this option for linear examples', default=False, action='store_true')
 	parser.add_argument('--realpaver', help='Enable realpaver guided subdivision inside satire+', default=False, action='store_true')
 	parser.add_argument('--enable-constr', help='Enable solving constrained optimization queries', default=False, action='store_true')
+	parser.add_argument('--stat-err-enable', help='Enable statistical error sampling', default=False, action='store_true')
+	parser.add_argument('--stat-err-fraction', help='Fractional bound for using statistical error. Default is 0.5',\
+	                                  default=0.5, type=float)
 	                                  
 
 	result = parser.parse_args()
@@ -317,4 +320,4 @@ if __name__ == "__main__":
 	print("Analysis time : {analysis_time}".format(analysis_time = ea2-ea1))
 	print("Full time : {full_time}".format(full_time = full_time))
 	
-
+	print(Globals.argList.stat_err_enable, Globals.argList.stat_err_fraction)

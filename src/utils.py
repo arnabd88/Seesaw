@@ -380,7 +380,7 @@ def statistical_eval( symDict, expr , niters=1000 ):
 	return (res/niters, maxres)
 
 
-def get_statistics(sym_expr):
+def get_statistics(sym_expr, inputDict=None):
 
 	try:
 		if(seng.count_ops(sym_expr)==0):
@@ -389,7 +389,7 @@ def get_statistics(sym_expr):
 	except ValueError:
 		pass
 
-	symDict = {fsyms : Globals.inputVars[fsyms]["INTV"] for fsyms in sym_expr.free_symbols}
+	symDict = inputDict if inputDict is not None else {fsyms : Globals.inputVars[fsyms]["INTV"] for fsyms in sym_expr.free_symbols}
 	res_avg_maxres = statistical_eval ( symDict, sym_expr)
 	return res_avg_maxres
 
