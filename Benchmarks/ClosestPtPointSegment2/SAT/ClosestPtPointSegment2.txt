@@ -1,0 +1,90 @@
+
+#####################################################################################
+# Given segment ab and point c, computes closest point d on ab.
+# Also returns t for the parametric position of d, d(t) = a + t*(b - a)
+#####################################################################################
+#	void ClosestPtPointSegment(Point c, Point a, Point b, float &t, Point &d)
+#	{
+#		Vector ab = b – a;
+#		// Project c onto ab, but deferring divide by Dot(ab, ab)
+#		t = Dot(c – a, ab);
+#		if (t <= 0.0f) {
+#		// c projects outside the [a,b] interval, on the a side; clamp to a
+#			t = 0.0f;
+#			d = a;
+#		} else {
+#			float denom = Dot(ab, ab); // Always nonnegative since denom = ||ab|| ∧ 2
+#			if (t >= denom) {
+#				// c projects outside the [a,b] interval, on the b side; clamp to b
+#				t = 1.0f;
+#				d = b;
+#			} else {
+#				// c projects inside the [a,b] interval; must do deferred divide now
+#				t = t / denom;
+#				d = a + t * ab;
+#			}
+#		}
+#	}
+#####################################################################################
+INPUTS {
+	#bx fl64 : (4.0, 5.0);
+	#by fl64 : (4.0, 5.0);
+	#bz fl64 : (4.0, 5.0);
+	#ax fl64 : (0.0, 2.0);
+	#ay fl64 : (0.0, 2.0);
+	#az fl64 : (0.0, 2.0);
+	#cx fl64 : (3.0, 7.0);
+	#cy fl64 : (3.0, 7.0);
+	#cz fl64 : (3.0, 7.0);
+	er fl64 : (-0.2 , 0.2);
+	bx fl64 : (-4.0  - er, -4.0  + er);
+	by fl64 : (4.0   - er, 4.0   + er);
+	bz fl64 : (3.0   - er, 3.0   + er);
+	ax fl64 : (-1.0  - er, -1.0  + er);
+	ay fl64 : (2.0   - er, 2.0   + er);
+	az fl64 : (1.5   - er, 1.5   + er);
+	cx fl64 : (-3.0  - er, -3.0   + er);
+	cy fl64 : (1.15  - er, 1.15  + er);
+	cz fl64 : (-2.87 - er, -2.87 + er);
+}
+
+OUTPUTS {
+	dx; 
+	#dy; dz; #t; #Dot_ac_ab; #Dot_ab_ab; #t ;
+}
+
+
+EXPRS {
+
+	abx = bx - ax ;
+	aby = by - ay ;
+	abz = bz - az ;
+
+	acx = cx - ax ;
+	acy = cy - ay ;
+	acz = cz - az ;
+
+	t = acx * abx + acy * aby + acz * abz ;
+
+	if ( t <= 0.0 ) then
+		t = 0.0 ;
+		dx = ax ;
+		dy = ay ;
+		dz = az ;
+	else
+		denom = abx * abx + aby * aby + abz * abz ;
+		if ( t >= denom ) then
+			t = 1.0 ;
+			dx = bx ;
+			dy = by ;
+			dz = bz ;
+		else
+			t = t / denom ;
+			dx = ax + t * abx ;
+			dy = ay + t * aby ;
+			dz = az + t * abz ;
+		endif
+	endif
+
+
+}
