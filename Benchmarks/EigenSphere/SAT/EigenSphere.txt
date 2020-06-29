@@ -1,0 +1,323 @@
+## Necessary to operate over conditionals
+## Otherwise will cause div by zero errors
+
+INPUTS {
+
+	err fl64 : (-0.1, 0.1);
+
+	px0 fl64  :	(1.0 - 0.1, 1.0 + 0.1);
+	py0 fl64  :	(1.0 - 0.1, 1.0 + 0.1);
+	pz0 fl64  :	(1.0 - 0.1, 1.0 + 0.1);
+	px1 fl64  :	(2.5 - 0.1, 2.5 + 0.1);
+	py1 fl64  :	(2.5 - 0.1, 2.5 + 0.1);
+	pz1 fl64  :	(2.5 - 0.1, 2.5 + 0.1);
+	px2 fl64  :	(1.5 - 0.1, 1.5 + 0.1);
+	py2 fl64  :	(1.5 - 0.1, 1.5 + 0.1);
+	pz2 fl64  :	(1.5 - 0.1, 1.5 + 0.1);
+	px3 fl64  :	(3.2 - 0.1, 3.2 + 0.1);
+	py3 fl64  :	(3.2 - 0.1, 3.2 + 0.1);
+	pz3 fl64  :	(3.2 - 0.1, 3.2 + 0.1);
+	px4 fl64  :	(2.1, 2.3);
+	py4 fl64  :	(2.1, 2.3);
+	pz4 fl64  :	(2.1, 2.3);
+
+}
+
+OUTPUTS {
+	#off; #m_2_1; #c; #m_2_1 ;
+	#proj0 ;
+	eigen_radius ;
+	#DX ;
+	#dist ;
+	#minPt_x ;
+}
+
+
+EXPRS {
+	
+	numPts int = 5 ;
+
+	## Covariance matrix block : Covariance(m, pt, numPts)
+		cx = (px0 + px1 + px2 + px3 + px4)/numPts ;
+		cy = (py0 + py1 + py2 + py3 + py4)/numPts ;
+		cz = (pz0 + pz1 + pz2 + pz3 + pz4)/numPts ;
+
+
+		e00 = 0.0 ; e11 = 0.0 ; e22 = 0.0 ; e01 = 0.0 ; e02 = 0.0 ; e12 = 0.0 ;
+
+		px = px0 - cx ;
+		py = py0 - cy ;
+		pz = pz0 - cz ;
+		e00 = e00 + px*px ;
+		e11 = e11 + py*py ;
+		e22 = e22 + pz*pz ;
+		e01 = e01 + px*py ;
+		e02 = e02 + px*pz ;
+		e12 = e12 + py*pz ;
+
+		px = px1 - cx ;
+		py = py1 - cy ;
+		pz = pz1 - cz ;
+		e00 = e00 + px*px ;
+		e11 = e11 + py*py ;
+		e22 = e22 + pz*pz ;
+		e01 = e01 + px*py ;
+		e02 = e02 + px*pz ;
+		e12 = e12 + py*pz ;
+
+		px = px2 - cx ;
+		py = py2 - cy ;
+		pz = pz2 - cz ;
+		e00 = e00 + px*px ;
+		e11 = e11 + py*py ;
+		e22 = e22 + pz*pz ;
+		e01 = e01 + px*py ;
+		e02 = e02 + px*pz ;
+		e12 = e12 + py*pz ;
+
+		px = px3 - cx ;
+		py = py3 - cy ;
+		pz = pz3 - cz ;
+		e00 = e00 + px*px ;
+		e11 = e11 + py*py ;
+		e22 = e22 + pz*pz ;
+		e01 = e01 + px*py ;
+		e02 = e02 + px*pz ;
+		e12 = e12 + py*pz ;
+
+		px = px4 - cx ;
+		py = py4 - cy ;
+		pz = pz4 - cz ;
+		e00 = e00 + px*px ;
+		e11 = e11 + py*py ;
+		e22 = e22 + pz*pz ;
+		e01 = e01 + px*py ;
+		e02 = e02 + px*pz ;
+		e12 = e12 + py*pz ;
+
+		## Fill the covariance matrix elements
+		m_0_0 = e00 / numPts ;
+		m_1_1 = e11 / numPts ;
+		m_2_2 = e22 / numPts ;
+		m_0_1 = e01 / numPts ;
+		m_1_0 = e01 / numPts ;
+		m_0_2 = e02 / numPts ;
+		m_2_0 = e02 / numPts ;
+		m_1_2 = e12 / numPts ;
+		m_2_1 = e12 / numPts ;
+
+	
+	## Jacobi : Jacobi(m, v)
+
+		v_0_0 = 1.0;
+		v_0_1 = 0.0;
+		v_0_2 = 0.0;
+		v_1_0 = 0.0;
+		v_1_1 = 1.0;
+		v_1_2 = 0.0;
+		v_2_0 = 0.0;
+		v_2_1 = 0.0;
+		v_2_2 = 1.0;
+
+		#r = (m_2_2 - m_1_1) / (2.0 * m_1_2) ;
+		#t = 1.0 / ( r + sqrt(1.0 + r*r));
+		#c = 1.0 / (sqrt(1.0 + t*t)) ;
+		#s = t * c ;
+		if (( m_1_2 > 0 && m_1_2 > 0.0001 ) || ( m_1_2 < 0 && -1*m_1_2 > 0.0001)) then
+			
+			r = (m_2_2 - m_1_1) / (2.0 * m_1_2) ;
+
+			if ( r >= 0.0 ) then
+				t = 1.0 / ( r + sqrt(1.0 + r*r));
+			else
+				t = -1*(1.0 / (sqrt(1.0 + r*r) - r));
+			endif
+
+			c = 1.0 / (sqrt(1.0 + t*t)) ;
+			s = t * c ;
+		else
+			c = 1.0 ;
+			s = 0.0 ;
+		endif
+
+		J_0_0 = 1.0;
+		J_0_1 = 0.0;
+		J_0_2 = 0.0;
+		J_1_0 = 0.0;
+		J_1_1 = 1.0;
+		J_1_2 = 0.0;
+		J_2_0 = 0.0;
+		J_2_1 = 0.0;
+		J_2_2 = 1.0;
+
+		J_1_1 = c ;
+		J_1_2 = s ;
+		J_2_1 = -1*s ;
+		J_2_2 = c ;
+
+		# vl = v * J
+		v_0_0 = v_0_0 * J_0_0 + v_0_1 * J_1_0 + v_0_2 * J_2_0 ;
+		v_0_1 = v_0_0 * J_0_1 + v_0_1 * J_1_1 + v_0_2 * J_2_1 ;
+		v_0_2 = v_0_0 * J_0_2 + v_0_1 * J_1_2 + v_0_2 * J_2_2 ;
+		v_1_0 = v_1_0 * J_0_0 + v_1_1 * J_1_0 + v_1_2 * J_2_0 ;
+		v_1_1 = v_1_0 * J_0_1 + v_1_1 * J_1_1 + v_1_2 * J_2_1 ;
+		v_1_2 = v_1_0 * J_0_2 + v_1_1 * J_1_2 + v_1_2 * J_2_2 ;
+		v_2_0 = v_2_0 * J_0_0 + v_2_1 * J_1_0 + v_2_2 * J_2_0 ;
+		v_2_1 = v_2_0 * J_0_1 + v_2_1 * J_1_1 + v_2_2 * J_2_1 ;
+		v_2_2 = v_2_0 * J_0_2 + v_2_1 * J_1_2 + v_2_2 * J_2_2 ;
+
+		# jta = (J.transpose() * a)
+		jtm_0_0 = J_0_0 * m_0_0 + J_1_0 * m_1_0 + J_2_0 * m_2_0 ;
+		jtm_0_1 = J_0_0 * m_0_1 + J_1_0 * m_1_1 + J_2_0 * m_2_1 ;
+		jtm_0_2 = J_0_0 * m_0_2 + J_1_0 * m_1_2 + J_2_0 * m_2_2 ;
+		jtm_1_0 = J_0_1 * m_0_0 + J_1_1 * m_1_0 + J_2_1 * m_2_0 ;
+		jtm_1_1 = J_0_1 * m_0_1 + J_1_1 * m_1_1 + J_2_1 * m_2_1 ;
+		jtm_1_2 = J_0_1 * m_0_2 + J_1_1 * m_1_2 + J_2_1 * m_2_2 ;
+		jtm_2_0 = J_0_2 * m_0_0 + J_1_2 * m_1_0 + J_2_2 * m_2_0 ;
+		jtm_2_1 = J_0_2 * m_0_1 + J_1_2 * m_1_1 + J_2_2 * m_2_1 ;
+		jtm_2_2 = J_0_2 * m_0_2 + J_1_2 * m_1_2 + J_2_2 * m_2_2 ;
+
+		m_0_0 = jtm_0_0 * J_0_0 + jtm_0_1 * J_1_0 + jtm_0_2 * J_2_0 ;
+		m_0_1 = jtm_0_0 * J_0_1 + jtm_0_1 * J_1_1 + jtm_0_2 * J_2_1 ;
+		m_0_2 = jtm_0_0 * J_0_2 + jtm_0_1 * J_1_2 + jtm_0_2 * J_2_2 ;
+		m_1_0 = jtm_1_0 * J_0_0 + jtm_1_1 * J_1_0 + jtm_1_2 * J_2_0 ;
+		m_1_1 = jtm_1_0 * J_0_1 + jtm_1_1 * J_1_1 + jtm_1_2 * J_2_1 ;
+		m_1_2 = jtm_1_0 * J_0_2 + jtm_1_1 * J_1_2 + jtm_1_2 * J_2_2 ;
+		m_2_0 = jtm_2_0 * J_0_0 + jtm_2_1 * J_1_0 + jtm_2_2 * J_2_0 ;
+		m_2_1 = jtm_2_0 * J_0_1 + jtm_2_1 * J_1_1 + jtm_2_2 * J_2_1 ;
+		m_2_2 = jtm_2_0 * J_0_2 + jtm_2_1 * J_1_2 + jtm_2_2 * J_2_2 ;
+
+		off = m_0_1 * m_0_1 + m_0_2 * m_0_2 + m_1_0 * m_1_0 + m_1_2 * m_1_2 + m_2_0 * m_2_0 + m_2_1 * m_2_1 ;
+
+
+		if ( m_0_0 >= 0.0 ) then
+			maxf_0 = m_0_0 ; maxe_0 = m_0_0 ;
+		else
+			maxf_0 = -1.0*m_0_0; maxe_0 = -1.0*m_0_0;
+		endif
+
+		if ( m_1_1 >= 0.0 ) then
+			maxf_1 = m_1_1 ; maxe_1 = m_1_1 ;
+		else
+			maxf_1 = -1.0*m_1_1; maxe_1 = -1.0*m_1_1;
+		endif
+
+		if ( m_2_2 >= 0.0 ) then
+			maxf_2 = m_2_2 ; maxe_2 = m_2_2 ;
+		else
+			maxf_2 = -1.0*m_2_2; maxe_2 = -1.0*m_2_2;
+		endif
+
+		if ( maxf_1 > maxe_0 ) then
+			maxc = 1 ; maxe = maxf_1 ;
+			e_0 = v_0_1 ;
+			e_1 = v_1_1 ;
+			e_2 = v_2_1 ;
+		else
+			if ( maxf_2 > m_0_0 ) then
+				maxc = 2 ; maxe = maxf_2 ;
+				e_0 = v_0_2 ;
+				e_1 = v_1_2 ;
+				e_2 = v_2_2 ;
+			else
+				e_0 = v_0_0 ;
+				e_1 = v_1_0 ;
+				e_2 = v_2_0 ;
+			endif
+		endif
+
+		#ExtremePointsAlongDirection(e, pt, numPts, &imin, &imax);
+
+		minproj = 2.2250738585072014e-308 ;
+		maxproj = 1.7976931348623158e+308 ;
+
+		#default
+		minPt_x = px0 ; minPt_y = py0 ; minPt_z = pz0 ;
+		maxPt_x = px2 ; maxPt_y = py2 ; maxPt_z = pz2 ;
+
+		ii int = 0;
+
+		proj0 = (px0 * e_0) + (py0 * e_1) + (pz0 * e_2) ;
+
+		if ( proj0 < minproj ) then
+			minproj = proj0 ;
+			#imin = ii ;
+			minPt_x = px0 ;# minPt_y = py0 ; minPt_z = pz0 ;
+		endif
+		if ( proj0 > maxproj ) then
+			maxproj = proj0 ;
+			#imax = ii ;
+			maxPt_x = px0 ; maxPt_y = py0 ; maxPt_z = pz0 ;
+		endif
+
+		ii = ii+1 ;
+		proj1 = (px1 * e_0) + (py1 * e_1) + (pz1 * e_2) ;
+
+		if ( proj1 < minproj ) then
+			minproj = proj1 ;
+			#imin = ii ;
+			minPt_x = px1 ; minPt_y = py1 ; minPt_z = pz1 ;
+		endif
+		if (proj1 > maxproj) then
+			maxproj = proj1 ;
+			#imax = ii ;
+			maxPt_x = px1 ; maxPt_y = py1 ; maxPt_z = pz1 ;
+		endif
+
+		ii = ii+1;
+		proj2 = (px2 * e_0) + (py2 * e_1) + (pz2 * e_2) ;
+
+		if ( proj2 < minproj ) then
+			minproj = proj2 ;
+			#imin = ii ;
+			minPt_x = px2 ; minPt_y = py2 ; minPt_z = pz2 ;
+		endif
+		if (proj2 > maxproj) then
+			maxproj = proj2 ;
+			#imax = ii ;
+			maxPt_x = px2 ; maxPt_y = py2 ; maxPt_z = pz2 ;
+		endif
+
+
+		#ii = ii+1;
+		#proj3 = (px3 * e_0) + (py3 * e_1) + (pz3 * e_2) ;
+
+		#if ( proj3 < minproj ) then
+		#	minproj = proj3 ;
+		#	#imin = ii ;
+		#	minPt_x = px3 ; minPt_y = py3 ; minPt_z = pz3 ;
+		#endif
+		#if (proj3 > maxproj) then
+		#	maxproj = proj3 ;
+		#	#imax = ii ;
+		#	maxPt_x = px3 ; maxPt_y = py3 ; maxPt_z = pz3 ;
+		#endif
+
+
+		#ii = ii+1;
+		#proj4 = (px4 * e_0) + (py4 * e_1) + (pz4 * e_2) ;
+
+		#if ( proj4 < minproj ) then
+		#	minproj = proj4 ;
+		#	#imin = ii ;
+		#	minPt_x = px4 ; minPt_y = py4 ; minPt_z = pz4 ;
+		#endif
+		#if (proj4 > maxproj) then
+		#	maxproj = proj4 ;
+		#	#imax = ii ;
+		#	maxPt_x = px4 ; maxPt_y = py4 ; maxPt_z = pz4 ;
+		#endif
+
+		DX = (maxPt_x - minPt_x)	;
+		DY = (maxPt_y - minPt_y)	;
+		DZ = (maxPt_z - minPt_z)	;
+
+		dist = sqrt(DX*DX + DY*DY + DZ*DZ) ;
+
+		eigen_radius = dist + 0.5 ;
+		eigen_center_x = (minPt_x + maxPt_x)*0.5 ;
+		eigen_center_y = (minPt_y + maxPt_y)*0.5 ;
+		eigen_center_z = (minPt_z + maxPt_z)*0.5 ;
+
+
+}
