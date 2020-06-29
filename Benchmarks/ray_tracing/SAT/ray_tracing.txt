@@ -1,0 +1,125 @@
+
+INPUTS {
+	err		fl64	:	(-0.1, 0.1);
+	TC_00	fl64	:	(27.05	- err, 27.05	+ err) ; 
+	TC_01	fl64	:	(1.5137	- err, 1.5137+ err) ; 
+	TC_02	fl64	:	(63.6	- err, 63.6	+ err) ; 
+	TC_03	fl64	:	(0.52	- err, 0.52	+ err) ; 
+	TC_10	fl64	: 	(-16.68	- err, -16.68+ err) ;
+	TC_11	fl64	: 	(1.0	- err, 1.0	+ err) ;
+	TC_12	fl64	: 	(1.0	- err, 1.0	+ err) ;
+	TC_13	fl64	: 	(0.138	- err, 0.138	+ err) ;
+	#
+	SPC_0	fl64	:	(0.0,0.0);
+	SPC_1	fl64	:	(7621.0,7621.0);
+	SPC_2	fl64	:	(6869.955,6869.955);
+	SPC_3	fl64	:	(6562.816,6562.816);
+	SPC_4	fl64	:	(5895.944,5895.944);
+	SPC_5	fl64	:	(5269.557,5269.557);
+	SPC_6	fl64	:	(4861.344,4861.344);
+	SPC_7	fl64	:	(4340.477,4340.477);
+	SPC_8	fl64	:	(3968.494,3968.494);
+}
+
+OUTPUTS {
+	axis_slope_angle ;
+}
+
+EXPRS {
+
+
+	#niter rnd64 = 0 ;
+	niter int = 0 ;
+	paraxial rnd64 = 0;
+	axis_slope_angle rnd64 = 0 ;
+
+	# trace_line(line=4, rayh = 4/2)
+		line_0 rnd64 = 4 ;
+		rayh_0 rnd64 = 2 ;
+
+		object_distance  = 0.0 ;
+		ray_height  = rayh_0 ;
+		from_index  = 1.0 ;
+
+		# iter0
+
+		iter int = 0;
+		radc  = TC_00 ;
+		to_index rnd64 = TC_01 ;
+
+		if (to_index > 1.0) then
+			to_index  = to_index + ((SPC_4 - SPC_4) / (SPC_3 - SPC_6)) * ((TC_01 - 1.0)/(TC_02));
+		endif
+
+		if (radc >= 0.01 || radc <= -0.01) then
+			if (object_distance == 0) then
+				axis_slope_angle = 0.0 ;
+				iang_sin = ray_height / radc ;
+			else
+				iang_sin = ((object_distance - radc) / radc) * sin(axis_slope_angle) ;
+			endif
+
+			iang = asin(iang_sin);
+			rang_sin = (from_index / to_index) * iang_sin ;
+			old_axis_slope_angle = axis_slope_angle ;
+			axis_slope_angle = axis_slope_angle + iang - asin(rang_sin) ;
+			sagitta = sin((old_axis_slope_angle + iang)/2) ;
+			sagitta = 2 * radc * sagitta * sagitta ;
+			object_distance = ((radc * sin(old_axis_slope_angle + iang)) * (1/tan(axis_slope_angle))) + sagitta ;
+		else
+			rang = -1*asin((from_index/to_index) * sin(axis_slope_angle)) ;
+			object_distance = object_distance * ((to_index * cos(-1*rang))/(from_index * cos(axis_slope_angle))) ;
+			axis_slope_angle = -1*rang ;
+		endif
+		
+		from_index = to_index ;
+		if (iter < 4) then
+			object_distance = object_distance - TC_03 ;
+		endif
+		
+		######### iter1
+		iter = iter + 1.0 ;
+		radc = TC_10 ;
+		to_index = TC_11 ;
+        
+		if (to_index > 1.0) then
+			to_index = to_index + ((SPC_4 - SPC_4)/(SPC_3 - SPC_6)) * ((TC_11 - 1.0) / (TC_12)) ;
+		endif
+        #
+		if (radc >= 0.01 || radc <= -0.01) then
+			if (object_distance == 0) then
+				axis_slope_angle = 0.0 ;
+				iang_sin = ray_height / radc ;
+			else
+				iang_sin = ((object_distance - radc) / radc) * sin(axis_slope_angle) ;
+			endif
+        
+			iang = asin(iang_sin);
+			rang_sin = (from_index / to_index) * iang_sin ;
+			old_axis_slope_angle = axis_slope_angle ;
+			axis_slope_angle = axis_slope_angle + iang - asin(rang_sin) ;
+			sagitta = sin((old_axis_slope_angle + iang)/2) ;
+			sagitta = 2 * radc * sagitta * sagitta ;
+			object_distance = ((radc * sin(old_axis_slope_angle + iang)) * (1/tan(axis_slope_angle))) + sagitta ;
+		else
+			rang = -1*asin((from_index/to_index) * sin(axis_slope_angle)) ;
+			object_distance = object_distance * ((to_index * cos(-1*rang))/(from_index * cos(axis_slope_angle))) ;
+			axis_slope_angle = -1*rang ;
+		endif
+		
+		from_index = to_index ;
+		if (iter < 4) then
+			object_distance = object_distance - TC_13 ;
+		endif
+
+
+
+
+	#return from traceline
+
+
+
+
+
+
+}
