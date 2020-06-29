@@ -164,21 +164,21 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	gstr_expr = inputStr + str_expr  ## without the constraints
 	Globals.gelpiaID += 1
 	print("Constr?", Globals.enable_constr, " Begining New gelpia query->ID:", Globals.gelpiaID)
-	fout = open("gelpia_"+str(Globals.gelpiaID)+".txt", "w")
-	fout.write("# --input-epsilon {ieps}\n".format(ieps=str(gelpia_input_epsilon)))
-	fout.write("# --output-epsilon {oeps}\n".format(oeps=str(gelpia_output_epsilon)))
-	fout.write("# --output-epsilon-relative {oreps}\n".format(oreps=str(gelpia_output_epsilon_relative)))
-	fout.write("# --timeout {tout}\n".format(tout=str(gelpia_timeout)))
-	fout.write("# --max-iters {miters}\n".format(miters=str(gelpia_max_iters)))
+	##-- fout = open("gelpia_"+str(Globals.gelpiaID)+".txt", "w")
+	##-- fout.write("# --input-epsilon {ieps}\n".format(ieps=str(gelpia_input_epsilon)))
+	##-- fout.write("# --output-epsilon {oeps}\n".format(oeps=str(gelpia_output_epsilon)))
+	##-- fout.write("# --output-epsilon-relative {oreps}\n".format(oreps=str(gelpia_output_epsilon_relative)))
+	##-- fout.write("# --timeout {tout}\n".format(tout=str(gelpia_timeout)))
+	##-- fout.write("# --max-iters {miters}\n".format(miters=str(gelpia_max_iters)))
 
 	str_constraint = " && ".join([str_cond_expr]+([] if str_extc_expr is None or len(str_extc_expr)==0 else [str_extc_expr]))
 
-	fout.write(inputStr + str_constraint +"; " + str_expr)
+	##-- fout.write(inputStr + str_constraint +"; " + str_expr)
 	if Globals.enable_constr:
 		gstr_expr = inputStr + str_constraint +"; " + str_expr
 	#fout.write(str_expr)
-	fout.close()
-	print(gstr_expr)
+	##-- fout.close()
+	##-- print(gstr_expr)
 
 	#print(str_expr)
 	start_time = time.time()
@@ -367,7 +367,7 @@ def generate_signature(sym_expr, cond_expr, externConstraints, cond_free_symbols
 	return Globals.hashBank[sig]
 
 
-def statistical_eval( symDict, expr , niters=1000 ):
+def statistical_eval( symDict, expr , niters=10000 ):
 
 	res = 0.0
 	maxres = 0.0

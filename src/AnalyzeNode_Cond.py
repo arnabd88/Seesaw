@@ -247,6 +247,7 @@ class AnalyzeNode_Cond(object):
 			unstable_cands = list(filter(lambda x: bool(helper.freeCondSymbols(x).difference(self.truthTable)), \
 							  expr_solve))
 			if len(unstable_cands) > 1:
+				print(unstable_cands)
 				#print("Candidates for instability:", len(unstable_cands))
 				for i in range(0, len(unstable_cands)):
 					for j in range(i+1, len(unstable_cands)):
@@ -257,23 +258,26 @@ class AnalyzeNode_Cond(object):
 						free_symbols = free_symbols1.union(free_symbols2)
 						free_symbols = free_symbols1.union(free_symbols2)
 						print("PROCESS_EXPRESSION_LOC4")
-						[errIntv, res_avg_maxres] = self.process_expression( expr_diff, cond_expr, free_symbols, get_stats=False )
-						print("Debug:", errIntv)
-						err = max([abs(i) for i in errIntv if i is not None] if errIntv is not None else [0])
-						temp_list += [(err, (unstable_cands[i], unstable_cands[j]))]
-						
-				temp_list.sort(key=lambda tup: -tup[0]) # reverse sort
-				print("temp_list:", temp_list)
-				print("unstable-conds:", unstable_cands)
-				if temp_list[0][0] > 0.0 and out and Globals.argList.report_instability:
-					Globals.InstabDict[temp_list[0][1]] = temp_list[0][0]
-					print("DETECTING UNSTABLE PAIRS:{pair}\t VARIATION:{instab}".format(pair=temp_list[0][1], \
-					                                                    instab=temp_list[0][0]))
-				return temp_list[0][0]
+						[errIntv, res_avg_maxres] = self.process_expression( expr_diff, cond_expr, free_symbols, get_stats=Globals.argList.stat_err_enable )
+						if errIntv is not None and res_avg_maxres is not None:
+							print("Debug:", errIntv)
+							err = max([abs(i) for i in errIntv if i is not None] if errIntv is not None else [0])
+							print(res_avg_maxres)
+							temp_list += [(err, res_avg_maxres[1], (unstable_cands[i], unstable_cands[j]))]
+				if len(temp_list) > 0:		
+					temp_list.sort(key=lambda tup: -tup[0]) # reverse sort
+					print("temp_list:", temp_list)
+					print("unstable-conds:", unstable_cands)
+					if temp_list[0][0] > 0.0 and out and Globals.argList.report_instability:
+						Globals.InstabDict[temp_list[0][2]] = (temp_list[0][0], temp_list[0][1])  ## (err, max_stat)
+						print("DETECTING UNSTABLE PAIRS:{pair}\t VARIATION:{instab}".format(pair=temp_list[0][2], \
+						                                                    instab=(temp_list[0][0],temp_list[0][1] )))
+					return (temp_list[0][0], temp_list[0][1])
+				return (0, 0)
 			else:
-				return 0
+				return (0,0)
 		else:
-			return 0
+			return (0,0)
 		#return max(temp_list)
 		
 
@@ -288,9 +292,16 @@ class AnalyzeNode_Cond(object):
 			if(len(acc) > 10):
 				acc = self.merge_discontinuities(self.condmerge(acc), 1000)
 
-			instability_error = 0 if not Globals.argList.report_instability else self.add_instability_error(expr_solve)
+			# instability_error(2tup) -> (rigorous err, max_stat_err)
+			instability_error = (0,0) if not Globals.argList.report_instability else self.add_instability_error(expr_solve)
+			instab_error = instability_error[0]
+			if Globals.argList.stat_err_enable:
+				fraction = Globals.argList.stat_err_fraction
+				ratio = 0 if instab_error <=0.01 else (instability_error[0]-instability_error[1])/instability_error[0]
+				if ratio > fraction:
+					instab_error = instability_error[1]
 			self.InstabilityAccumulator[outVar] = self.InstabilityAccumulator.get(outVar, 0.0) +\
-													instability_error
+													instab_error
 			expr_solve = self.merge_discontinuities(expr_solve, 1000)
 			if Globals.argList.report_instability:
 				Globals.InstabID[node] = instability_error 
@@ -545,10 +556,10 @@ class AnalyzeNode_Cond(object):
 			ret_intv = None
 			#print("Debug:", node.f_expression)
 			##-------- Evaluate the instability at the output ----------------
-			instability_error = 0 if not Globals.argList.report_instability \
+			# instability_error(2tup) -> (rigorous err, max_stat_err)
+			instability_error = (0,0) if not Globals.argList.report_instability \
 			                    else self.add_instability_error(node.f_expression, out=True)
-			print("Location:", node.token)
-			self.InstabilityAccumulator[node] = self.InstabilityAccumulator.get(node, 0.0) + instability_error
+			instab_error = instability_error[0]
 			##----------------------------------------------------------------
 			#print("Inside top:", instability_error)
 			print("NODE-EXPR:", node.f_expression)
@@ -569,13 +580,18 @@ class AnalyzeNode_Cond(object):
 			if Globals.argList.stat_err_enable:
 				frac = Globals.argList.stat_err_fraction
 				ratio = 0 if node_err <= 0.01 else (max(errList) - max(statList))/max(errList)
+				ratio_instab = 0 if instab_error <= 0.01 else \
+				                 (instability_error[0]-instability_error[1])/instability_error[0]
 				if ratio > frac:
 					node_err = max(statList)
+				if ratio_instab < frac:
+					instab_error = instability_error[1]
 
+			self.InstabilityAccumulator[node] = self.InstabilityAccumulator.get(node, 0.0) + instab_error
 
 			self.results[node] = {"ERR" : node_err, \
 								  "SERR" : 0.0, \
-								  "INSTABILITY": self.InstabilityAccumulator[node], \
+								  "INSTABILITY": instab_error, \
 								  "INTV" : ret_intv \
 								  }
 
@@ -583,8 +599,8 @@ class AnalyzeNode_Cond(object):
 			logger.info(" > MaxError:\n {error} ; {fintv}\n".format(error=max(errList)*pow(2,-53), fintv=ret_intv))
 			print(" > MaxError:\n {error} ; {fintv}\n".format(error=max(errList)*pow(2,-53), fintv=ret_intv))
 			if self.InstabilityAccumulator[node]!= 0.0:
-				print(" > Instability:\n {instab} ;".format(instab=self.InstabilityAccumulator[node]))
-				logger.info(" > Instability:\n {instab} ;".format(instab=self.InstabilityAccumulator[node]))
+				print(" > Instability:\n {instab} ;".format(instab=instab_error))
+				logger.info(" > Instability:\n {instab} ;".format(instab=instab_error))
 
 		return self.results
 
