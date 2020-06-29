@@ -1,0 +1,67 @@
+
+## SymSchur2 
+
+#void SymSchur2 ( Matrix33 &a, int p, int q, float &c, float &s)
+#{
+#	if (Abs(a[p][q]) > 0.001f) {
+#		float r = (a[q][q] - a[p][p]) / (2.0f * a[p][q]) ;
+#		float t ;
+#
+#		if (r >= 0.0f) {
+#			t = 1.0f / (r + Sqrt(1.0f + r*r)) ;
+#		} else {
+#			t = -1.0f / (-r + Sqrt(1.0f + r*r)) ;
+#		}
+#		c = 1.0f / Sqrt(1.0f + t*t);
+#		s = t * c ;
+#	} else {
+#		c = 1.0f;
+#		s = 0.0f;
+#	}
+#}
+
+## abs(x) > c =>  (x > 0 && x > c) || (x < 0 && (-1)*x > c)
+
+
+INPUTS {
+	err1   fl64 : (-0.01, 0.02) ;
+	err2   fl64 : (-0.01, 0.02) ;
+	a_p_p fl64 : (2.5 - err1, 3.5 + err1) ;
+	a_p_q fl64 : (4.5 - err2, 5.5 + err2) ;
+	a_q_q fl64 : (0.24,5.0) ;
+	p fl64 : (1,1);
+	q fl64 : (2,2);
+}
+
+
+OUTPUTS {
+	c ;
+}
+
+REQUIRES {
+	RCS1 : (p >= 1) ;
+	RSC2 : (q > p)  ;
+	#RSC3 : (r <= n) ;
+}
+
+EXPRS {
+
+	
+	if (( a_p_q > 0 && a_p_q > 0.0001 ) || ( a_p_q < 0 && -1*a_p_q > 0.0001)) then
+		
+		r = (a_q_q - a_p_p) / (2.0 * a_p_q) ;
+
+		if ( r >= 0.0 ) then
+			t = 1.0 / ( r + sqrt(1.0 + r*r));
+		else
+			t = -1*(1.0 / (sqrt(1.0 + r*r) - r));
+		endif
+
+		c = 1.0 / (sqrt(1.0 + t*t)) ;
+		s = t * c ;
+	else
+		c = 1.0 ;
+		s = 0.0 ;
+	endif
+
+}
