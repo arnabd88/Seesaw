@@ -1,7 +1,18 @@
 
 
 DIRS="barycentric_coordinates\
+	 ClosestPtPointSegment2\
+     EigenSphere\
+	 ExtremePointsAlongDirection\
+	 gram-schmidt\
+	 MD\
+	 smartRoot\
+	 SphereOfSphereAndPt\
+	 SqDistPointSegment\
+	 squareRoot3\
+	 styblinski\
 	 test2\
+	 SymSchur\
 	 Jacobi\
 	 lead-lag"
 
