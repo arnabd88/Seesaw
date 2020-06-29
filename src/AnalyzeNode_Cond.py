@@ -204,9 +204,9 @@ class AnalyzeNode_Cond(object):
 				print("PROCESS_EXPRESSION_LOC3")
 				[errIntv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=Globals.argList.stat_err_enable )
 				err = max([abs(i) for i in errIntv])
-				maxres = res_avg_maxres[1]
-				avg_res = res_avg_maxres[0]
-				if Globals.argList.get_stats:
+				maxres = err if res_avg_maxres is None else res_avg_maxres[1]
+				#avg_res = res_avg_maxres[0]
+				if Globals.argList.stat:
 					print("STAT Enabled: SP:{err}, maxres:{maxres}, avg={avg}".format(\
 						err = err, maxres = res_avg_maxres[1], avg = res_avg_maxres[0] \
 					))
