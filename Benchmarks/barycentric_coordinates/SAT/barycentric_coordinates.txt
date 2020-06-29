@@ -1,0 +1,100 @@
+
+#void Barycentric(Point a, Point b, Point c, Point p, float &u, float &v, float &w)
+#{
+#
+#	Vector m = Cross(b-a, c-a);
+#
+#	float nu, nv, ood ;
+#
+#	float x = Abs(m.x), y = Abs(m.y), z = Abs(m.z);
+#
+#	if ( x >= y && x >= z) {
+#		#nu = TriArea2D(p.y, p.z, b.y, b.z, c.y, c.z);
+#		nu = return (p.y-b.y)*(b.z-c.z) - (b.y-c.y)*(p.z-b.z);
+#
+#		#nv = TriArea2D(p.y, p.z, c.y, c.z, a.y, a.z);
+#		nv = (p.y-c.y)*(c.z-a.z) - (c.y-a.y)*(p.z-c.z);
+#
+#		ood = 1.0/m.x ;
+#	} else if ( y >= x && y >= z) {
+#		#nu = TriArea2D(p.x, p.z, b.x, b.z, c.x, c.z);
+#		nu = (p.x - b.x)*(b.z - c.z) - (b.x - c.x)*(p.z-b.z);
+#		#nv = TriArea2D(p.x, p.z, c.x, c.z, a.x, a.z);
+#		nv = (p.x - c.x)*(c.z - a.z) - (c.x-a.x)*(p.z-c.z);
+#		ood = 1.0/(-m.y);
+#	} else {
+#		#nu = TriArea2D(p.x, p.y, b.x, b.y, c.x, c.y);
+#		nu = (p.x-b.x)*(b.y-c.y) - (b.x-c.x)(p.y-b.y);
+#		#nv = TriArea2D(p.x, p.y, c.x, c.y, a.x, a.y);
+#		nv = (p.x - c.x)*(c.y-a.y) - (c.x - a.x)*(p.y - c.y);
+#		ood = 1.0/m.z ;
+#	}
+#
+#	u = nu * ood ;
+#	v = nv * ood ;
+#	w = 1.0 - u - v ;
+#
+#}
+
+INPUTS {
+	err fl64 : (-0.5, 0.5) ;
+	ax	fl64 : (-3.657 - 0.5, -3.657 + 0.5); ay	fl64 : (5.43 - 0.5, 5.43 + 0.5); az	fl64 : (-6.23 - 0.5, -6.23 + 0.5);
+	bx	fl64 : (7.893 - 0.5, 7.893 + 0.5); by	fl64 : (-6.67 - 0.5, -6.67 + 0.5); bz	fl64 : (8.92 - 0.5, 8.92 + 0.5);
+	cx	fl64 : (4.441 - 0.5, 4.441 + 0.5); cy	fl64 : (8.34 - 0.5, 8.34 + 0.5); cz	fl64 : (-3.35 - 0.5, -3.35 + 0.5);
+
+	#px	fl64 : (-2 , 2); py	fl64 : (3  , 3 ); pz	fl64 : (5  , 5 );
+	px	fl64 : (2 - err, 2 + err); py	fl64 : (3 - err , 3 + err ); pz	fl64 : (5 - err  , 5 + err);
+}
+
+OUTPUTS {
+	#ood; 
+	#nu ;
+	#u ;
+	#w ;
+	#w ;
+	#mz ;
+	nu ;
+}
+
+
+EXPRS {
+
+
+	bax = bx - ax ; bay = by - ay ; baz = bz - az ;
+	cax = cx - ax ; cay = cy - ay ; caz = cz - az ;
+
+	mx = bay*caz - baz*cay; my = baz*cax - bax*caz; mz = bax*cay - bay*cax;
+
+	if(( ((mx >= 0) && (my >= 0) && (mx >= my)) || ((mx < 0) && (my >= 0) && (mx+my <= 0)) || 
+	    ((mx >= 0) && (my < 0) && (mx + my >= 0)) || ((mx < 0) && (my < 0) && (mx - my <= 0))
+		 ) && ( ((mx >= 0) && (mz >= 0) && (mx >= mz)) || ((mx < 0) && (mz >= 0) && (mx+mz <= 0)) || 
+	    ((mx >= 0) && (mz < 0) && (mx + mz >= 0)) || ((mx < 0) && (mz < 0) && (mx - mz <= 0))
+		 )) then
+		nu = (py-by)*(bz-cz) - (by-cy)*(pz-bz);
+		nv = (py-cy)*(cz-az) - (cy-ay)*(pz-cz);
+		ood = 1.0/mx ;
+	else
+		if(( ((my >= 0) && (mx >= 0) && (my >= mx)) || ((my < 0) && (mx >= 0) && (my+mx <= 0)) || 
+		    ((my >= 0) && (mx < 0) && (my + mx >= 0)) || ((my < 0) && (mx < 0) && (my - mx <= 0))
+			 ) && ( ((my >= 0) && (mz >= 0) && (my >= mz)) || ((my < 0) && (mz >= 0) && (my+mz <= 0)) || 
+		    ((my >= 0) && (mz < 0) && (my + mz >= 0)) || ((my < 0) && (mz < 0) && (my - mz <= 0))
+			 )) then
+			nu = (px - bx)*(bz - cz) - (bx - cx)*(pz-bz);
+			nv = (px - cx)*(cz - az) - (cx-ax)*(pz-cz);
+			ood = 1.0/(-1.0*my);
+		else
+			nu = (px-bx)*(by-cy) - (bx-cx)*(py-by);
+			nv = (px - cx)*(cy-ay) - (cx - ax)*(py - cy);
+			ood = 1.0/mz ;			
+		endif
+		
+	endif
+
+	u = nu * ood ;
+	v = nv * ood ;
+	w = 1.0 - u - v ;
+
+
+
+
+}
