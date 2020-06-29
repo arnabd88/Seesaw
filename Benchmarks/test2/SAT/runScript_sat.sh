@@ -13,7 +13,7 @@ python3 ../../../src/satire+.py  \
 python3 ../../../src/satire+.py  \
         --std \
 		--file ${testname} \
-		--realpaver
+		--realpaver \
 		--logfile basic_RP.log \
 		--outfile basic_RP.out
 
@@ -32,7 +32,7 @@ python3 ../../../src/satire+.py  \
         --std \
         --report-instability \
 		--file ${testname} \
-		--realpaver
+		--realpaver \
 		--logfile basic_instab_RP.log \
 		--outfile basic_instab_RP.out
 
@@ -72,7 +72,7 @@ python3 ../../../src/satire+.py  \
         --std \
 		--file ${testname} \
 		--enable-constr \
-		--realpaver
+		--realpaver \
 		--logfile Constrained_RP.log \
 		--outfile Constrained_RP.out
 
@@ -93,7 +93,7 @@ python3 ../../../src/satire+.py  \
         --report-instability \
 		--file ${testname} \
 		--enable-constr \
-		--realpaver
+		--realpaver \
 		--logfile Constrained_instab_RP.log \
 		--outfile Constrained_instab_RP.out
 
