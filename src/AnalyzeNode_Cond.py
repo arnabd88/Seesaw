@@ -242,10 +242,12 @@ class AnalyzeNode_Cond(object):
 	def add_instability_error(self, expr_solve, out=False):
 		temp_list = []
 		if len(expr_solve) > 1:
-			#print("INSTABILITY COMPRESSION LIST:", len(expr_solve))
+			print("INSTABILITY COMPRESSION LIST:", len(expr_solve))
 			print("expr_solve:", expr_solve)
 			unstable_cands = list(filter(lambda x: bool(helper.freeCondSymbols(x).difference(self.truthTable)), \
 							  expr_solve))
+			#print("Unstable Cands:", len(unstable_cands))
+			#print(unstable_cands)
 			if len(unstable_cands) > 1:
 				print(unstable_cands)
 				#print("Candidates for instability:", len(unstable_cands))
@@ -258,16 +260,18 @@ class AnalyzeNode_Cond(object):
 						free_symbols = free_symbols1.union(free_symbols2)
 						free_symbols = free_symbols1.union(free_symbols2)
 						print("PROCESS_EXPRESSION_LOC4")
-						[errIntv, res_avg_maxres] = self.process_expression( expr_diff, cond_expr, free_symbols, get_stats=Globals.argList.stat_err_enable )
+						[errIntv, res_avg_maxres] = self.process_expression( expr_diff, cond_expr, free_symbols, get_stats=True ) #Globals.argList.stat_err_enable )
+						print(errIntv, res_avg_maxres)
 						if errIntv is not None and res_avg_maxres is not None:
 							print("Debug:", errIntv)
 							err = max([abs(i) for i in errIntv if i is not None] if errIntv is not None else [0])
 							print(res_avg_maxres)
 							temp_list += [(err, res_avg_maxres[1], (unstable_cands[i], unstable_cands[j]))]
+							print("DEBUG_INSTABILITY :", err)
 				if len(temp_list) > 0:		
 					temp_list.sort(key=lambda tup: -tup[0]) # reverse sort
-					print("temp_list:", temp_list)
-					print("unstable-conds:", unstable_cands)
+					#print("temp_list:", temp_list)
+					#print("unstable-conds:", unstable_cands)
 					if temp_list[0][0] > 0.0 and out and Globals.argList.report_instability:
 						Globals.InstabDict[temp_list[0][2]] = (temp_list[0][0], temp_list[0][1])  ## (err, max_stat)
 						print("DETECTING UNSTABLE PAIRS:{pair}\t VARIATION:{instab}".format(pair=temp_list[0][2], \
@@ -542,7 +546,7 @@ class AnalyzeNode_Cond(object):
 				(cond_expr,free_symbols)	=	self.parse_cond(cond)
 				print("PROCESS_EXPRESSION_LOC1")
 				print("Outside:", cond_expr)
-				[errIntv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=Globals.argList.stat_err_enable )
+				[errIntv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=True ) #Globals.argList.stat_err_enable )
 				err = max([abs(i) for i in errIntv]) if errIntv is not None else 0
 				print("STAT: SP:{err}, maxres:{maxres}, avg:{avg}".format(\
 					err = err, maxres = res_avg_maxres[1] if res_avg_maxres is not None else 0, avg = res_avg_maxres[0] if res_avg_maxres is not None else 0 \
@@ -591,6 +595,7 @@ class AnalyzeNode_Cond(object):
 
 			self.results[node] = {"ERR" : node_err, \
 								  "SERR" : 0.0, \
+								  #"INSTABILITY": self.InstabilityAccumulator[node], \
 								  "INSTABILITY": instab_error, \
 								  "INTV" : ret_intv \
 								  }
