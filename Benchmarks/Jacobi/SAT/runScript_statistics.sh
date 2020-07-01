@@ -1,4 +1,4 @@
-testname="Jacobi.txt
+testname="Jacobi.txt"
 
 
 for frac in 0.0 0.5 0.8 
@@ -7,6 +7,9 @@ do
 	python3 ../../../src/satire+.py \
 			--std \
 			--file ${testname} \
+			--enable-abstraction \
+			--mindepth 10 \
+			--maxdepth 20 \
 			--stat-err-enable \
 			--stat-err-fraction ${frac} \
 			--samples 10000 \
@@ -16,6 +19,9 @@ do
 	python3 ../../../src/satire+.py \
 			--std \
 			--file ${testname} \
+			--enable-abstraction \
+			--mindepth 10 \
+			--maxdepth 20 \
 			--realpaver \
 			--stat-err-enable \
 			--stat-err-fraction ${frac} \
