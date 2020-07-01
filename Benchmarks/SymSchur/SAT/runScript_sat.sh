@@ -2,14 +2,14 @@
 testname="SymSchur2.txt"
 
 # Different run configurations
-#1. Confiig : Basic Solver + instability
+# Confiig : Basic Solver + instability
 python3 ../../../src/satire+.py  \
         --std \
 		--file ${testname} \
 		--logfile basic.log \
 		--outfile basic.out
 
-#2. Confiig : Basic Solver + instability + realpaver
+# Confiig : Basic Solver + instability + realpaver
 python3 ../../../src/satire+.py  \
         --std \
 		--file ${testname} \
@@ -18,7 +18,7 @@ python3 ../../../src/satire+.py  \
 		--outfile basic_RP.out
 
 
-#3. Confiig : Basic Solver + instability
+# Confiig : Basic Solver + instability
 python3 ../../../src/satire+.py  \
         --std \
         --report-instability \
@@ -27,7 +27,7 @@ python3 ../../../src/satire+.py  \
 		--outfile basic_instab.out
 
 
-#4. Confiig : Basic Solver + instability + realpaver
+# Confiig : Basic Solver + instability + realpaver
 python3 ../../../src/satire+.py  \
         --std \
         --report-instability \
@@ -36,30 +36,64 @@ python3 ../../../src/satire+.py  \
 		--logfile basic_instab_RP.log \
 		--outfile basic_instab_RP.out
 
-#5. Config : Basic Solver + statistical error with fractional threshold
-python3 ../../../src/satire+.py  \
-        --std \
-        --report-instability \
-		--file ${testname} \
-		--stat-err-enable \
-		--stat-err-fraction 0.8 \
-		--logfile basic_instab_stat_0.8.log \
-		--outfile basic_instab_stat_0.8.out
 
-#6. Config : Basic Solver + realpaver + statistical error with fractional threshold
+
+##---------------------------------------------------------
+##
+## ---------  Constrained solver with Z3 ------------
+##
+##---------------------------------------------------------
+# Confiig : Constrained Solver + instability
 python3 ../../../src/satire+.py  \
         --std \
-        --report-instability \
 		--file ${testname} \
+		--enable-constr \
+		--useZ3 \
+		--logfile Z3_Constrained.log \
+		--outfile Z3_Constrained.out
+
+# Confiig : Constrained Solver + instability + realpaver
+python3 ../../../src/satire+.py  \
+        --std \
+		--file ${testname} \
+		--enable-constr \
+		--useZ3 \
 		--realpaver \
-		--stat-err-enable \
-		--stat-err-fraction 0.5 \
-		--logfile basic_instab_RP_stat_0.5.log \
-		--outfile basic_instab_RP_stat_0.5.out
+		--logfile Z3_Constrained_RP.log \
+		--outfile Z3_Constrained_RP.out
 
-## ---------------- Constrained optimizer enabled -------------------------
 
-#6. Confiig : Constrained Solver + instability
+# Confiig : Constrained Solver + instability
+python3 ../../../src/satire+.py  \
+        --std \
+        --report-instability \
+		--file ${testname} \
+		--enable-constr \
+		--useZ3 \
+		--logfile Z3_Constrained_instab.log \
+		--outfile Z3_Constrained_instab.out
+
+
+# Confiig : Constrained Solver + instability + realpaver
+python3 ../../../src/satire+.py  \
+        --std \
+        --report-instability \
+		--file ${testname} \
+		--enable-constr \
+		--useZ3 \
+		--realpaver \
+		--logfile Z3_Constrained_instab_RP.log \
+		--outfile Z3_Constrained_instab_RP.out
+
+
+
+##---------------------------------------------------------
+##
+## ---------  Constrained solver with Dreal ------------
+##
+##---------------------------------------------------------
+
+# Confiig : Constrained Solver + instability
 python3 ../../../src/satire+.py  \
         --std \
 		--file ${testname} \
@@ -67,7 +101,7 @@ python3 ../../../src/satire+.py  \
 		--logfile Constrained.log \
 		--outfile Constrained.out
 
-#7. Confiig : Constrained Solver + instability + realpaver
+# Confiig : Constrained Solver + instability + realpaver
 python3 ../../../src/satire+.py  \
         --std \
 		--file ${testname} \
@@ -77,7 +111,7 @@ python3 ../../../src/satire+.py  \
 		--outfile Constrained_RP.out
 
 
-#8. Confiig : Constrained Solver + instability
+# Confiig : Constrained Solver + instability
 python3 ../../../src/satire+.py  \
         --std \
         --report-instability \
@@ -87,7 +121,7 @@ python3 ../../../src/satire+.py  \
 		--outfile Constrained_instab.out
 
 
-#9. Confiig : Constrained Solver + instability + realpaver
+# Confiig : Constrained Solver + instability + realpaver
 python3 ../../../src/satire+.py  \
         --std \
         --report-instability \

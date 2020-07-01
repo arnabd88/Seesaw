@@ -1,20 +1,20 @@
 
 
 DIRS="barycentric_coordinates\
-	 ClosestPtPointSegment2\
-     EigenSphere\
-	 ExtremePointsAlongDirection\
-	 gram-schmidt\
-	 MD\
-	 smartRoot\
-	 SphereOfSphereAndPt\
+	 SymSchur\
 	 SqDistPointSegment\
 	 squareRoot3\
 	 styblinski\
+	 smartRoot\
 	 test2\
-	 SymSchur\
+	 lead-lag\
+	 gram-schmidt\
+	 ClosestPtPointSegment2\
+	 ExtremePointsAlongDirection\
+	 SphereOfSphereAndPt\
 	 Jacobi\
-	 lead-lag"
+     EigenSphere\
+	 MD"
 
 
 set -x
