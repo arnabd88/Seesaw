@@ -243,23 +243,25 @@ class AnalyzeNode_Cond(object):
 		temp_list = []
 		if len(expr_solve) > 1:
 			print("INSTABILITY COMPRESSION LIST:", len(expr_solve))
-			print("expr_solve:", expr_solve)
+			#print("expr_solve:", expr_solve)
 			unstable_cands = list(filter(lambda x: bool(helper.freeCondSymbols(x).difference(self.truthTable)), \
 							  expr_solve))
 			#print("Unstable Cands:", len(unstable_cands))
 			#print(unstable_cands)
+			count=0
 			if len(unstable_cands) > 1:
 				print(unstable_cands)
 				#print("Candidates for instability:", len(unstable_cands))
 				for i in range(0, len(unstable_cands)):
 					for j in range(i+1, len(unstable_cands)):
+						count += 1
 						expr_diff = (unstable_cands[i].exprCond[0] - unstable_cands[j].exprCond[0]).__abs__()
 						(cond1_expr, free_symbols1) = self.parse_cond(unstable_cands[i].exprCond[1])
 						(cond2_expr, free_symbols2) = self.parse_cond(unstable_cands[j].exprCond[1])
 						cond_expr =	utils.process_conditionals(cond1_expr,  cond2_expr)
 						free_symbols = free_symbols1.union(free_symbols2)
 						free_symbols = free_symbols1.union(free_symbols2)
-						print("PROCESS_EXPRESSION_LOC4")
+						print("PROCESS_EXPRESSION_LOC4", count)
 						[errIntv, res_avg_maxres] = self.process_expression( expr_diff, cond_expr, free_symbols, get_stats=True ) #Globals.argList.stat_err_enable )
 						print(errIntv, res_avg_maxres)
 						if errIntv is not None and res_avg_maxres is not None:
@@ -686,17 +688,36 @@ class AnalyzeNode_Cond(object):
 # Build the expression
 # If too large depth : apply abstraction 
 
+
+	def default_res(self):
+		print("Setting default results")
+		for node in self.trimList:
+			expr = node.f_expression[0].exprCond[0] # just the expr part --> if leaf => matches the symbolic form of inputs or FVs
+			print("In default seetings -> ", expr)
+			self.results[node] = {"ERR" : 0.0, \
+								  "SERR" : 0.0, \
+								  #"INSTABILITY": self.InstabilityAccumulator[node], \
+								  "INSTABILITY": 0.0, \
+								  "INTV" : [0,0] if expr not in Globals.inputVars.keys() else Globals.inputVars[expr] \
+								  }
+
+		return self.results
+
+
+
 	#def start(self, bound_min=Globals.argList.mindepth, bound_max=Globals.argList.maxdepth ):
 	def start(self, bound_min=10, bound_max=20 ):
 	
 		MaxDepth = max([node.depth for node in self.trimList])
 
-		print("MAXDEPTH:{MaxDepth}".format(MaxDepth=MaxDepth))
+		print("MAXDEPTH1:{MaxDepth}".format(MaxDepth=MaxDepth))
 		while (MaxDepth >= bound_min and MaxDepth >= bound_max):
 			#MaxOps = max([node.f_expression.__countops__() for node in self.trimList])
-			print("MAXDEPTH:{MaxDepth}".format(MaxDepth=MaxDepth))
+			print("MAXDEPTH2:{MaxDepth}".format(MaxDepth=MaxDepth))
 			MaxDepth = self.abstractAnalysis(MaxDepth, bound_min, bound_max)
 		print("out of while")
+		if MaxDepth==0 :
+			return self.default_res()
 		self.__setup_condexpr__()
 		(self.parent_dict, self.cond_syms) = helper.expression_builder(self.trimList)
 		self.__init_workStack__()
@@ -717,7 +738,7 @@ class AnalyzeNode_Cond(object):
 		#print("//----------------------------//")
 		print(" > Analyzing error for the current abstraction block...\n")
 		logger.info("Analyzing error for the current abstraction block...\n")
-		res = self.first_order_error()
+		res = self.first_order_error() 
 		fe2 = time.time()
 		print(" > Finished in {duration} secs\n".format(duration=fe2-fe1))
 		logger.info("Finished in {duration} secs\n".format(duration=fe2-fe1))
