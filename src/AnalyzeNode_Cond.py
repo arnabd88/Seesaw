@@ -202,7 +202,7 @@ class AnalyzeNode_Cond(object):
 				#print("lim:", expr, lim, len(racc))
 				(cond_expr,free_symbols)	=	self.parse_cond(cond)
 				print("PROCESS_EXPRESSION_LOC3")
-				[errIntv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=Globals.argList.stat_err_enable )
+				[errIntv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=Globals.argList.stat_err_enable or Globals.argList.stat )
 				err = max([abs(i) for i in errIntv])
 				maxres = err if res_avg_maxres is None else res_avg_maxres[1]
 				#avg_res = res_avg_maxres[0]
@@ -262,7 +262,7 @@ class AnalyzeNode_Cond(object):
 						free_symbols = free_symbols1.union(free_symbols2)
 						free_symbols = free_symbols1.union(free_symbols2)
 						print("PROCESS_EXPRESSION_LOC4", count)
-						[errIntv, res_avg_maxres] = self.process_expression( expr_diff, cond_expr, free_symbols, get_stats=True ) #Globals.argList.stat_err_enable )
+						[errIntv, res_avg_maxres] = self.process_expression( expr_diff, cond_expr, free_symbols, get_stats=Globals.argList.stat_err_enable or Globals.argList.stat)
 						print(errIntv, res_avg_maxres)
 						if errIntv is not None and res_avg_maxres is not None:
 							print("Debug:", errIntv)
@@ -548,7 +548,7 @@ class AnalyzeNode_Cond(object):
 				(cond_expr,free_symbols)	=	self.parse_cond(cond)
 				print("PROCESS_EXPRESSION_LOC1")
 				print("Outside:", cond_expr)
-				[errIntv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=True ) #Globals.argList.stat_err_enable )
+				[errIntv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=Globals.argList.stat_err_enable or Globals.argList.stat )
 				err = max([abs(i) for i in errIntv]) if errIntv is not None else 0
 				print("STAT: SP:{err}, maxres:{maxres}, avg:{avg}".format(\
 					err = err, maxres = res_avg_maxres[1] if res_avg_maxres is not None else 0, avg = res_avg_maxres[0] if res_avg_maxres is not None else 0 \

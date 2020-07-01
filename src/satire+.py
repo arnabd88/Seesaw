@@ -34,6 +34,8 @@ def parseArguments():
 									  default=40, type=int)
 	parser.add_argument('--stat', help='Report statistics on error expression. Disabled by default', \
 									  default=False, action='store_true')
+	parser.add_argument('--samples', help='Number of samples for stats', \
+									  default=1000, type=int)
 	parser.add_argument('--report-instability', help='Report instability for every divergent path. Disabled by default', \
 									  default=False, action='store_true')
 	parser.add_argument('--simplify', help='Simplify expression -> could be costly for very large expressions',
@@ -49,6 +51,7 @@ def parseArguments():
 	parser.add_argument('--stat-err-enable', help='Enable statistical error sampling', default=False, action='store_true')
 	parser.add_argument('--stat-err-fraction', help='Fractional bound for using statistical error. Default is 0.5',\
 	                                  default=0.5, type=float)
+	parser.add_argument('--useZ3', help='Enabled using Z3 for constraint solving. Dreal gets disabled', default=False, action='store_true')
 	                                  
 
 	result = parser.parse_args()

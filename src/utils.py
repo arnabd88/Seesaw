@@ -194,8 +194,11 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	                                          gelpia_max_iters,
 	                                          gelpia_seed,
 	                                          False,
+											  #True, #z3
+											  Globals.argList.useZ3,
 	                                          gelpia.SRC_DIR,
 	                                          gelpia_rust_executable,
+											  False, #drop constraints
 	                                          max_lower,
 	                                          max_upper))
 	p.start()
@@ -207,8 +210,11 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	                                       gelpia_max_iters,
 	                                       gelpia_seed,
 	                                       False,
+										   #True, #z3
+										   Globals.argList.useZ3,
 	                                       gelpia.SRC_DIR,
-	                                       gelpia_rust_executable)
+	                                       gelpia_rust_executable,
+										   False)
 	p.join()
 	end_time = time.time()
 	#print("Finishing gelpia query->ID:", Globals.gelpiaID)
