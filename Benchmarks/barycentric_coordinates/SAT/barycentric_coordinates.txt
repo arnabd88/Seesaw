@@ -50,10 +50,10 @@ OUTPUTS {
 	#ood; 
 	#nu ;
 	#u ;
-	#w ;
+	w ;
 	#w ;
 	#mz ;
-	nu ;
+	#nu ;
 }
 
 
