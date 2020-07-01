@@ -7,9 +7,6 @@ do
 	python3 ../../../src/satire+.py \
 			--std \
 			--file ${testname} \
-			--enable-abstraction \
-			--mindepth 10 \
-			--maxdepth 20 \
 			--stat-err-enable \
 			--stat-err-fraction ${frac} \
 			--samples 10000 \
@@ -19,9 +16,6 @@ do
 	python3 ../../../src/satire+.py \
 			--std \
 			--file ${testname} \
-			--enable-abstraction \
-			--mindepth 10 \
-			--maxdepth 20 \
 			--realpaver \
 			--stat-err-enable \
 			--stat-err-fraction ${frac} \
