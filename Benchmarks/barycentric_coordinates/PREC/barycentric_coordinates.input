@@ -1,0 +1,12 @@
+barycentric (AX, AY, AZ, BX, BY, BZ, CX, CY, CZ, PX, PY, PZ) :	AX in [-4.157, -3.157], 
+																AY in [4.93, 5.93], 
+																AZ in [-6.73, -5.73] ,
+																BX in [7.393, 8.393] ,
+																BY in  [-7.17, -6.17],
+																BZ in  [8.42, 9.42],
+																CX in [3.941, 4.941] ,
+																CY in [7.84, 8.84] ,
+																CZ in [-3.85, -2.85] ,
+																PX in [1.5, 2.5] ,
+																PY in [2.5, 3.5] ,
+																PZ in  [4.5, 5.5]

@@ -1,0 +1,23 @@
+symschur:	THEORY
+BEGIN
+IMPORTING float@aerr754dp
+
+symschur ( A_P_P, A_P_Q, A_Q_Q: unb_double ): unb_double =
+
+
+	IF ( Dabs(A_P_Q) > RtoD(0.0001) ) THEN
+		LET R = Ddiv(Dsub(A_Q_Q, A_P_P), Dmul(RtoD(2), A_P_Q)) IN
+		IF ( R >= 0 ) THEN
+			LET T = Ddiv(RtoD(1), Dadd(Dsqrt(Dadd(RtoD(1), Dmul(R,R))), R)) IN
+			Ddiv(RtoD(1), Dsqrt(Dadd(RtoD(1), Dmul(T,T))))
+		ELSE
+			LET T = Ddiv(RtoD(-1), Dsub(Dsqrt(Dadd(RtoD(1), Dmul(R,R))), R)) IN
+			Ddiv(RtoD(1), Dsqrt(Dadd(RtoD(1), Dmul(T,T))))
+		ENDIF
+	ELSE
+		RtoD(1)
+	ENDIF
+
+END symschur
+
+		

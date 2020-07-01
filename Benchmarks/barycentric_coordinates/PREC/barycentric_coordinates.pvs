@@ -1,0 +1,38 @@
+barycentric: THEORY
+BEGIN
+IMPORTING float@aerr754dp
+
+
+barycentric (AX, AY, AZ, BX, BY, BZ, CX, CY, CZ, PX, PY, PZ: unb_double): unb_double =
+
+	LET MX = Dsub(Dmul(Dsub(BY,AY), Dsub(CZ,AZ)),   Dmul(Dsub(BZ,AZ), Dsub(CY,AY))) IN
+	LET MY = Dsub(Dmul(Dsub(BZ,AZ), Dsub(CX,AX)),   Dmul(Dsub(BX,AX), Dsub(CZ,AZ))) IN
+	LET MZ = Dsub(Dmul(Dsub(BX,AX), Dsub(CY,AY)),   Dmul(Dsub(BY,AY), Dsub(CX,AX))) IN
+	IF (Dabs(MX) >= Dabs(MY) AND Dabs(MX) >= Dabs(MZ)) THEN 
+		LET U1 = Dmul( Dsub( Dmul(Dsub(PY,BY), Dsub(BZ,CZ)),
+		           			 Dmul(Dsub(BY,CY), Dsub(PZ,BZ))),
+		      		   Ddiv(RtoD(1), MX)) IN
+		LET V1 = Dmul( Dsub( Dmul(Dsub(PY,CY), Dsub(CZ,AZ)),
+		           			 Dmul(Dsub(CY,AY), Dsub(PZ,CZ))),
+		      		   Ddiv(RtoD(1), MX)) IN
+		Dsub(Dsub(RtoD(1), U1), V1)
+	ELSIF (Dabs(MY) >= Dabs(MX) AND Dabs(MY) >= Dabs(MZ)) THEN
+		LET U1 = Dmul( Dsub( Dmul(Dsub(PX,BX), Dsub(BZ,CZ)),
+		           			 Dmul(Dsub(BX,CX), Dsub(PZ,BZ))),
+		      		   Ddiv(RtoD(1), Dmul(RtoD(-1),MY))) IN
+		LET V1 = Dmul( Dsub( Dmul(Dsub(PX,CX), Dsub(CZ,AZ)),
+		           			 Dmul(Dsub(CX,AX), Dsub(PZ,CZ))),
+		      		   Ddiv(RtoD(1), Dmul(RtoD(-1),MY))) IN
+		Dsub(Dsub(RtoD(1), U1), V1)
+	ELSE 
+		LET U1 = Dmul( Dsub( Dmul(Dsub(PX,BX), Dsub(BY,CY)),
+		           			 Dmul(Dsub(BX,CX), Dsub(PY,BY))),
+		      		   Ddiv(RtoD(1), MZ)) IN
+		LET V1 = Dmul( Dsub( Dmul(Dsub(PX,CX), Dsub(CY,AY)),
+		           			 Dmul(Dsub(CX,AX), Dsub(PY,CY))),
+		      		   Ddiv(RtoD(1), MZ)) IN
+		Dsub(Dsub(RtoD(1), U1), V1)
+	ENDIF
+	
+
+END barycentric

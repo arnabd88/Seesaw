@@ -1,0 +1,17 @@
+closest:	THEORY
+BEGIN
+IMPORTING float@aerr754dp
+
+closest ( BX, BY, BZ, AX, AY, AZ, CX, CY, CZ: unb_double):	unb_double =
+	LET XPOS = Dmul(Dsub(CX,AX), Dsub(BX,AX)) IN
+	LET YPOS = Dmul(Dsub(CY,AY), Dsub(BY,AY)) IN
+	LET ZPOS = Dmul(Dsub(CZ,AZ), Dsub(BZ,AZ)) IN
+	LET T = Dadd(XPOS, Dadd(YPOS, ZPOS)) IN
+	LET DENOM = Dadd(Dmul( Dsub(BZ,AZ), Dsub(BZ,AZ)), Dadd( Dmul(Dsub(BX,AX),Dsub(BX,AX)), Dmul(Dsub(BY,AY),Dsub(BY,AY))) ) IN
+	IF ( T <= RtoD(0) ) THEN AX
+	ELSIF ( T >= DENOM) THEN BX
+	ELSE Dadd(AX, Dmul(T,  Dsub(BX,AX)))
+	ENDIF
+	
+
+END closest

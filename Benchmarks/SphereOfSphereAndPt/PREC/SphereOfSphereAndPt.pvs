@@ -1,0 +1,91 @@
+sphereofspherewithpoint: THEORY
+BEGIN
+IMPORTING float@aerr754dp
+
+sphereofspherewithpoint (PX0, PY0, PZ0, PX1, PY1, PZ1, PX2, PY2, PZ2, CX0, CY0, CZ0: unb_double): unb_double =
+
+	LET RADIUS0 = RtoD(2.5) IN
+	LET DX_0 = Dsub(PX0, CX0) IN
+	LET DY_0 = Dsub(PY0, CY0) IN
+	LET DZ_0 = Dsub(PZ0, CZ0) IN
+	LET DIST2_0 = Dadd(Dmul(DX_0,DX_0), Dadd(Dmul(DY_0,DY_0), Dmul(DZ_0,DZ_0))) IN
+
+	IF ( DIST2_0 > Dmul(RADIUS0, RADIUS0) ) THEN
+		LET DIST_1 =  Dsqrt(DIST2_0) IN
+		LET NEWRADIUS_1 = Dmul(RtoD(0.5), Dadd(RADIUS0, DIST_1)) IN
+		LET FAC_1 = Ddiv(Dsub(  NEWRADIUS_1 , RADIUS0 ), DIST_1) IN
+		LET CX_1 = Dadd(CX0, Dmul(DX_0, FAC_1)) IN
+		LET CY_1 = Dadd(CY0, Dmul(DY_0, FAC_1)) IN
+		LET CZ_1 = Dadd(CZ0, Dmul(DZ_0, FAC_1)) IN
+		LET RADIUS1 = NEWRADIUS_1 IN
+		LET DX_1 = Dsub(PX1, CX_1) IN
+		LET DY_1 = Dsub(PY1, CY_1) IN
+		LET DZ_1 = Dsub(PZ1, CZ_1) IN
+		LET DIST2_1 = Dadd(Dmul(DX_1,DX_1), Dadd(Dmul(DY_1,DY_1), Dmul(DZ_1,DZ_1))) IN
+
+		IF ( DIST2_1 > Dmul(RADIUS1, RADIUS1) ) THEN
+			LET DIST_2 =  Dsqrt(DIST2_1) IN
+			LET NEWRADIUS_2 = Dmul(RtoD(0.5), Dadd(RADIUS1, DIST_2)) IN
+			LET FAC_2 = Ddiv(Dsub(  NEWRADIUS_2 , RADIUS1 ), DIST_2) IN
+			LET CX_2 = Dadd(CX_1, Dmul(DX_1, FAC_2)) IN
+			LET CY_2 = Dadd(CY_1, Dmul(DY_1, FAC_2)) IN
+			LET CZ_2 = Dadd(CZ_1, Dmul(DZ_1, FAC_2)) IN
+			LET RADIUS2 = NEWRADIUS_2 IN
+			LET DX_2 = Dsub(PX2, CX_2) IN
+			LET DY_2 = Dsub(PY2, CY_2) IN
+			LET DZ_2 = Dsub(PZ2, CZ_2) IN
+			LET DIST2_2 = Dadd(Dmul(DX_2,DX_2), Dadd(Dmul(DY_2,DY_2), Dmul(DZ_2,DZ_2))) IN
+
+				IF ( DIST2_2 > Dmul(RADIUS2, RADIUS2) ) THEN
+					LET DIST_3 =  Dsqrt(DIST2_2) IN
+					Dmul(RtoD(0.5), Dadd(RADIUS1, DIST_3)) 
+				ELSE
+					RADIUS2
+				ENDIF
+		ELSE
+			LET RADIUS2 = Dmul(RtoD(0.5), Dadd(RADIUS0, DIST_1)) IN
+			LET DX_2 = Dsub(PX2, CX_1) IN
+			LET DY_2 = Dsub(PY2, CY_1) IN
+			LET DZ_2 = Dsub(PZ2, CZ_1) IN
+			LET DIST2_2 = Dadd(Dmul(DX_2,DX_2), Dadd(Dmul(DY_2,DY_2), Dmul(DZ_2,DZ_2))) IN
+			
+				IF ( DIST2_2 > Dmul(RADIUS2, RADIUS2) ) THEN
+					LET DIST_3 =  Dsqrt(DIST2_2) IN
+					Dmul(RtoD(0.5), Dadd(RADIUS1, DIST_3)) 
+				ELSE
+					RADIUS2
+				ENDIF
+
+		ENDIF
+	ELSE
+		LET DX_1 = Dsub(PX1, CX0) IN
+		LET DY_1 = Dsub(PY1, CY0) IN
+		LET DZ_1 = Dsub(PZ1, CZ0) IN
+		LET RADIUS1 = RADIUS0 IN
+		LET DIST2_1 = Dadd(Dmul(DX_1,DX_1), Dadd(Dmul(DY_1,DY_1), Dmul(DZ_1,DZ_1))) IN
+
+		IF ( DIST2_1 > Dmul(RADIUS1, RADIUS1)) THEN
+			LET DIST_2 =  Dsqrt(DIST2_1) IN
+			LET NEWRADIUS_2 = Dmul(RtoD(0.5), Dadd(RADIUS1, DIST_2)) IN
+			LET FAC_2 = Ddiv(Dsub(  NEWRADIUS_2 , RADIUS1 ), DIST_2) IN
+			LET CX_2 = Dadd(CX0, Dmul(DX_1, FAC_2)) IN
+			LET CY_2 = Dadd(CY0, Dmul(DY_1, FAC_2)) IN
+			LET CZ_2 = Dadd(CZ0, Dmul(DZ_1, FAC_2)) IN
+			LET RADIUS2 = NEWRADIUS_2 IN
+			LET DX_2 = Dsub(PX2, CX_2) IN
+			LET DY_2 = Dsub(PY2, CY_2) IN
+			LET DZ_2 = Dsub(PZ2, CZ_2) IN
+			LET DIST2_2 = Dadd(Dmul(DX_2,DX_2), Dadd(Dmul(DY_2,DY_2), Dmul(DZ_2,DZ_2))) IN
+
+				IF ( DIST2_2 > Dmul(RADIUS2, RADIUS2) ) THEN
+					LET DIST_3 =  Dsqrt(DIST2_2) IN
+					Dmul(RtoD(0.5), Dadd(RADIUS1, DIST_3)) 
+				ELSE
+					RADIUS2
+				ENDIF
+		ELSE
+			RADIUS0
+		ENDIF
+	ENDIF
+
+END sphereofspherewithpoint
