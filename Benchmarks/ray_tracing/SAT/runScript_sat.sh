@@ -53,14 +53,14 @@ python3 ../../../src/satire+.py  \
 		--outfile Z3_Constrained.out
 
 # Confiig : Constrained Solver + instability + realpaver
-python3 ../../../src/satire+.py  \
-        --std \
-		--file ${testname} \
-		--enable-constr \
-		--useZ3 \
-		--realpaver \
-		--logfile Z3_Constrained_RP.log \
-		--outfile Z3_Constrained_RP.out
+#python3 ../../../src/satire+.py  \
+#        --std \
+#		--file ${testname} \
+#		--enable-constr \
+#		--useZ3 \
+#		--realpaver \
+#		--logfile Z3_Constrained_RP.log \
+#		--outfile Z3_Constrained_RP.out
 
 
 # Confiig : Constrained Solver + instability
@@ -75,15 +75,15 @@ python3 ../../../src/satire+.py  \
 
 
 # Confiig : Constrained Solver + instability + realpaver
-python3 ../../../src/satire+.py  \
-        --std \
-        --report-instability \
-		--file ${testname} \
-		--enable-constr \
-		--useZ3 \
-		--realpaver \
-		--logfile Z3_Constrained_instab_RP.log \
-		--outfile Z3_Constrained_instab_RP.out
+#python3 ../../../src/satire+.py  \
+#        --std \
+#        --report-instability \
+#		--file ${testname} \
+#		--enable-constr \
+#		--useZ3 \
+#		--realpaver \
+#		--logfile Z3_Constrained_instab_RP.log \
+#		--outfile Z3_Constrained_instab_RP.out
 
 
 
@@ -102,13 +102,13 @@ python3 ../../../src/satire+.py  \
 		--outfile Constrained.out
 
 # Confiig : Constrained Solver + instability + realpaver
-python3 ../../../src/satire+.py  \
-        --std \
-		--file ${testname} \
-		--enable-constr \
-		--realpaver \
-		--logfile Constrained_RP.log \
-		--outfile Constrained_RP.out
+#python3 ../../../src/satire+.py  \
+#        --std \
+#		--file ${testname} \
+#		--enable-constr \
+#		--realpaver \
+#		--logfile Constrained_RP.log \
+#		--outfile Constrained_RP.out
 
 
 # Confiig : Constrained Solver + instability
@@ -122,12 +122,12 @@ python3 ../../../src/satire+.py  \
 
 
 # Confiig : Constrained Solver + instability + realpaver
-python3 ../../../src/satire+.py  \
-        --std \
-        --report-instability \
-		--file ${testname} \
-		--enable-constr \
-		--realpaver \
-		--logfile Constrained_instab_RP.log \
+#python3 ../../../src/satire+.py  \
+#        --std \
+#        --report-instability \
+#		--file ${testname} \
+#		--enable-constr \
+#		--realpaver \
+#		--logfile Constrained_instab_RP.log \
 		--outfile Constrained_instab_RP.out
 
