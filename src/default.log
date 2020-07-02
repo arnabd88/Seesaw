@@ -1,0 +1,284 @@
+INFO:root:Parsing time : 0.012601852416992188 secs
+INFO:root:Full AST_DEPTH : 6
+INFO:helper:Building conditional expressions...
+
+INFO:helper:Building conditional expressions...
+
+INFO:AnalyzeNode_Cond: > Begin building derivatives....
+INFO:AnalyzeNode_Cond: > Finished in 0.0007443428039550781 secs
+
+INFO:AnalyzeNode_Cond:Analyzing error for the current abstraction block...
+
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond: > MaxError:
+ 5.4956039718945254e-17 ; [-0.9900000000000001, 0.9900000000000001]
+
+INFO:AnalyzeNode_Cond:Finished in 0.0712900161743164 secs
+
+INFO:helper:Building conditional expressions...
+
+INFO:AnalyzeNode_Cond: > Begin building derivatives....
+INFO:AnalyzeNode_Cond: > Finished in 0.00011444091796875 secs
+
+INFO:AnalyzeNode_Cond:Analyzing error for the current abstraction block...
+
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond: > MaxError:
+ 0.0 ; [0.4, 0.4]
+
+INFO:AnalyzeNode_Cond:Finished in 0.002029895782470703 secs
+
+INFO:helper:Building conditional expressions...
+
+INFO:helper:Building conditional expressions...
+
+INFO:AnalyzeNode_Cond: > Begin building derivatives....
+INFO:AnalyzeNode_Cond: > Finished in 0.0010762214660644531 secs
+
+INFO:AnalyzeNode_Cond:Analyzing error for the current abstraction block...
+
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond: > MaxError:
+ 5.4956039718945254e-17 ; [-0.9900000000000001, 0.9900000000000001]
+
+INFO:AnalyzeNode_Cond:Finished in 0.013763904571533203 secs
+
+INFO:helper:Building conditional expressions...
+
+INFO:AnalyzeNode_Cond: > Begin building derivatives....
+INFO:AnalyzeNode_Cond: > Finished in 7.82012939453125e-05 secs
+
+INFO:AnalyzeNode_Cond:Analyzing error for the current abstraction block...
+
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond: > MaxError:
+ 0.0 ; [0.4, 0.4]
+
+INFO:AnalyzeNode_Cond:Finished in 0.001565694808959961 secs
+
+INFO:helper:Building conditional expressions...
+
+INFO:helper:Building conditional expressions...
+
+INFO:AnalyzeNode_Cond: > Begin building derivatives....
+INFO:AnalyzeNode_Cond: > Finished in 0.0009148120880126953 secs
+
+INFO:AnalyzeNode_Cond:Analyzing error for the current abstraction block...
+
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond: > MaxError:
+ 5.551115123125783e-17 ; [9.999999999999996e-05, 1.0]
+
+INFO:AnalyzeNode_Cond:Finished in 0.049599647521972656 secs
+
+INFO:helper:Building conditional expressions...
+
+INFO:AnalyzeNode_Cond: > Begin building derivatives....
+INFO:AnalyzeNode_Cond: > Finished in 8.130073547363281e-05 secs
+
+INFO:AnalyzeNode_Cond:Analyzing error for the current abstraction block...
+
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond: > MaxError:
+ 0.0 ; [0.25, 0.25]
+
+INFO:AnalyzeNode_Cond:Finished in 0.0015764236450195312 secs
+
+INFO:helper:Building conditional expressions...
+
+INFO:AnalyzeNode_Cond: > Begin building derivatives....
+INFO:AnalyzeNode_Cond: > Finished in 0.003691434860229492 secs
+
+INFO:AnalyzeNode_Cond:Analyzing error for the current abstraction block...
+
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond: > MaxError:
+ 1.1157741397482826e-14 ; [0.00019999999999999993, 101.00000000000003]
+
+INFO:AnalyzeNode_Cond:Finished in 0.09325551986694336 secs
+
+INFO:helper:Building conditional expressions...
+
+INFO:AnalyzeNode_Cond: > Begin building derivatives....
+INFO:AnalyzeNode_Cond: > Finished in 0.0015304088592529297 secs
+
+INFO:AnalyzeNode_Cond:Analyzing error for the current abstraction block...
+
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond: > MaxError:
+ 5.551115123125783e-17 ; [9.999999999999996e-05, 1.0]
+
+INFO:AnalyzeNode_Cond:Finished in 0.016661882400512695 secs
+
+INFO:helper:Building conditional expressions...
+
+INFO:helper:Building conditional expressions...
+
+INFO:AnalyzeNode_Cond: > Begin building derivatives....
+INFO:AnalyzeNode_Cond: > Finished in 0.0008909702301025391 secs
+
+INFO:AnalyzeNode_Cond:Analyzing error for the current abstraction block...
+
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond: > MaxError:
+ 5.551115123125783e-17 ; [9.999999999999996e-05, 1.0]
+
+INFO:AnalyzeNode_Cond:Finished in 0.01000070571899414 secs
+
+INFO:helper:Building conditional expressions...
+
+INFO:AnalyzeNode_Cond: > Begin building derivatives....
+INFO:AnalyzeNode_Cond: > Finished in 0.00011539459228515625 secs
+
+INFO:AnalyzeNode_Cond:Analyzing error for the current abstraction block...
+
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond: > MaxError:
+ 0.0 ; [0.25, 0.25]
+
+INFO:AnalyzeNode_Cond:Finished in 0.0011124610900878906 secs
+
+INFO:helper:Building conditional expressions...
+
+INFO:AnalyzeNode_Cond: > Begin building derivatives....
+INFO:AnalyzeNode_Cond: > Finished in 0.0033159255981445312 secs
+
+INFO:AnalyzeNode_Cond:Analyzing error for the current abstraction block...
+
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond: > MaxError:
+ 1.1157741397482826e-14 ; [0.00019999999999999993, 101.00000000000003]
+
+INFO:AnalyzeNode_Cond:Finished in 0.023955106735229492 secs
+
+INFO:helper:Building conditional expressions...
+
+INFO:AnalyzeNode_Cond: > Begin building derivatives....
+INFO:AnalyzeNode_Cond: > Finished in 0.0008533000946044922 secs
+
+INFO:AnalyzeNode_Cond:Analyzing error for the current abstraction block...
+
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond: > MaxError:
+ 5.551115123125783e-17 ; [9.999999999999996e-05, 1.0]
+
+INFO:AnalyzeNode_Cond:Finished in 0.009633302688598633 secs
+
+INFO:helper:Building conditional expressions...
+
+INFO:AnalyzeNode_Cond: > Begin building derivatives....
+INFO:AnalyzeNode_Cond: > Finished in 0.05624890327453613 secs
+
+INFO:AnalyzeNode_Cond:Analyzing error for the current abstraction block...
+
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = CS1
+INFO:AnalyzeNode_Cond:Handling Condtional CS1
+INFO:AnalyzeNode_Cond:SubCond:CS1 : <<(x1 - x2 <0.4000000000000001)>>
+
+
+INFO:AnalyzeNode_Cond:Finished parsing -> CS1 : <<(x1 - x2 <0.4000000000000001)>>
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = True
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = ~CS1 & ~CS2
+INFO:AnalyzeNode_Cond:Handling Condtional CS1
+INFO:AnalyzeNode_Cond:SubCond:CS1 : <<(x1 - x2 <0.4000000000000001)>>
+
+
+INFO:AnalyzeNode_Cond:Handling Condtional CS2
+INFO:AnalyzeNode_Cond:SubCond:CS2 : (<<(x3**2> 0.24999999999999994)>>&<<(-5.55111512312578e-17 + x4*(x3 + x2/x1)<=1.11577413974828e-14 + x1**2)>>)
+
+
+INFO:AnalyzeNode_Cond:Finished parsing -> ~CS1 & ~CS2 : <<(x1 - x2> 0.39999999999999997)>> & (<<(x3**2 <0.25000000000000006)>>|<<(5.55111512312578e-17 + x4*(x3 + x2/x1)>=-1.11577413974828e-14 + x1**2)>>)
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = CS2 & ~CS1
+INFO:AnalyzeNode_Cond:Handling Condtional CS1
+INFO:AnalyzeNode_Cond:SubCond:CS1 : <<(x1 - x2 <0.4000000000000001)>>
+
+
+INFO:AnalyzeNode_Cond:Handling Condtional CS2
+INFO:AnalyzeNode_Cond:SubCond:CS2 : (<<(x3**2> 0.24999999999999994)>>&<<(-5.55111512312578e-17 + x4*(x3 + x2/x1)<=1.11577413974828e-14 + x1**2)>>)
+
+
+INFO:AnalyzeNode_Cond:Finished parsing -> CS2 & ~CS1 : (<<(x3**2> 0.24999999999999994)>>&<<(-5.55111512312578e-17 + x4*(x3 + x2/x1)<=1.11577413974828e-14 + x1**2)>>) & <<(x1 - x2> 0.39999999999999997)>>
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = CS2 & ~CS1
+INFO:AnalyzeNode_Cond:Handling Condtional CS1
+INFO:AnalyzeNode_Cond:SubCond:CS1 : <<(x1 - x2 <0.4000000000000001)>>
+
+
+INFO:AnalyzeNode_Cond:Handling Condtional CS2
+INFO:AnalyzeNode_Cond:SubCond:CS2 : (<<(x3**2> 0.24999999999999994)>>&<<(-5.55111512312578e-17 + x4*(x3 + x2/x1)<=1.11577413974828e-14 + x1**2)>>)
+
+
+INFO:AnalyzeNode_Cond:Finished parsing -> CS2 & ~CS1 : (<<(x3**2> 0.24999999999999994)>>&<<(-5.55111512312578e-17 + x4*(x3 + x2/x1)<=1.11577413974828e-14 + x1**2)>>) & <<(x1 - x2> 0.39999999999999997)>>
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = CS1
+INFO:AnalyzeNode_Cond:Handling Condtional CS1
+INFO:AnalyzeNode_Cond:SubCond:CS1 : <<(x1 - x2 <0.4000000000000001)>>
+
+
+INFO:AnalyzeNode_Cond:Finished parsing -> CS1 : <<(x1 - x2 <0.4000000000000001)>>
+INFO:AnalyzeNode_Cond:
+ Parsing Conditional = ~CS1 & ~CS2
+INFO:AnalyzeNode_Cond:Handling Condtional CS1
+INFO:AnalyzeNode_Cond:SubCond:CS1 : <<(x1 - x2 <0.4000000000000001)>>
+
+
+INFO:AnalyzeNode_Cond:Handling Condtional CS2
+INFO:AnalyzeNode_Cond:SubCond:CS2 : (<<(x3**2> 0.24999999999999994)>>&<<(-5.55111512312578e-17 + x4*(x3 + x2/x1)<=1.11577413974828e-14 + x1**2)>>)
+
+
+INFO:AnalyzeNode_Cond:Finished parsing -> ~CS1 & ~CS2 : <<(x1 - x2> 0.39999999999999997)>> & (<<(x3**2 <0.25000000000000006)>>|<<(5.55111512312578e-17 + x4*(x3 + x2/x1)>=-1.11577413974828e-14 + x1**2)>>)
+INFO:AnalyzeNode_Cond: > MaxError:
+ 5.748310116266484e-14 ; [0.020099833334166286, 102.84147098480793]
+
+INFO:AnalyzeNode_Cond:Finished in 0.39885878562927246 secs
+
+INFO:root:Optimizer calls : 13
+
+INFO:root:Parsing time : 0.012601852416992188
+
+INFO:root:PreProcessing time : 2.384185791015625e-07
+
+INFO:root:Analysis time : 0.7971656322479248
+
+INFO:root:Full time : 0.811323881149292
+
