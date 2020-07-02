@@ -132,6 +132,7 @@ int IBparser(char *namefile)
 
 int IBparsepred(char *predStr)
 {
+	printf("From inside C : %s\n", predStr);
 	yy_scan_string(predStr);
 	yyparse();
     if( IBNbParsingError==0 ) return( 1 );
@@ -1230,7 +1231,7 @@ interval_t** initializeRP(char* namefile)
     
     /* Initialization of pragmas */
     IBPragmaNbGeneratedDomains = 1;
-    IBPragmaMaxSolution        = 100; /* 1024 */
+    IBPragmaMaxSolution        = 10; /* 1024 */
     IBPragmaPrecision          = 1.0e-8;
     IBPragmaBisection          = IBBisectRoundRobin;
     IBPragmaNumberBisection    = 3;
@@ -1636,7 +1637,7 @@ interval_t** initializeRP(char* namefile)
         {
             IBClockEnd(IBClockSolve);
             printf("\nEND OF SOLVING\n");
-			printf("IBInfoTop : %d\n", IBInfoTop);
+			printf("nbsol=%d, IBInfoTop : %d\n", nbsol, IBInfoTop);
         }
         else
         {

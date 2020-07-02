@@ -69,7 +69,7 @@ class AnalyzeNode_Cond(object):
 		self.argList = argList
 		self.paving = paving
 		self.maxdepth = maxdepth
-		self.numBoxes = 100
+		self.numBoxes = 10
 		(self.parent_dict, self.cond_syms) = helper.expression_builder(probeNodeList)
 		#print("ROOT EXPRESSION SIZE:", [node.f_expression.__countops__() for node in probeNodeList])
 		#print("Expression builder condsyms:", self.cond_syms)
@@ -264,11 +264,11 @@ class AnalyzeNode_Cond(object):
 						print("PROCESS_EXPRESSION_LOC4", count)
 						[errIntv, res_avg_maxres] = self.process_expression( expr_diff, cond_expr, free_symbols, get_stats=Globals.argList.stat_err_enable or Globals.argList.stat)
 						print(errIntv, res_avg_maxres)
-						if errIntv is not None and res_avg_maxres is not None:
+						if errIntv is not None :
 							print("Debug:", errIntv)
 							err = max([abs(i) for i in errIntv if i is not None] if errIntv is not None else [0])
 							print(res_avg_maxres)
-							temp_list += [(err, res_avg_maxres[1], (unstable_cands[i], unstable_cands[j]))]
+							temp_list += [(err, res_avg_maxres[1] if res_avg_maxres is not None else 0.0, (unstable_cands[i], unstable_cands[j]))]
 							print("DEBUG_INSTABILITY :", err)
 				if len(temp_list) > 0:		
 					temp_list.sort(key=lambda tup: -tup[0]) # reverse sort
@@ -485,6 +485,7 @@ class AnalyzeNode_Cond(object):
 				[rpBoxes, fhand] = helper.rpInterface(rpVars+"Constraints "+rpConstraint, numVars, self.numBoxes) ;
 				boxIntervals				=	self.extract_boxes(rpBoxes, expr, free_symbols.union(self.externFreeSymbols))
 				#ctypes.cdll.LoadLibrary('libdl.so').dlclose(fhand)
+				print("BOINTERVALSSIZE=", len(boxIntervals))
 				if len(boxIntervals)>=1:
 					Intv						=	utils.generate_signature(expr,\
 																   #cond_expr, \
@@ -503,7 +504,7 @@ class AnalyzeNode_Cond(object):
 						Intv = [min(Intv[0], currIntv[0]), max(Intv[1], currIntv[1])]
 						res_avg_maxres = [max(res_avg_maxres[0], curr_res_avg_maxres[0]), \
 						                  max(res_avg_maxres[1], curr_res_avg_maxres[1])]
-						#print("INTV; ", Intv, box, Globals.gelpiaID)
+						print("INTV; ", Intv, box, Globals.gelpiaID)
 						
 
 					print("INTV-out2; ", Intv)
@@ -590,7 +591,7 @@ class AnalyzeNode_Cond(object):
 				                 (instability_error[0]-instability_error[1])/instability_error[0]
 				if ratio > frac:
 					node_err = max(statList)
-				if ratio_instab < frac:
+				if ratio_instab > frac:
 					instab_error = instability_error[1]
 
 			self.InstabilityAccumulator[node] = self.InstabilityAccumulator.get(node, 0.0) + instab_error

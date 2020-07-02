@@ -164,20 +164,23 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	gstr_expr = inputStr + str_expr  ## without the constraints
 	Globals.gelpiaID += 1
 	print("Constr?", Globals.enable_constr, " Begining New gelpia query->ID:", Globals.gelpiaID)
-	##-- fout = open("gelpia_"+str(Globals.gelpiaID)+".txt", "w")
-	##-- fout.write("# --input-epsilon {ieps}\n".format(ieps=str(gelpia_input_epsilon)))
-	##-- fout.write("# --output-epsilon {oeps}\n".format(oeps=str(gelpia_output_epsilon)))
-	##-- fout.write("# --output-epsilon-relative {oreps}\n".format(oreps=str(gelpia_output_epsilon_relative)))
-	##-- fout.write("# --timeout {tout}\n".format(tout=str(gelpia_timeout)))
-	##-- fout.write("# --max-iters {miters}\n".format(miters=str(gelpia_max_iters)))
+	fout = open("gelpia_"+str(Globals.gelpiaID)+".txt", "w")
+	fout.write("# --input-epsilon {ieps}\n".format(ieps=str(gelpia_input_epsilon)))
+	fout.write("# --output-epsilon {oeps}\n".format(oeps=str(gelpia_output_epsilon)))
+	fout.write("# --output-epsilon-relative {oreps}\n".format(oreps=str(gelpia_output_epsilon_relative)))
+	fout.write("# --dreal-epsilon {oeps}\n".format(oeps=str(gelpia_dreal_epsilon)))
+	fout.write("# --dreal-epsilon-relative {oreps}\n".format(oreps=str(gelpia_dreal_epsilon_relative)))
+	fout.write("# --timeout {tout}\n".format(tout=str(gelpia_timeout)))
+	fout.write("# --max-iters {miters}\n".format(miters=str(gelpia_max_iters)))
+	fout.write("{x3opt}".format(x3opt="# --use-z3\n" if Globals.argList.useZ3 else ""))
 
 	str_constraint = " && ".join([str_cond_expr]+([] if str_extc_expr is None or len(str_extc_expr)==0 else [str_extc_expr]))
 
-	##-- fout.write(inputStr + str_constraint +"; " + str_expr)
+	fout.write(inputStr + str_constraint +"; " + str_expr)
 	if Globals.enable_constr:
 		gstr_expr = inputStr + str_constraint +"; " + str_expr
 	#fout.write(str_expr)
-	##-- fout.close()
+	fout.close()
 	##-- print(gstr_expr)
 
 	#print(str_expr)
@@ -338,40 +341,62 @@ def genSig(sym_expr):
 
 	return hashSig(strSig, "md5")
 
+#--def generate_signature(sym_expr, cond_expr, externConstraints, cond_free_symbols, inputStr=None):
+#--	print("GenSig:", sym_expr)
+#--	try:
+#--		if(seng.count_ops(sym_expr)==0):
+#--			const_intv = float(str(sym_expr))
+#--			return [const_intv, const_intv]
+#--	except ValueError:
+#--	    pass
+#--
+#--	hbs = len(Globals.hashBank.keys())
+#--	#s2 = time.time()
+#--	#print("\nTime for hashing sig = ", s2 - s1)
+#--	#print("************ HBS : ", hbs, " ******************")
+#--	if(hbs > 100):
+#--		list(map(lambda x : Globals.hashBank.popitem(x) , list(Globals.hashBank.keys())[0:int(hbs/2)]))
+#--	sig = genSig(sym_expr)
+#--	check = Globals.hashBank.get(sig, None)
+#--	if check is None:
+#--		inputStr = inputStr if inputStr is not None else \
+#--		            extract_input_dep(list(sym_expr.free_symbols.union(cond_free_symbols)))
+#--		print("Gelpia input expr ops ->", seng.count_ops(sym_expr))
+#--		print("InputStr({gelpiaid}):".format(gelpiaid=Globals.gelpiaID+1), inputStr)
+#--		print("expression symbols :", sym_expr.free_symbols)
+#--		print("cond symbols :", cond_free_symbols)
+#--		g1 = time.time()
+#--		Globals.hashBank[sig] = invoke_gelpia(sym_expr, cond_expr, externConstraints, inputStr)
+#--		g2 = time.time()
+#--		print("Gelpia solve = ", g2 - g1, "opCount =", seng.count_ops(sym_expr))
+#--	else:
+#--		#print("MATCH FOUND")
+#--		#Globals.hashBank[sig] = check
+#--		print("Just passing")
+#--		pass
+#--
+#--	return Globals.hashBank[sig]
+
+
 def generate_signature(sym_expr, cond_expr, externConstraints, cond_free_symbols, inputStr=None):
+	print("GenSig:", sym_expr)
 	try:
 		if(seng.count_ops(sym_expr)==0):
 			const_intv = float(str(sym_expr))
 			return [const_intv, const_intv]
 	except ValueError:
 	    pass
-
-	hbs = len(Globals.hashBank.keys())
-	#s2 = time.time()
-	#print("\nTime for hashing sig = ", s2 - s1)
-	#print("************ HBS : ", hbs, " ******************")
-	if(hbs > 100):
-		list(map(lambda x : Globals.hashBank.popitem(x) , list(Globals.hashBank.keys())[0:int(hbs/2)]))
-	sig = genSig(sym_expr)
-	check = Globals.hashBank.get(sig, None)
-	if check is None:
-		inputStr = inputStr if inputStr is not None else \
-		            extract_input_dep(list(sym_expr.free_symbols.union(cond_free_symbols)))
-		print("Gelpia input expr ops ->", seng.count_ops(sym_expr))
-		print("InputStr({gelpiaid}):".format(gelpiaid=Globals.gelpiaID+1), inputStr)
-		print("expression symbols :", sym_expr.free_symbols)
-		print("cond symbols :", cond_free_symbols)
-		g1 = time.time()
-		Globals.hashBank[sig] = invoke_gelpia(sym_expr, cond_expr, externConstraints, inputStr)
-		g2 = time.time()
-		print("Gelpia solve = ", g2 - g1, "opCount =", seng.count_ops(sym_expr))
-	else:
-		#print("MATCH FOUND")
-		#Globals.hashBank[sig] = check
-		pass
-
-	return Globals.hashBank[sig]
-
+	inputStr = inputStr if inputStr is not None else \
+	            extract_input_dep(list(sym_expr.free_symbols.union(cond_free_symbols)))
+	print("Gelpia input expr ops ->", seng.count_ops(sym_expr))
+	print("InputStr({gelpiaid}):".format(gelpiaid=Globals.gelpiaID+1), inputStr)
+	print("expression symbols :", sym_expr.free_symbols)
+	print("cond symbols :", cond_free_symbols)
+	g1 = time.time()
+	val = invoke_gelpia(sym_expr, cond_expr, externConstraints, inputStr)
+	g2 = time.time()
+	print("Gelpia solve = ", g2 - g1, "opCount =", seng.count_ops(sym_expr))
+	return val
 
 def statistical_eval( symDict, expr , niters=10000 ):
 
@@ -396,7 +421,7 @@ def get_statistics(sym_expr, inputDict=None):
 		pass
 
 	symDict = inputDict if inputDict is not None else {fsyms : Globals.inputVars[fsyms]["INTV"] for fsyms in sym_expr.free_symbols}
-	res_avg_maxres = statistical_eval ( symDict, sym_expr)
+	res_avg_maxres = statistical_eval ( symDict, sym_expr, niters=Globals.argList.samples)
 	return res_avg_maxres
 
 
