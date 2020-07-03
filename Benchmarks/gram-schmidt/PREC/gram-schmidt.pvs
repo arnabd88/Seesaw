@@ -1,0 +1,81 @@
+gramschmidt: THEORY
+BEGIN
+IMPORTING float@aerr754dp
+
+gramschmidt (Q11, Q22, Q12, Q13, Q21, Q23, Q31, Q32, Q33: unb_double):	unb_double =
+
+	LET EPS	= RtoD(0.000005) IN
+	LET H1	= RtoD(0.0) IN
+	LET H2	= RtoD(0.0) IN
+	LET H3	= RtoD(0.0) IN
+	LET QJ1 = Q31 IN
+	LET QJ2	= Q32 IN
+	LET QJ3	= Q33 IN
+	LET R1	= RtoD(0.0) IN
+	LET R2	= RtoD(0.0) IN
+	LET R3	= RtoD(0.0) IN
+	LET R = Dadd(Dmul(QJ3, QJ3), Dadd(Dmul(QJ1, QJ1), Dmul(QJ2,QJ2))) IN
+	LET RJJ = RtoD(0.0) IN
+	LET E = RtoD(0.0) IN
+	LET ROLD = Dsqrt(R) IN
+	IF ( E > EPS ) THEN
+		LET H1_1 = Dadd(Dadd(Dmul(Q11, QJ1), Dmul(Q21,QJ2)), Dmul(Q31, QJ3)) IN
+		LET H2_1 = Dadd(Dadd(Dmul(Q12, QJ1), Dmul(Q22,QJ2)), Dmul(Q32, QJ3)) IN
+		LET H3_1 = Dadd(Dadd(Dmul(Q13, QJ1), Dmul(Q23,QJ2)), Dmul(Q33, QJ3)) IN
+		LET QJ1_1 = Dsub(QJ1 , Dadd(Dadd(Dmul(Q11, H1_1),  Dmul(Q12, H2_1)),  Dmul(Q13, H3_1))) IN
+		LET QJ2_1 = Dsub(QJ2 , Dadd(Dadd(Dmul(Q21, H1_1),  Dmul(Q22, H2_1)),  Dmul(Q23, H3_1))) IN
+		LET QJ3_1 = Dsub(QJ3 , Dadd(Dadd(Dmul(Q31, H1_1),  Dmul(Q32, H2_1)),  Dmul(Q33, H3_1))) IN
+		LET R1_1  = Dadd(R1, H1_1) IN
+		LET R2_1  = Dadd(R2, H2_1) IN
+		LET R3_1  = Dadd(R3, H3_1) IN
+		LET R_1   = Dadd(Dadd(Dmul(QJ1_1, QJ1_1), Dmul(QJ2_1, QJ2_1)), Dmul(QJ3_1, QJ3_1)) IN
+		LET RJJ_1 = Dsqrt(R_1) IN
+		LET E_1  = Dabs(Dsub(RtoD(1) , Ddiv(RJJ_1, ROLD))) IN
+		LET ROLD_1 = RJJ_1 IN
+		IF ( E_1 > EPS ) THEN
+			LET H1_2 = Dadd(Dadd(Dmul(Q11, QJ1_1), Dmul(Q21,QJ2_1)), Dmul(Q31, QJ3_1)) IN
+			LET H2_2 = Dadd(Dadd(Dmul(Q12, QJ1_1), Dmul(Q22,QJ2_1)), Dmul(Q32, QJ3_1)) IN
+			LET H3_2 = Dadd(Dadd(Dmul(Q13, QJ1_1), Dmul(Q23,QJ2_1)), Dmul(Q33, QJ3_1)) IN
+			LET QJ1_2 = Dsub(QJ1_1 , Dadd(Dadd(Dmul(Q11, H1_2),  Dmul(Q12, H2_2)),  Dmul(Q13, H3_2))) IN
+			LET QJ2_2 = Dsub(QJ2_1 , Dadd(Dadd(Dmul(Q21, H1_2),  Dmul(Q22, H2_2)),  Dmul(Q23, H3_2))) IN
+			LET QJ3_2 = Dsub(QJ3_1 , Dadd(Dadd(Dmul(Q31, H1_2),  Dmul(Q32, H2_2)),  Dmul(Q33, H3_2))) IN
+			LET R1_2  = Dadd(R1_1, H1_2) IN
+			LET R2_2  = Dadd(R2_1, H2_2) IN
+			LET R3_2  = Dadd(R3_1, H3_2) IN
+			LET R_2   = Dadd(Dadd(Dmul(QJ1_2, QJ1_2), Dmul(QJ2_2, QJ2_2)), Dmul(QJ3_2, QJ3_2)) IN
+			LET RJJ_2 = Dsqrt(R_2) IN
+			LET E_2  = Dabs(Dsub(RtoD(1) , Ddiv(RJJ_2, ROLD_1))) IN
+			LET ROLD_2 = RJJ_2 IN
+			IF ( E_2 > EPS ) THEN
+				LET H1_3 = Dadd(Dadd(Dmul(Q11, QJ1_2), Dmul(Q21,QJ2_2)), Dmul(Q31, QJ3_2)) IN
+				LET H2_3 = Dadd(Dadd(Dmul(Q12, QJ1_2), Dmul(Q22,QJ2_2)), Dmul(Q32, QJ3_2)) IN
+				LET H3_3 = Dadd(Dadd(Dmul(Q13, QJ1_2), Dmul(Q23,QJ2_2)), Dmul(Q33, QJ3_2)) IN
+				LET QJ1_3 = Dsub(QJ1_2 , Dadd(Dadd(Dmul(Q11, H1_3),  Dmul(Q12, H2_3)),  Dmul(Q13, H3_3))) IN
+				LET QJ2_3 = Dsub(QJ2_2 , Dadd(Dadd(Dmul(Q21, H1_3),  Dmul(Q22, H2_3)),  Dmul(Q23, H3_3))) IN
+				LET QJ3_3 = Dsub(QJ3_2 , Dadd(Dadd(Dmul(Q31, H1_3),  Dmul(Q32, H2_3)),  Dmul(Q33, H3_3))) IN
+				LET R1_3  = Dadd(R1_2, H1_3) IN
+				LET R2_3  = Dadd(R2_2, H2_3) IN
+				LET R3_3  = Dadd(R3_2, H3_3) IN
+				LET R_3   = Dadd(Dadd(Dmul(QJ1_3, QJ1_3), Dmul(QJ2_3, QJ2_3)), Dmul(QJ3_3, QJ3_3)) IN
+				LET RJJ_3 = Dsqrt(R_3) IN
+				LET E_3  = Dabs(Dsub(RtoD(1) , Ddiv(RJJ_3, ROLD_2))) IN
+				LET ROLD_3 = RJJ_3 IN
+				IF ( E_3 > EPS ) THEN		
+					LET H1_4 = Dadd(Dadd(Dmul(Q11, QJ1_3), Dmul(Q21,QJ2_3)), Dmul(Q31, QJ3_3)) IN
+					LET H2_4 = Dadd(Dadd(Dmul(Q12, QJ1_3), Dmul(Q22,QJ2_3)), Dmul(Q32, QJ3_3)) IN
+					LET H3_4 = Dadd(Dadd(Dmul(Q13, QJ1_3), Dmul(Q23,QJ2_3)), Dmul(Q33, QJ3_3)) IN
+					Dsub(QJ1_3 , Dadd(Dadd(Dmul(Q11, H1_4),  Dmul(Q12, H2_4)),  Dmul(Q13, H3_4))) 
+				ELSE
+					QJ1_3
+				ENDIF
+			ELSE
+				QJ1_2
+			ENDIF
+		ELSE
+			QJ1_1
+		ENDIF
+	ELSE
+		QJ1	
+	ENDIF
+
+END gramschmidt
