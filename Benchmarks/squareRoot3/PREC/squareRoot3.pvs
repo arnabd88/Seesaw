@@ -1,0 +1,13 @@
+squareroot3: THEORY
+BEGIN
+IMPORTING float@aerr754dp
+
+squareroot3 ( X: unb_double ): unb_double =
+
+	IF ( X < RtoD(0.00001) ) THEN
+		Dadd(RtoD(1) , Dmul(RtoD(0.5),X))
+	ELSE
+		Dsqrt(Dadd(RtoD(1), X))
+	ENDIF
+
+END squareroot3
