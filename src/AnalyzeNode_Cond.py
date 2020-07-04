@@ -75,6 +75,7 @@ class AnalyzeNode_Cond(object):
 		#print("Expression builder condsyms:", self.cond_syms)
 
 	def __setup_condexpr__(self):
+		print("__setup_condexpr__", self.cond_syms)
 		for csym in self.cond_syms:
 			# Fill in both csym and ~csym for delta substitution
 			symNode = Globals.predTable[csym]
@@ -374,7 +375,8 @@ class AnalyzeNode_Cond(object):
 				print("Handling Condtional {symID}".format(symID=fsym))
 				logger.info("Handling Condtional {symID}".format(symID=fsym))
 				dict_element = Globals.condExprBank.get(fsym) 
-				#print("DICT_EL:", dict_element)
+				print("DICT_EL:", dict_element)
+				print(Globals.condExprBank.keys())
 				assert(dict_element is not None)
 				(subcond,free_symbols, cond_symbols) =  dict_element[0], dict_element[1], dict_element[2]
 				#subcond = subcondList[0]
@@ -719,8 +721,8 @@ class AnalyzeNode_Cond(object):
 		print("out of while")
 		if MaxDepth==0 :
 			return self.default_res()
-		self.__setup_condexpr__()
 		(self.parent_dict, self.cond_syms) = helper.expression_builder(self.trimList)
+		self.__setup_condexpr__()
 		self.__init_workStack__()
 		self.__setup_outputs__()
 		self.__externConstraints__()
