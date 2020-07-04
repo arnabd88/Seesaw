@@ -1,6 +1,10 @@
 
 
 DIRS="barycentric_coordinates\
+	 Interpolator\
+	 cubicspline\
+	 linearfit\
+	 jetapprox\
 	 ClosestPtPointSegment2\
      EigenSphere\
 	 ExtremePointsAlongDirection\

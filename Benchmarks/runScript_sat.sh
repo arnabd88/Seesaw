@@ -2,6 +2,10 @@
 
 DIRS="barycentric_coordinates\
 	 SymSchur\
+	 Interpolator\
+	 cubicspline\
+	 linearfit\
+	 jetapprox\
 	 SqDistPointSegment\
 	 squareRoot3\
 	 styblinski\
