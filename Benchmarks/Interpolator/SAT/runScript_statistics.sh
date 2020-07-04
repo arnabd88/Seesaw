@@ -1,4 +1,4 @@
-testname="barycentric_coordinates.txt"
+testname="interpolator.txt"
 
 
 for frac in 0.0 0.5 0.8 

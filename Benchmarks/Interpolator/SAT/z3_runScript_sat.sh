@@ -1,5 +1,5 @@
 
-testname="barycentric_coordinates.txt"
+testname="interpolator.txt"
 
 ##---------------------------------------------------------
 ##
