@@ -4,6 +4,7 @@ DIRS="barycentric_coordinates\
 	 Interpolator\
 	 cubicspline\
 	 linearfit\
+	 EnclosingSphere\
 	 jetapprox\
 	 ClosestPtPointSegment2\
      EigenSphere\

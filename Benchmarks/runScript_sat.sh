@@ -3,6 +3,7 @@
 DIRS="barycentric_coordinates\
 	 SymSchur\
 	 Interpolator\
+	 EnclosingSphere\
 	 cubicspline\
 	 linearfit\
 	 jetapprox\

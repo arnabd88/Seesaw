@@ -5,6 +5,7 @@ DIRS="barycentric_coordinates\
 	 Interpolator\
 	 cubicspline\
 	 linearfit\
+	 EnclosingSphere\
 	 jetapprox\
 	 SqDistPointSegment\
 	 squareRoot3\
