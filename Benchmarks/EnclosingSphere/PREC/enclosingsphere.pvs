@@ -1,0 +1,24 @@
+enclosingsphere: THEORY
+BEGIN
+IMPORTING float@aerr754dp
+
+enclosingsphere ( S0_CX, S0_CY, S0_CZ, S0_R, S1_CX, S1_CY, S1_CZ, S1_R: unb_double):	unb_double =
+
+	LET DX = Dsub(S1_CX , S0_CX) IN
+	LET DY = Dsub(S1_CY , S0_CY) IN
+	LET DZ = Dsub(S1_CZ , S0_CZ) IN
+	LET DIST2 = Dadd(Dadd(Dmul(DX,DX), Dmul(DY,DY)), Dmul(DZ,DZ)) IN
+	LET RDIST2 = Dmul(Dsub(S1_R, S0_R), Dsub(S1_R, S0_R)) IN
+	IF (RDIST2 >= DIST2) THEN
+		IF (S1_R >= S0_R) THEN
+			S1_R
+		ELSE
+			S0_R
+		ENDIF
+	ELSE
+		LET DIST = Dsqrt(DIST2) IN
+		Dmul(RtoD(0.5), Dadd(DIST, Dadd(S0_R, S1_R)))
+	ENDIF
+
+
+END enclosingsphere

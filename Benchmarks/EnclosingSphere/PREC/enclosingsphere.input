@@ -1,0 +1,8 @@
+enclosingsphere ( S0_CX, S0_CY, S0_CZ, S0_R, S1_CX, S1_CY, S1_CZ, S1_R ): S0_CX in [-2.0, 1.0], 
+																		  S0_CY in [8.0, 12.0],
+																		  S0_CZ in [1.0, 3.0],
+																		  S0_R in [1.0, 4.0],
+																		  S1_CX in [5.0, 10.0],
+																		  S1_CY in [9.0, 11.0],
+																		  S1_CZ in [-1.0, 2.0],
+																		  S1_R in [5.0, 6.0]
