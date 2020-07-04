@@ -1,0 +1,54 @@
+
+INPUTS {
+	s0_cx	fl64	:	(-2.0, 1.0);
+	s0_cy	fl64	:	(8.0, 12.0);
+	s0_cz	fl64	:	(1.0, 3.0);
+	s0_r	fl64	:	(1.0, 4.0);
+	s1_cx	fl64	:	(5.0, 10.0);
+	s1_cy	fl64	:	(9.0, 11.0);
+	s1_cz	fl64	:	(-1.0, 2.0);
+	s1_r	fl64	:	(5.0, 6.0);
+}
+
+
+
+OUTPUTS {
+	s_r ;
+	#dist2 ;
+}
+
+EXPRS {
+
+
+	dx = s1_cx - s0_cx ;
+	dy = s1_cy - s0_cy ;
+	dz = s1_cz - s0_cz ;
+
+	dist2 = dx*dx + dy*dy + dz*dz ;
+
+	rdist2 = ((s1_r - s0_r)*(s1_r - s0_r));
+
+	if ( rdist2 >= dist2 ) then
+		if (s1_r >= s0_r ) then
+			s_cx = s1_cx ;
+			s_cy = s1_cy ;
+			s_cz = s1_cz ;
+			s_r  = s1_r ;
+		else
+			s_cx = s0_cx ;
+			s_cy = s0_cy ;
+			s_cz = s0_cz ;
+			s_r  = s0_r ;
+		endif
+	else
+		dist = sqrt(dist2);
+		s_r = (dist + s0_r + s1_r)*0.5 ;
+		s_cx = s0_cx ; s_cy = s0_cy ; s_cz = s0_cz ;
+		if (dist > 0.01) then
+			s_cx = s_cx + ((s_r - s0_r)/dist) * dx ;
+			s_cy = s_cy + ((s_r - s0_r)/dist) * dy ;
+			s_cz = s_cz + ((s_r - s0_r)/dist) * dz ;
+		endif
+	endif
+
+}
