@@ -1,15 +1,27 @@
 
 
 DIRS="barycentric_coordinates\
+	 SymSchur\
+	 Interpolator\
 	 EnclosingSphere\
 	 cubicspline\
 	 linearfit\
+	 jetapprox\
 	 SqDistPointSegment\
+	 styblinski\
+	 test2\
 	 gram-schmidt\
 	 ClosestPtPointSegment2\
 	 ExtremePointsAlongDirection\
 	 SphereOfSphereAndPt\
      EigenSphere"
+
+
+	 #squareRoot3\
+	 #smartRoot\
+	 #lead-lag\
+	 #Jacobi\
+	 #MD"
 
 
 set -x
