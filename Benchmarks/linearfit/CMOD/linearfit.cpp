@@ -55,7 +55,7 @@ T execute_spec_precision()
 	}
 	
 
-
+	return res ;
 
 
 }
