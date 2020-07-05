@@ -1,1 +1,1 @@
-g++ EnclosingSphere.cpp -lquadmath --std=c++11 -o EnclosingSphere
+g++ EnclosingSphere.cpp -lquadmath --std=c++11 -o emp
