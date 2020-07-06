@@ -568,6 +568,13 @@ if __name__ == "__main__":
 	parser.parse(text)
 	end_parse_time = time.time()
 	print("Parsing time -> ", end_parse_time - start_parse_time)
+
+	sumNodes = 0
+	for d,num in Globals.depthTable.items():
+		print(d, "-->", len(num))
+		sumNodes += len(num)
+	print("Total = ", sumNodes)
+	print("NumPredicates = ", len(Globals.predTable.keys()))
 	
 #	for k,v in Globals.progTrace.items():
 #		print("Line {num} , val = {expr}".format(num=k, expr=v.rec_eval(v)))
