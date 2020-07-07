@@ -42,7 +42,7 @@ gelpia_dreal_epsilon = 1e-15
 gelpia_dreal_epsilon_relative = 1e-15
 #gelpia_epsilons = (gelpia_input_epsilon, gelpia_output_epsilon, gelpia_output_epsilon_relative)
 gelpia_epsilons = (gelpia_input_epsilon, gelpia_output_epsilon, gelpia_output_epsilon_relative, gelpia_dreal_epsilon, gelpia_dreal_epsilon_relative)
-gelpia_timeout = 10
+gelpia_timeout = 120
 gelpia_grace = 0
 gelpia_update = 0
 gelpia_max_iters = 20000
@@ -164,7 +164,7 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	gstr_expr = inputStr + str_expr  ## without the constraints
 	Globals.gelpiaID += 1
 	print("Constr?", Globals.enable_constr, " Begining New gelpia query->ID:", Globals.gelpiaID)
-	##-- fout = open("gelpia_"+str(Globals.gelpiaID)+".txt", "w")
+	fout = open("gelpia_"+str(Globals.gelpiaID)+".txt", "w")
 	##-- fout.write("# --input-epsilon {ieps}\n".format(ieps=str(gelpia_input_epsilon)))
 	##-- fout.write("# --output-epsilon {oeps}\n".format(oeps=str(gelpia_output_epsilon)))
 	##-- fout.write("# --output-epsilon-relative {oreps}\n".format(oreps=str(gelpia_output_epsilon_relative)))
@@ -176,11 +176,11 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 
 	str_constraint = " && ".join([str_cond_expr]+([] if str_extc_expr is None or len(str_extc_expr)==0 else [str_extc_expr]))
 
-	##-- fout.write(inputStr + str_constraint +"; " + str_expr)
+	fout.write(inputStr + str_constraint +"; " + str_expr)
 	if Globals.enable_constr:
 		gstr_expr = inputStr + str_constraint +"; " + str_expr
 	#fout.write(str_expr)
-	##-- fout.close()
+	fout.close()
 	##-- print(gstr_expr)
 
 	#print(str_expr)
@@ -188,6 +188,7 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	
 	max_lower = Value("d", float("nan"))
 	max_upper = Value("d", float("nan"))
+	max_solver_calls = Value("i", 0)
 	#print("ID:",Globals.gelpiaID, "\t Finding max, min\n")
 	p = Process(target=gelpia.find_max, args=(gstr_expr,
 	                                          gelpia_epsilons,
@@ -203,9 +204,9 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	                                          gelpia_rust_executable,
 											  False, #drop constraints
 	                                          max_lower,
-	                                          max_upper))
+	                                          max_upper, max_solver_calls))
 	p.start()
-	min_lower, min_upper = gelpia.find_min(gstr_expr,
+	min_lower, min_upper, min_solver_calls = gelpia.find_min(gstr_expr,
 	                                       gelpia_epsilons,
 	                                       gelpia_timeout,
 	                                       gelpia_grace,
@@ -228,6 +229,9 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	#return [min_lower, max_upper.value]
 	print("min_lower", min_lower, type(min_lower))
 	print("max_upper", max_upper.value, type(max_upper.value))
+	total_solver_calls = min_solver_calls + max_solver_calls.value
+	print("solver_calls", total_solver_calls)
+	Globals.solver_calls += total_solver_calls        
 	return [min_lower if min_lower!="Overconstrained" else 0.0, \
 	        max_upper.value if max_upper.value!="Overconstrained" else 0.0]
 

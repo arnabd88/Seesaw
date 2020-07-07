@@ -4,6 +4,7 @@ import symengine as seng
 
 from collections import OrderedDict, defaultdict
 
+solver_calls = 0
 argList = []
 ROOT_DIR = ''
 LIBFILE = ''

@@ -313,12 +313,14 @@ if __name__ == "__main__":
 	full_time = end_exec_time - start_exec_time 
 
 	logger.info("Optimizer calls : {num_calls}\n".format(num_calls = Globals.gelpiaID))
+	logger.info("Smt calls : {num_calls}\n".format(num_calls = Globals.solver_calls))
 	logger.info("Parsing time : {parsing_time}\n".format(parsing_time = parse_time))
 	logger.info("PreProcessing time : {preprocess_time}\n".format(preprocess_time = pr2-pr1))
 	logger.info("Analysis time : {analysis_time}\n".format(analysis_time = ea2-ea1))
 	logger.info("Full time : {full_time}\n".format(full_time = full_time))
 
 	print("Optimizer calls : {num_calls}".format(num_calls = Globals.gelpiaID))
+	print("Smt calls : {num_calls}".format(num_calls = Globals.solver_calls))
 	print("Parsing time : {parsing_time}".format(parsing_time = parse_time))
 	print("PreProcessing time : {preprocess_time}".format(preprocess_time = pr2-pr1))
 	print("Analysis time : {analysis_time}".format(analysis_time = ea2-ea1))
