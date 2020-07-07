@@ -52,6 +52,7 @@ def parseArguments():
 	parser.add_argument('--stat-err-fraction', help='Fractional bound for using statistical error. Default is 0.5',\
 	                                  default=0.5, type=float)
 	parser.add_argument('--useZ3', help='Enabled using Z3 for constraint solving. Dreal gets disabled', default=False, action='store_true')
+	parser.add_argument('--stable', help='Inform to ignore instability correction', default=False, action='store_true')
 	                                  
 
 	result = parser.parse_args()
@@ -324,3 +325,40 @@ if __name__ == "__main__":
 	print("Full time : {full_time}".format(full_time = full_time))
 	
 	print(Globals.argList.stat_err_enable, Globals.argList.stat_err_fraction)
+
+	## --- some extra profiling data
+	#for k,v in Globals.InstabID.items():
+	#	print(type(k), k.f_expression,v)
+	#print("Hello:", Globals.InstabID)
+
+	#print("\n\n")
+
+	#for k, v in Globals.InstabDict.items():
+	#	print(k, v)
+
+	D = list(set([(( k[0].exprCond[1], k[1].exprCond[1]),v[0]) for k,v in Globals.InstabDict.items() if v is not None and v[0] > 0.0]))
+	D.sort(key=lambda tup: -tup[1])
+	print("Printing sorted instability list:")
+	for i in range(len(D)):
+		print("Pred:{pred}\t instab:{instab}".format(pred=D[i][0], instab=D[i][1]))
+
+
+	D1 = dict()
+	for k,v in Globals.InstabDict.items():
+		if v is not None and v[0] > 0.0:
+			KEY = ( k[0].exprCond[1], k[1].exprCond[1])
+			entry = D1.get(KEY, [])
+			entry.append([v[0], (k[0].exprCond[0], k[1].exprCond[0])])
+			D1[KEY] = entry
+			
+	for k,v in D1.items():
+		D1[k].sort(key=lambda tup: -tup[0])
+
+	# D = [(instab, (expr1, expr2), pred),...]
+	D = [ (v[0][0], v[0][1], k) for k,v in D1.items() ]
+	D.sort(key=lambda tup: -tup[0])
+	print("Printing sorted instability list:")
+	for i in range(len(D)):
+		print("Pred:{pred}\t instab:{instab}".format(pred=D[i][2], instab=D[i][0]))
+
+
