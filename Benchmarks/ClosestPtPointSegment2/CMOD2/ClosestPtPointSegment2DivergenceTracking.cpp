@@ -7,6 +7,7 @@
 #include <quadmath.h>
 #include <time.h>
 #include <fstream>
+#include <sstream>
 
 #define bx_low  -4.1
 #define bx_high -3.9
@@ -110,7 +111,14 @@ T execute_spec_precision(int conditions[])
 	return dx ;
 }
 
-
+template <typename T>
+std::string to_string_with_precision(const T a_value, const int n = 6)
+{
+    std::ostringstream out;
+    out.precision(n);
+    out << std::fixed << a_value;
+    return out.str();
+}
 
 int main(int argc, char** argv)
 
@@ -121,9 +129,9 @@ int main(int argc, char** argv)
 	FILE *fp ;
 	int N;
 	sscanf(argv[1], "%d", &N);
-	fp = fopen("barycentric_ccordinates_profile.csv", "w+");
+	fp = fopen("ClosestPtPointSegment2_profile.csv", "w+");
     ofstream fp_divergence_inputs;
-	fp_divergence_inputs.open("barycentric_coordinates_divergence_inputs.csv", ios::out | ios::app);
+	fp_divergence_inputs.open("ClosestPtPointSegment2_divergence_inputs.csv", ios::out | ios::app);
 
 	__float80 val_lp = 0;
 	__float80 val_dp = 0;
@@ -157,16 +165,14 @@ int main(int argc, char** argv)
 		if ( maxerrdp < fabs(val_qp - val_dp)) maxerrdp = fabs(val_qp - val_dp) ;
 		for(int j = 0; j < num_predicates; j++) {
             if(conditions_lp[j] != conditions_dp[j] && conditions_lp[j] != -1 && conditions_dp[j] != -1) {
-                string str = "Pred:" + to_string(j) + ",_ax:" + to_string(_ax) + ",_ay:" + to_string(_ay) + ",_az:" + to_string(_az) + ",_bx:" + to_string(_bx) + ",_by:" + to_string(_by) + ",_bz:" + to_string(_bz) + ",_cx:" + to_string(_cx) + ",_cy:" + to_string(_cy) +  ",_cz:" + to_string(_cz) + "\n";
+                string str = "instability_lp:" + to_string_with_precision(fabs(val_dp - val_lp), 16) + ",Pred:" + to_string(j) + ",_ax:" + to_string_with_precision(_ax, 16) + ",_ay:" + to_string_with_precision(_ay, 16) + ",_az:" + to_string_with_precision(_az, 16) + ",_bx:" + to_string_with_precision(_bx, 16) + ",_by:" + to_string_with_precision(_by, 16) + ",_bz:" + to_string_with_precision(_bz, 16) + ",_cx:" + to_string_with_precision(_cx, 16) + ",_cy:" + to_string_with_precision(_cy, 16) +  ",_cz:" + to_string_with_precision(_cz, 16) + "\n";
                 fp_divergence_inputs << str;
-                cout << "instability_lp:" << fabs(val_dp - val_lp) << "," << str;
-//                cout << "Pred:" << j << ",instability_lp:" << fabs(val_dp - val_lp) << ",_ax:" << _ax << ",_ay:" << _ay << ",_az:" << _az << ",_bx:" << _bx << ",_by:" << _by << ",_bz:" << _bz << ",_cx:" << _cx << ",_cy:" << _cy <<  ",_cz:" << _cz <<endl;
+                cout << str;
             }
             if(conditions_dp[j] != conditions_qp[j] && conditions_dp[j] != -1 && conditions_qp[j] != -1) {
-                string str = "Pred:" + to_string(j) + ",_ax:" + to_string(_ax) + ",_ay:" + to_string(_ay) + ",_az:" + to_string(_az) + ",_bx:" + to_string(_bx) + ",_by:" + to_string(_by) + ",_bz:" + to_string(_bz) + ",_cx:" + to_string(_cx) + ",_cy:" + to_string(_cy) +  ",_cz:" + to_string(_cz) + "\n";
+                string str = "instability_dp:" + to_string_with_precision(fabs(val_qp - val_dp), 16) + ",Pred:" + to_string(j) + ",_ax:" + to_string_with_precision(_ax, 16) + ",_ay:" + to_string_with_precision(_ay, 16) + ",_az:" + to_string_with_precision(_az, 16) + ",_bx:" + to_string_with_precision(_bx, 16) + ",_by:" + to_string_with_precision(_by, 16) + ",_bz:" + to_string_with_precision(_bz, 16) + ",_cx:" + to_string_with_precision(_cx, 16) + ",_cy:" + to_string_with_precision(_cy, 16) +  ",_cz:" + to_string_with_precision(_cz, 16) + "\n";
                 fp_divergence_inputs << str;
-                cout << "instability_dp:" << fabs(val_qp - val_dp) << "," << str;
-//                cout << "Pred:" << j << ",instability_dp:" << fabs(val_qp - val_dp) << ",_ax:" << _ax << ",_ay:" << _ay << ",_az:" << _az << ",_bx:" << _bx << ",_by:" << _by << ",_bz:" << _bz << ",_cx:" << _cx << ",_cy:" << _cy <<  ",_cz:" << _cz <<endl;
+                cout << str;
             }
         }
 	}
