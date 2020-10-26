@@ -1,0 +1,144 @@
+#include <cstdio>
+#include <iostream>
+#include <unistd.h>
+#include <cstdlib>
+#include<cmath>
+#include <quadmath.h>
+#include <time.h>
+#include <fstream>
+#include <sstream>
+
+#define _low 0.01
+#define _high 1.0
+
+using namespace std ;
+
+double _x1 ;
+double _x2 ;
+double _x3 ;
+double _x4 ;
+
+
+template<class T>
+void init() 
+{
+	_x1 = _low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(_high - _low))) ;
+	_x2 = _low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(_high - _low))) ;
+	_x3 = _low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(_high - _low))) ;
+	_x4 = _low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(_high - _low))) ;
+}
+
+
+
+template<class T>
+T execute_spec_precision(int conditions[])
+{
+
+
+	T	x1 =	(T)	_x1;
+	T	x2 =	(T)	_x2;
+	T	x3 =	(T)	_x3;
+	T	x4 =	(T)	_x4;
+
+	T h  = (x2/x1) + x3 ;
+	T g  = x1 + x1*x2 ;
+
+	if ( x1-x2 < 0.4 ) {
+	    conditions[0] = 1;
+		 g  = 1 + 1/g ;
+		h  = x3 + x4 ;
+	} else {
+	    conditions[0] = 0;
+		if (( x3*x3 > 0.25 ) && (x4*h <= x1*x1)) {
+			conditions[1] = 1;
+			g  = h + x2*x3 ;
+		} else {
+		    conditions[1] = 0;
+		}
+	}
+
+	T y  = g + x4 ;
+
+	return y;
+
+}
+
+template <typename T>
+std::string to_string_with_precision(const T a_value, const int n = 6)
+{
+    std::ostringstream out;
+    out.precision(n);
+    out << std::fixed << a_value;
+    return out.str();
+}
+
+int main(int argc, char** argv)
+
+{
+
+	srand(time(0));
+
+	FILE *fp ;
+	int N;
+	sscanf(argv[1], "%d", &N);
+	fp = fopen("test2_profile.csv", "w+");
+    ofstream fp_divergence_inputs;
+	fp_divergence_inputs.open("test2_divergence_inputs.csv", ios::out | ios::app);
+
+    __float80 val_lp = 0;
+	__float80 val_dp = 0;
+	__float80 val_qp = 0;
+	__float80 err_qp_lp = 0;
+	__float80 err_qp_dp = 0;
+
+    __float80 maxerrlp = 0.0;
+	__float80 maxerrdp = 0.0 ;
+
+    int num_predicates = 2;
+	int conditions_lp[num_predicates];
+	int conditions_dp[num_predicates];
+	int conditions_qp[num_predicates];
+
+	for(int i=0; i<N; i++) {
+        for(int j = 0; j < num_predicates; j++) {
+            conditions_lp[j] = -1;
+            conditions_dp[j] = -1;
+            conditions_qp[j] = -1;
+        }
+		init<double>();
+		__float80 val_lp = (__float80) execute_spec_precision<float>(conditions_lp);
+		__float80 val_dp = (__float80) execute_spec_precision<double>(conditions_dp);
+		__float80 val_qp = (__float80) execute_spec_precision<__float128>(conditions_qp);
+
+        err_qp_lp += fabs(val_dp - val_lp);
+		err_qp_dp += fabs(val_qp - val_dp);
+
+        if ( maxerrlp < fabs(val_dp - val_lp)) maxerrlp = fabs(val_dp - val_lp) ;
+		if ( maxerrdp < fabs(val_qp - val_dp)) maxerrdp = fabs(val_qp - val_dp) ;
+		for(int j = 0; j < num_predicates; j++) {
+            if(conditions_lp[j] != conditions_dp[j] && conditions_lp[j] != -1 && conditions_dp[j] != -1) {
+                string str = "instability_lp:" + to_string_with_precision(fabs(val_dp - val_lp), 16) + ",Pred:" + to_string(j) + ",_x1:" + to_string_with_precision(_x1, 16) + ",_x2:" + to_string_with_precision(_x2, 16) + ",_x3:" + to_string_with_precision(_x3, 16) + ",_x4:" + to_string_with_precision(_x4, 16) + "\n";
+                fp_divergence_inputs << str;
+                cout << str;
+            }
+            if(conditions_dp[j] != conditions_qp[j] && conditions_dp[j] != -1 && conditions_qp[j] != -1) {
+                string str = "instability_dp:" + to_string_with_precision(fabs(val_qp - val_dp), 16) + ",Pred:" + to_string(j) + ",_x1:" + to_string_with_precision(_x1, 16) + ",_x2:" + to_string_with_precision(_x2, 16) + ",_x3:" + to_string_with_precision(_x3, 16) + ",_x4:" + to_string_with_precision(_x4, 16) + "\n";
+                fp_divergence_inputs << str;
+                cout << str;
+            }
+        }
+	}
+
+	fclose(fp);
+	fp_divergence_inputs.close();
+
+    cout << "Avg Error in LP -> " << err_qp_lp/N << endl ;
+	cout << "Max Error in LP -> " << maxerrlp << endl ;
+	cout << "Avg Error in DP -> " << err_qp_dp/N << endl ;
+	cout << "Max Error in DP -> " << maxerrdp << endl ;
+
+
+	return 1;
+
+}
+

@@ -10,31 +10,6 @@
 #include <fstream>
 #include <sstream>
 
-//#define _ax_low  -4.157
-//#define _ax_high -3.157
-//#define _ay_low  4.93
-//#define _ay_high 5.93
-//#define _az_low  -6.73
-//#define _az_high -5.73
-//#define _bx_low  7.393
-//#define _bx_high 8.393
-//#define _by_low  -7.17
-//#define _by_high -6.17
-//#define _bz_low  8.42
-//#define _bz_high 9.42
-//#define _cx_low  3.941
-//#define _cx_high 4.941
-//#define _cy_low  7.84
-//#define _cy_high 8.84
-//#define _cz_low  -3.85
-//#define _cz_high -2.85
-//#define _px_low  1.5
-//#define _px_high 2.5
-//#define _py_low  2.5
-//#define _py_high 3.5
-//#define _pz_low  4.5
-//#define _pz_high 5.5
-
 #define _ax_low  -4.0
 #define _ax_high -1.0
 #define _ay_low  1.0

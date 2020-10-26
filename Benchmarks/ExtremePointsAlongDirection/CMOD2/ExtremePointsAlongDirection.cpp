@@ -9,7 +9,7 @@
 #include <fstream>
 #include <sstream>
 
-#define dirx_low  (3.0-0.1)
+#define dirx_low  (-3.0-0.1)
 #define dirx_high (3.0+0.1)
 #define diry_low  (4.0-0.1)
 #define diry_high (4.0+0.1)
@@ -131,8 +131,8 @@ T execute_spec_precision (int conditions[])
  T	py5  	=	(T)	_py5 ;
  T	pz5  	=	(T)	_pz5 ;
 
- T minproj = 2.2250738585072014e-308 ;
- T maxproj = 1.7976931348623158e+308 ;
+ T maxproj = 2.2250738585072014e-308 ;
+ T minproj = 1.7976931348623158e+308 ;
 
  	T proj = (px0 * dirx) + (py0 * diry) + (pz0 * dirz) ;
 	if ( proj < minproj ) {
@@ -230,7 +230,7 @@ T execute_spec_precision (int conditions[])
 	    conditions[11] = 0;
 	}
 
-	return maxproj ;
+	return minproj ;
 
 }
 
