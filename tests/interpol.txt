@@ -1,0 +1,18 @@
+
+INPUTS {
+	x	fl64 :	(0, 10.0);
+}
+
+OUTPUTS {
+	y ;
+}
+
+EXPRS {
+	
+	y = x*x - x ;
+	if ( y >= 0) then
+		y = x / 10.0;
+	else
+		y = x*x + 2 ;
+	endif
+}

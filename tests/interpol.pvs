@@ -1,0 +1,18 @@
+interpol: THEORY
+BEGIN
+IMPORTING float@aerr754dp
+
+
+interpol (X: unb_double): unb_double =
+	
+	LET Y = Dsub(Dmul(X,X), X) IN
+
+	IF ( Y >= RtoD(0.0) ) THEN
+		Ddiv(X, RtoD(10.0))
+
+	ELSE
+		Dadd( Dmul(X, X), RtoD(2.0))
+	
+	ENDIF
+
+END interpol
