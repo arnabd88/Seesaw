@@ -92,6 +92,7 @@ def dfs_expression_builder(node, reachable, parent_dict, free_syms, cond_syms, c
 		## an exprComp node as a modified evaluation ops to include extra error terms
 			(fexpr,fsyms) = node.mod_eval(node, inv, res0[node.children[0]]["ERR"]*pow(2,-53), \
 								   res1[node.children[1]]["ERR"]*pow(2,-53) )
+			print("Never ever error")
 		else:
 			(fexpr,fsyms) = node.mod_eval(node, inv, 0.0, 0.0)
 		free_syms = free_syms.union(fsyms)

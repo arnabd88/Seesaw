@@ -53,6 +53,7 @@ def parseArguments():
 	                                  default=0.5, type=float)
 	parser.add_argument('--useZ3', help='Enabled using Z3 for constraint solving. Dreal gets disabled', default=False, action='store_true')
 	parser.add_argument('--stable', help='Inform to ignore instability correction', default=False, action='store_true')
+	parser.add_argument('--gverbose', help='Create dumps of each optimizer query for debugging', default=False, action='store_true')
 	                                  
 
 	result = parser.parse_args()
@@ -280,6 +281,7 @@ if __name__ == "__main__":
 	end_parse_time = time.time()
 	parse_time = end_parse_time - start_parse_time
 	logger.info("Parsing time : {parse_time} secs".format(parse_time = parse_time))
+	print("// End of Parsing: Parsing time : {parse_time} secs".format(parse_time = parse_time))
 
 
 
@@ -350,7 +352,7 @@ if __name__ == "__main__":
 		if v is not None and v[0] > 0.0:
 			KEY = ( k[0].exprCond[1], k[1].exprCond[1])
 			entry = D1.get(KEY, [])
-			entry.append([v[0], (k[0].exprCond[0], k[1].exprCond[0])])
+			entry.append([v[0], (k[0].exprCond[0], k[1].exprCond[0], k)])
 			D1[KEY] = entry
 			
 	for k,v in D1.items():

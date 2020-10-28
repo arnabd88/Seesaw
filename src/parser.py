@@ -35,7 +35,7 @@ class Sparser(object):
 		raise Exception('Invalid syntax while parsing')
 
 	def consume(self, token_type):
-		print(self.current_token.type, token_type, self.current_token.value, self.current_token.lineno)
+		#print(self.current_token.type, token_type, self.current_token.value, self.current_token.lineno)
 		if self.current_token.type == token_type:
 			self.current_token = self.lexer.get_next_token()
 		else:
@@ -317,6 +317,7 @@ class Sparser(object):
 			node.derived_token = deriv_token
 			self.consume(SEMICOLON)
 			self.current_symtab._symTab[nameSym] = ((node, Globals.__T__),)
+			return node
 
 			
 
@@ -585,8 +586,12 @@ if __name__ == "__main__":
 #		#	print(k, v.token.lineno, v.rec_eval(v))
 #		
 #
-	#for k,v in Globals.GS[0]._symTab.items():
-	#	print(k)
+	for k,v in Globals.GS[0]._symTab.items():
+		print(k, v)
+		for els in v:
+			(nd, cond) = els
+			for child in nd.nodeList:
+				print(child[0], child[1])
 
 	#rhs = Globals.GS[0]._symTab[seng.var('g')]
 	#print(rhs[0][0], type(rhs[0][0]))

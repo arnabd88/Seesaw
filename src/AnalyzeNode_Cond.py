@@ -80,7 +80,7 @@ class AnalyzeNode_Cond(object):
 			# Fill in both csym and ~csym for delta substitution
 			symNode = Globals.predTable[csym]
 			Globals.condExprBank[csym] = Globals.condExprBank.get(csym) if csym in Globals.condExprBank.keys()\
-			else helper.handleConditionals([symNode], etype=True, inv=False)
+			else helper.handleConditionals([symNode], etype=not Globals.argList.stable, inv=False)
 			# debug prints
 			(expr, FSYM, CSYM) = Globals.condExprBank[csym]
 			if "True" in expr or "False" in expr:
@@ -88,7 +88,7 @@ class AnalyzeNode_Cond(object):
 				self.truthTable.add(csym)
 
 			Globals.condExprBank[~csym] = Globals.condExprBank.get(~csym) if ~csym in Globals.condExprBank.keys()\
-			else helper.handleConditionals([symNode], etype=True, inv=True)
+			else helper.handleConditionals([symNode], etype=not Globals.argList.stable, inv=True)
 
 
 	def __setup_outputs__(self):
@@ -251,7 +251,7 @@ class AnalyzeNode_Cond(object):
 			#print(unstable_cands)
 			count=0
 			if len(unstable_cands) > 1:
-				print(unstable_cands)
+				print("Unstable-candidates:", unstable_cands)
 				#print("Candidates for instability:", len(unstable_cands))
 				for i in range(0, len(unstable_cands)):
 					for j in range(i+1, len(unstable_cands)):
@@ -266,7 +266,7 @@ class AnalyzeNode_Cond(object):
 						[errIntv, res_avg_maxres] = self.process_expression( expr_diff, cond_expr, free_symbols, get_stats=Globals.argList.stat_err_enable or Globals.argList.stat)
 						print(errIntv, res_avg_maxres)
 						if errIntv is not None :
-							print("Debug:", errIntv)
+							print("Debug:", errIntv, Globals.gelpiaID)
 							err = max([abs(i) for i in errIntv if i is not None] if errIntv is not None else [0])
 							print(res_avg_maxres)
 							temp_list += [(err, res_avg_maxres[1] if res_avg_maxres is not None else 0.0, (unstable_cands[i], unstable_cands[j]))]
@@ -300,7 +300,8 @@ class AnalyzeNode_Cond(object):
 				acc = self.merge_discontinuities(self.condmerge(acc), 1000)
 
 			# instability_error(2tup) -> (rigorous err, max_stat_err)
-			instability_error = (0,0) if not Globals.argList.report_instability else self.add_instability_error(expr_solve)
+			#instability_error = (0,0) if not Globals.argList.report_instability else self.add_instability_error(expr_solve)
+			instability_error = (0,0) if not Globals.argList.report_instability else self.add_instability_error(node.f_expression, out=True)
 			instab_error = instability_error[0]
 			if Globals.argList.stat_err_enable:
 				fraction = Globals.argList.stat_err_fraction
@@ -469,6 +470,8 @@ class AnalyzeNode_Cond(object):
 		if self.paving:
 			processConds				=	utils.process_conditionals(cond_expr,  self.externConstraints)
 			rpConstraint				=	banalyzer.bool_expression_analyzer( processConds ).start()
+			print("processConds:", processConds)
+			print("rpConstraint:", rpConstraint)
 			if "False" in rpConstraint:
 				#print("Invalid constraint -> nothing to invoke, return None")
 				return [None, None]
@@ -518,6 +521,7 @@ class AnalyzeNode_Cond(object):
 															   free_symbols.union(self.externFreeSymbols))
 
 					print("INTV-out3; ", Intv)
+					return [None, None]
 		else:
 			#print("Paving disabled -> invoke gelpia on full box")
 			res_avg_maxres 				=	None if not get_stats else utils.get_statistics(expr)
