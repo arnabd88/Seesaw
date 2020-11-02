@@ -69,12 +69,12 @@ _COPS = {	\
 
 # inverted token of _MCOPS
 invert = {	\
-			LT		:	GT 	,\
-			GT		:	LT	,\
-			LEQ		:	GEQ	,\
-			GEQ		:	LEQ	,\
-			EQ		:	EQ	,\
-			NEQ		:	NEQ ,\
+			LT		:	GEQ 	,\
+			GT		:	LEQ	,\
+			LEQ		:	GT	,\
+			GEQ		:	LT	,\
+			EQ		:	NEQ	,\
+			NEQ		:	EQ ,\
 			AND		:	OR	,\
 			OR		:	AND \
 }
@@ -166,19 +166,19 @@ _Priority = { \
 ## difficult to do it optimally
 ## specially whendealing with intervals
 
-_ALLOC_ULP = { PLUS  : 0.5, \
-			   MINUS : 0.5, \
-			   MUL   : 0.5, \
-			   DIV   : 0.5, \
-			   SQRT  : 0.5, \
-			   SIN	 : 1, \
-			   COS	 : 1, \
-			   TAN	 : 1, \
-			   COT	 : 1, \
-			   COSH	 : 1, \
-			   SINH	 : 1, \
-			   LOG	 : 1, \
-			   EXP	 : 1, \
+_ALLOC_ULP = { PLUS  : 1.0, \
+			   MINUS : 1.0, \
+			   MUL   : 1.0, \
+			   DIV   : 2.0, \
+			   SQRT  : 1.0, \
+			   SIN	 : 2, \
+			   COS	 : 2, \
+			   TAN	 : 2, \
+			   COT	 : 2, \
+			   COSH	 : 2, \
+			   SINH	 : 2, \
+			   LOG	 : 2, \
+			   EXP	 : 2, \
 			   IDEN  : 0, \
 			   ID	 : 0
 			  }

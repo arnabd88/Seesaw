@@ -28,8 +28,8 @@ _ARITH_OPS = { PLUS : lambda L : L[0]+L[1]	,\
 invert = {	\
 			LT		:	GEQ	,\
 			GT		:	LEQ	,\
-			LEQ		:	GEQ	,\
-			GEQ		:	LEQ	,\
+			LEQ		:	GT	,\
+			GEQ		:	LT	,\
 			EQ		:	NEQ	,\
 			NEQ		:	EQ ,\
 			AND		:	OR	,\
@@ -38,9 +38,9 @@ invert = {	\
 
 _INEQ_OPS = { \
 		LEQ		:	lambda L	:	L[0] <= L[1] ,\
-		LT		:	lambda L	:	L[0] <= L[1] ,\
+		LT		:	lambda L	:	L[0] < L[1] ,\
 		GEQ		:	lambda L	:	L[1] <= L[0] ,\
-		GT		:	lambda L	:	L[1] <= L[0] \
+		GT		:	lambda L	:	L[1] < L[0] \
 }
 
 _BINARY_OPS = { \

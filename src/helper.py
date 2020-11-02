@@ -160,7 +160,10 @@ def handleConditionals(probeNodeList, etype=True, inv=False):
 	print("Building conditional expressions...\n")
 	logger.info("Building conditional expressions...\n")
 	(fsyms, csyms) = expression_builder(probeNodeList, etype, ctype=True, inv=inv)
-	return (" & ".join([str(probeNode.f_expression) for probeNode in probeNodeList]),fsyms, csyms)
+	cstr = " & ".join([str(probeNode.f_expression) for probeNode in probeNodeList])
+	print("Debug-check:", (cstr,fsyms, csyms))
+	#return (" & ".join([str(probeNode.f_expression) for probeNode in probeNodeList]),fsyms, csyms)
+	return (cstr,fsyms, csyms)
 
 def pretraverse(node, reachable):
 	

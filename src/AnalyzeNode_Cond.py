@@ -113,7 +113,7 @@ class AnalyzeNode_Cond(object):
 		
 	def converge_parents(self, node):
 		#print(node.depth, len(node.f_expression))
-		print(type(node).__name__, node.depth, self.parentTracker[node], len(node.parents) , len(self.parent_dict[node]))#, node.f_expression)
+		#print(type(node).__name__, node.depth, self.parentTracker[node], len(node.parents) , len(self.parent_dict[node]))#, node.f_expression)
 		return True if self.parentTracker[node] >= len(self.parent_dict[node]) else False
 
 
@@ -402,11 +402,11 @@ class AnalyzeNode_Cond(object):
 					x = var.x
 					y = var.y
 					intv_dict[name] = [x,y]
-					print("Valid:", [name,x,y])
+					#print("Valid:", [name,x,y])
 				else:
 					intv_dict.clear()
 					Globals.garbageCount += 1
-					print(var.name.decode(), Globals.garbageCount)
+					#print(var.name.decode(), Globals.garbageCount)
 					return intv_dict
 			return intv_dict
 
@@ -470,10 +470,11 @@ class AnalyzeNode_Cond(object):
 		if self.paving:
 			processConds				=	utils.process_conditionals(cond_expr,  self.externConstraints)
 			rpConstraint				=	banalyzer.bool_expression_analyzer( processConds ).start()
-			print("processConds:", processConds)
-			print("rpConstraint:", rpConstraint)
+			print("def:process_expressions: Before processing:", cond_expr)
+			print("def:process_expressions: Original Cond expressions:", processConds)
+			print("def:process_expressions: Constraint for RealPaver:", rpConstraint)
 			if "False" in rpConstraint:
-				#print("Invalid constraint -> nothing to invoke, return None")
+				print("Invalid constraint -> nothing to invoke, return None")
 				return [None, None]
 			elif "True" in rpConstraint :
 				#print("Constraint true -> invoke gelpia on full box")
@@ -483,14 +484,17 @@ class AnalyzeNode_Cond(object):
 														   self.externConstraints, \
 														   free_symbols.union(self.externFreeSymbols))
 				res_avg_maxres 				=	Intv if not get_stats else utils.get_statistics(expr)
-				print("INTV-out1; ", Intv)
+				print("def:process_expressions: Constraint is Always True --> Unconstrained solution (no RealPaver)")
+				print("INTV-out1: {intv}\n".format(intv=Intv))
+				print("")
 			else:
 				res_avg_maxres 				=	[0,0] if not get_stats else utils.get_statistics(expr)
 				[rpVars, numVars]			=	utils.rpVariableStr(free_symbols.union(self.externFreeSymbols))
 				[rpBoxes, fhand] = helper.rpInterface(rpVars+"Constraints "+rpConstraint, numVars, self.numBoxes) ;
 				boxIntervals				=	self.extract_boxes(rpBoxes, expr, free_symbols.union(self.externFreeSymbols))
 				#ctypes.cdll.LoadLibrary('libdl.so').dlclose(fhand)
-				print("BOINTERVALSSIZE=", len(boxIntervals))
+				print("def:process_expressions: Constrained solution ( Realpaver subdivision involved )")
+				print("def:process_expressions: RealPaver BOX-INTERVALS-SIZE=", len(boxIntervals))
 				if len(boxIntervals)>=1:
 					Intv						=	utils.generate_signature(expr,\
 																   #cond_expr, \
@@ -499,6 +503,7 @@ class AnalyzeNode_Cond(object):
 																   free_symbols.union(self.externFreeSymbols), boxIntervals[0][0])
 					res_avg_maxres 				=	Intv if not get_stats else utils.get_statistics(expr, boxIntervals[0][1])
 					#print("INTV; ", Intv, boxIntervals[0], Globals.gelpiaID)
+					boxCount=0
 					for box in boxIntervals[1:]:
 						currIntv						=	utils.generate_signature(expr,\
 																	   #cond_expr, \
@@ -509,10 +514,11 @@ class AnalyzeNode_Cond(object):
 						Intv = [min(Intv[0], currIntv[0]), max(Intv[1], currIntv[1])]
 						res_avg_maxres = [max(res_avg_maxres[0], curr_res_avg_maxres[0]), \
 						                  max(res_avg_maxres[1], curr_res_avg_maxres[1])]
-						print("INTV; ", Intv, box, Globals.gelpiaID)
+						boxCount += 1
+						print("\tBOX[{count}] = {bbox} , Gelpia-query = {query}\n\t INTV={intv}\n".format(count=boxCount, bbox=box, query=Globals.gelpiaID, intv=Intv))#, Intv, box, Globals.gelpiaID)
 						
 
-					print("INTV-out2; ", Intv)
+					print("def:process_expressions: INTV-out2; ", Intv)
 				else:
 					Intv						=	utils.generate_signature(expr,\
 															   #cond_expr, \
@@ -520,7 +526,8 @@ class AnalyzeNode_Cond(object):
 															   self.externConstraints, \
 															   free_symbols.union(self.externFreeSymbols))
 
-					print("INTV-out3; ", Intv)
+					print("def:process_expressions: Whole Box required!")
+					print("def:process_expressions: INTV-out3; ", Intv)
 					return [None, None]
 		else:
 			#print("Paving disabled -> invoke gelpia on full box")
@@ -530,7 +537,8 @@ class AnalyzeNode_Cond(object):
 													   cond_expr, \
 													   self.externConstraints, \
 													   free_symbols.union(self.externFreeSymbols))
-			print("INTV-out4; ", Intv)
+			print("def:process_expressions: Paving disabled!")
+			print("def:process_expressions: INTV-out4; ", Intv)
 		return [Intv, res_avg_maxres]
 
 

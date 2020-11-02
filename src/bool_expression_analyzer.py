@@ -58,16 +58,22 @@ class bool_expression_analyzer(object):
 		#print(cnf_expression)
 		if cnf_expression==True or cnf_expression==False or len(cnf_expression.args)==0 or type(cnf_expression).__name__ == "Not":
 			node = bool_Globals.ConstraintToObject.get(cnf_expression)
-			#print(cnf_expression)
+			print("CNF:", cnf_expression)
 			if node is None:
 				return (cnf_expression,)
-			if node.token.type in (LT, LEQ):
+			if node.token.type == LEQ:
 				exprStr = ((node.children[0].f_expression - node.children[1].f_expression),)
-			elif node.token.type in (GT, GEQ):
+			elif node.token.type == LT:
+				exprStr = ((node.children[0].f_expression - node.children[1].f_expression) + 0.000001,)
+			elif node.token.type == GEQ:
 				exprStr = ((node.children[1].f_expression - node.children[0].f_expression),)
+			elif node.token.type == GT:
+				exprStr = ((node.children[1].f_expression - node.children[0].f_expression) + 0.000001,)
+				print(node.children[0].f_expression, "---", node.children[1].f_expression)
 			else:
 				self.error()
 			#print("Leaf: ", cnf_expression, exprStr)
+			print(node.token.type, exprStr)
 			return exprStr
 		exprList = ()
 		for arg in cnf_expression.args:

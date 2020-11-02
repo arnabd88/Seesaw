@@ -163,7 +163,7 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	#print("Pass conversion gelpia")
 	gstr_expr = inputStr + str_expr  ## without the constraints
 	Globals.gelpiaID += 1
-	print("Constr?", Globals.enable_constr, " Begining New gelpia query->ID:", Globals.gelpiaID)
+	#print("Constr?", Globals.enable_constr, " Begining New gelpia query->ID:", Globals.gelpiaID)
 	str_constraint = " && ".join([str_cond_expr]+([] if str_extc_expr is None or len(str_extc_expr)==0 else [str_extc_expr]))
 	if Globals.argList.gverbose:
 		fout = open("gelpia_"+str(Globals.gelpiaID)+".txt", "w")
@@ -228,10 +228,10 @@ def invoke_gelpia(symExpr, cond_expr, externConstraints, inputStr, label="Func->
 	#print(label, end_time - start_time, "  , FSYM: ", len(symExpr.free_symbols))
 	
 	#return [min_lower, max_upper.value]
-	print("min_lower", min_lower, type(min_lower))
-	print("max_upper", max_upper.value, type(max_upper.value))
+	#print("min_lower", min_lower, type(min_lower))
+	#print("max_upper", max_upper.value, type(max_upper.value))
 	total_solver_calls = min_solver_calls + max_solver_calls.value
-	print("solver_calls", total_solver_calls)
+	#print("solver_calls", total_solver_calls)
 	Globals.solver_calls += total_solver_calls        
 	return [min_lower if min_lower!="Overconstrained" else 0.0, \
 	        max_upper.value if max_upper.value!="Overconstrained" else 0.0]
@@ -393,14 +393,14 @@ def generate_signature(sym_expr, cond_expr, externConstraints, cond_free_symbols
 	    pass
 	inputStr = inputStr if inputStr is not None else \
 	            extract_input_dep(list(sym_expr.free_symbols.union(cond_free_symbols)))
-	print("Gelpia input expr ops ->", seng.count_ops(sym_expr))
-	print("InputStr({gelpiaid}):".format(gelpiaid=Globals.gelpiaID+1), inputStr)
-	print("expression symbols :", sym_expr.free_symbols)
-	print("cond symbols :", cond_free_symbols)
+	#print("Gelpia input expr ops ->", seng.count_ops(sym_expr))
+	#print("InputStr({gelpiaid}):".format(gelpiaid=Globals.gelpiaID+1), inputStr)
+	#print("expression symbols :", sym_expr.free_symbols)
+	#print("cond symbols :", cond_free_symbols)
 	g1 = time.time()
 	val = invoke_gelpia(sym_expr, cond_expr, externConstraints, inputStr)
 	g2 = time.time()
-	print("Gelpia solve = ", g2 - g1, "opCount =", seng.count_ops(sym_expr))
+	print("\tGelpia solve = {duration}, opCount = {ops}".format(duration=g2 - g1, ops=seng.count_ops(sym_expr)))
 	return val
 
 def statistical_eval( symDict, expr , niters=10000 ):
@@ -413,9 +413,12 @@ def statistical_eval( symDict, expr , niters=10000 ):
 		res = res + val  
 		maxres = max(val,maxres) 
 
+	#return [mean-sample-error, max-sample-error]
+	#print("From statistical eval:", (res/niters, maxres))
 	return (res/niters, maxres)
 
-
+## Performs statistical sampling of the symbolic expression
+## Used for obtaining statistical profile on error distribution
 def get_statistics(sym_expr, inputDict=None):
 
 	try:

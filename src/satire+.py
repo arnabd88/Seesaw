@@ -251,7 +251,7 @@ if __name__ == "__main__":
 	Globals.argList = argList
 	Globals.enable_constr = argList.enable_constr
 	sys.setrecursionlimit(10**6)
-	print(argList)
+	print("LEVEL_TOP: Parsed argList = ", argList)
 	text = open(argList.file, 'r').read()
 	fout = open(argList.outfile, 'w')
 
@@ -281,7 +281,7 @@ if __name__ == "__main__":
 	end_parse_time = time.time()
 	parse_time = end_parse_time - start_parse_time
 	logger.info("Parsing time : {parse_time} secs".format(parse_time = parse_time))
-	print("// End of Parsing: Parsing time : {parse_time} secs".format(parse_time = parse_time))
+	print("LEVEL_TOP: End of Parsing: Parsing time : {parse_time} secs".format(parse_time = parse_time))
 
 
 
@@ -290,7 +290,7 @@ if __name__ == "__main__":
 	pr1 = time.time()
 	#helper.PreProcessAST()
 	pr2 = time.time()
-	print("\nAfter:", Globals.GS[0]._symTab.keys(),"\n\n")
+	##print("\nAfter:", Globals.GS[0]._symTab.keys(),"\n\n")
 	#opList = helper.get_opList(DIV)
 	#D = helper.find_common_dependence(opList, 5, 40)
 	#for k,v in D.items():
@@ -321,12 +321,12 @@ if __name__ == "__main__":
 	logger.info("Analysis time : {analysis_time}\n".format(analysis_time = ea2-ea1))
 	logger.info("Full time : {full_time}\n".format(full_time = full_time))
 
-	print("Optimizer calls : {num_calls}".format(num_calls = Globals.gelpiaID))
-	print("Smt calls : {num_calls}".format(num_calls = Globals.solver_calls))
-	print("Parsing time : {parsing_time}".format(parsing_time = parse_time))
-	print("PreProcessing time : {preprocess_time}".format(preprocess_time = pr2-pr1))
-	print("Analysis time : {analysis_time}".format(analysis_time = ea2-ea1))
-	print("Full time : {full_time}".format(full_time = full_time))
+	print("LEVEL_TOP: Optimizer calls : {num_calls}".format(num_calls = Globals.gelpiaID))
+	print("LEVEL_TOP: Smt calls : {num_calls}".format(num_calls = Globals.solver_calls))
+	print("LEVEL_TOP: Parsing time : {parsing_time}".format(parsing_time = parse_time))
+	print("LEVEL_TOP: PreProcessing time : {preprocess_time}".format(preprocess_time = pr2-pr1))
+	print("LEVEL_TOP: Analysis time : {analysis_time}".format(analysis_time = ea2-ea1))
+	print("LEVEL_TOP: Full time : {full_time}".format(full_time = full_time))
 	
 	print(Globals.argList.stat_err_enable, Globals.argList.stat_err_fraction)
 
