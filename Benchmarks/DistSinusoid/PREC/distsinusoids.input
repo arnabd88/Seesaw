@@ -1,0 +1,1 @@
+distsinusoids(T, K1, K2) : T in [0.1, 1.0], K1 in [0.1, 1.0], K2 in [0.1, 1.0]

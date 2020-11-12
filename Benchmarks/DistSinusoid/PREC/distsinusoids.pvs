@@ -1,0 +1,21 @@
+distsinusoids: THEORY
+BEGIN
+IMPORTING float@aerr754dp
+
+distsinusoids ( T, K1, K2: unb_double):	unb_double =
+
+	LET KHALFPI = RtoD(1.570796326794896619231321) IN
+	LET KHALFPIPRECIP = Ddiv(RtoD(1.0), KHALFPI) IN
+	LET F =  Dadd(Dmul(K1,KHALFPIPRECIP),   Dadd(Dsub(K2, K1), Dmul(Dsub(RtoD(1.0), K2), KHALFPIPRECIP))) IN
+	IF ( T < K1) THEN
+		Ddiv(Dmul(Dmul(K1,KHALFPIPRECIP), Dadd(Ssin(Dsub(Ddiv(T, Dmul(K1,KHALFPI)), KHALFPI)),RtoD(1.0))), F)
+	ELSIF ( T > K2 ) THEN
+		Dadd(
+		Dadd(Dsub(K2,K1), Dmul(K1, KHALFPIPRECIP)) ,
+		Dmul(Dsub(RtoD(1.0),K2),Dmul(Ssin(Dmul( Ddiv(Dsub(T,K2),Dsub(RtoD(1.0),K2)), KHALFPI)),KHALFPIPRECIP)) )
+	ELSE
+		Ddiv(Dsub(Dadd(Dmul(K1, KHALFPIPRECIP), T), K1), F)
+	ENDIF
+
+END distsinusoids
+
