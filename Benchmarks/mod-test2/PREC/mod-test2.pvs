@@ -1,0 +1,11 @@
+test2:	THEORY
+BEGIN
+IMPORTING float@aerr754dp
+
+test2 (X,Y: unb_double):	unb_double	=
+	IF ( Dsub(X,Y) > RtoD(0.25)) THEN Dadd(Dadd(1, Ddiv(RtoD(1),Dadd(X, Ddiv(X,Y)))), Dsin(Y))
+	ELSIF ( Dmul(X,X) > RtoD(0.25) AND Dmul(Y,Dadd(X,Ddiv(Y,X))) <= Dmul(X,X)) THEN Dadd(Dadd( Dadd(X,Ddiv(Y,X))  , Dmul(Y,X)), Dsin(Y))
+	ELSE  Dadd(Dadd(X, Dmul(X,Y)), Dsin(Y))
+	ENDIF
+
+END test2
