@@ -1,4 +1,3 @@
-
 #include <cstdio>
 #include <iostream>
 #include <unistd.h>
@@ -9,63 +8,56 @@
 #include <fstream>
 #include <sstream>
 
-#define a_p_p_low  2.3
-#define a_p_p_high 3.6
-#define a_p_q_low  4.4
-#define a_p_q_high 5.6
-#define a_q_q_low  0.1
-#define a_q_q_high 5.2
+//#define x1_low 0.01
+//#define x1_high 10.0
+//#define x2_low 0.01
+//#define x2_high 10.0
+
+#define x1_low 8
+#define x1_high 10
+#define x2_low 8
+#define x2_high 10
 
 using namespace std ;
 
- double _a_p_p ;
- double _a_p_q ;
- double _a_q_q ;
-
+double _x1 ;
+double _x2 ;
 
 template<class T>
 void init() {
-
-	_a_p_p = a_p_p_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(a_p_p_high - a_p_p_low))) ;
-	_a_p_q = a_p_q_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(a_p_q_high - a_p_q_low))) ;
-	_a_q_q = a_q_q_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(a_q_q_high - a_q_q_low))) ;
-
+	_x1 = x1_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(x1_high - x1_low))) ;
+	_x2 = x2_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(x2_high - x2_low))) ;
 }
 
 template<class T>
 T execute_spec_precision(int conditions[])
 {
+    T	x1  =	(T)	_x1 ;
+	T	x2  =	(T)	_x2 ;
 
-  T	a_p_p =	(T) _a_p_p;
-  T	a_p_q =	(T) _a_p_q;
-  T	a_q_q =	(T) _a_q_q;
+    T h = (x2/x1) + x1 ;
+    T g = x1 + x1*x2 ;
 
-  T c, s ;
-  	
-	if (( a_p_q > 0 && a_p_q > 0.0001 ) || ( a_p_q < 0 && -1*a_p_q > 0.0001)) {
-		conditions[0] = 1;
-		T r = (a_q_q - a_p_p) / (2.0 * a_p_q) ;
-		T t ;
-		if ( r >= 0.0 ) {
-		    conditions[1] = 1;
-			t = 1.0 / ( r + sqrt((double) (1.0 + r*r)));
-		} else {
-		    conditions[1] = 0;
-			t = -1*(1.0 / (sqrt((double) ((1.0 + r*r) - r))));
-		}
+    T y;
 
-		c = 1.0 / (sqrt((double) (1.0 + t*t))) ;
-		s = t * c ;
-	} else {
-	    conditions[0] = 0;
-		c = 1.0 ;
-		s = 0.0 ;
-	}
-
-	return c ;
-
+    if ( x1-x2 < 0.4 ) {
+        conditions[0] = 1 ;
+        g = 1 + 1/g ;
+        h = x2 - x1 ;
+    } else {
+        conditions[0] = 0 ;
+        if (( x1*x1 > 0.25 ) && (x2*h <= x1*x1)) {
+            conditions[1] = 1 ;
+            g = h + x2*x1 ;
+//            cout << "1";
+        } else {
+            conditions[1] = 0;
+//            cout << "2";
+        }
+    }
+    y = g + sin((double) x2) ;
+    return y;
 }
-
 
 template <typename T>
 std::string to_string_with_precision(const T a_value, const int n = 6)
@@ -76,9 +68,7 @@ std::string to_string_with_precision(const T a_value, const int n = 6)
     return out.str();
 }
 
-
 int main(int argc, char** argv)
-
 {
 
 	srand(time(0));
@@ -86,20 +76,20 @@ int main(int argc, char** argv)
 	FILE *fp ;
 	int N;
 	sscanf(argv[1], "%d", &N);
-	fp = fopen("SymSchurr_profile.csv", "w+");
+	fp = fopen("mod-test2_profile.csv", "w+");
     ofstream fp_divergence_inputs;
-	fp_divergence_inputs.open("SymSchurr_divergence_inputs.csv", ios::out | ios::app);
+	fp_divergence_inputs.open("mod-test2_divergence_inputs.csv", ios::out | ios::app);
 
-    __float80 val_lp = 0;
+	__float80 val_lp = 0;
 	__float80 val_dp = 0;
 	__float80 val_qp = 0;
 	__float80 err_dp_lp = 0;
 	__float80 err_qp_dp = 0;
 
-    __float80 maxerrlp = 0.0;
-	__float80 maxerrdp = 0.0 ;
+	__float80 maxerrlp = 0.0;
+	__float80 maxerrdp = 0.0;
 
-    int num_predicates = 2;
+	int num_predicates = 2;
 	int conditions_lp[num_predicates];
 	int conditions_dp[num_predicates];
 	int conditions_qp[num_predicates];
@@ -119,7 +109,7 @@ int main(int argc, char** argv)
 	}
 
 	for(int i=0; i<N; i++) {
-        for(int j = 0; j < num_predicates; j++) {
+	    for(int j = 0; j < num_predicates; j++) {
             conditions_lp[j] = -1;
             conditions_dp[j] = -1;
             conditions_qp[j] = -1;
@@ -136,7 +126,7 @@ int main(int argc, char** argv)
 		if ( maxerrdp < fabs(val_qp - val_dp)) maxerrdp = fabs(val_qp - val_dp) ;
 		for(int j = 0; j < num_predicates; j++) {
             if(conditions_lp[j] != conditions_dp[j] && conditions_lp[j] != -1 && conditions_dp[j] != -1) {
-                string str = "instability_lp:" + to_string_with_precision(fabs(val_dp - val_lp), 16) + ",Pred:" + to_string(j) + ",_a_p_p:" + to_string_with_precision(_a_p_p, 16) + ",_a_p_q:" + to_string_with_precision(_a_p_q, 16) + ",_a_q_q:"  + to_string_with_precision(_a_q_q, 16) + "\n";
+                string str = "instability_lp:" + to_string_with_precision(fabs(val_dp - val_lp), 16) + ",Pred:" + to_string(j) + ",_x1:" + to_string_with_precision(_x1, 16) + ",_x2:" + to_string_with_precision(_x2, 16) + "\n";
                 fp_divergence_inputs << str;
                 cout << str;
                 numinstability_lp[j]++;
@@ -144,7 +134,7 @@ int main(int argc, char** argv)
                 if ( maxinstabilitylp[j] < fabs(val_dp - val_lp)) maxinstabilitylp[j] = fabs(val_dp - val_lp) ;
             }
             if(conditions_dp[j] != conditions_qp[j] && conditions_dp[j] != -1 && conditions_qp[j] != -1) {
-                string str = "instability_dp:" + to_string_with_precision(fabs(val_qp - val_dp), 16) + ",Pred:" + to_string(j) + ",_a_p_p:" + to_string_with_precision(_a_p_p, 16) + ",_a_p_q:" + to_string_with_precision(_a_p_q, 16) + ",_a_q_q:"  + to_string_with_precision(_a_q_q, 16) + "\n";
+                string str = "instability_dp:" + to_string_with_precision(fabs(val_qp - val_dp), 16) + ",Pred:" + to_string(j) + ",_x1:" + to_string_with_precision(_x1, 16) + ",_x2:" + to_string_with_precision(_x2, 16) + "\n";
                 fp_divergence_inputs << str;
                 cout << str;
                 numinstability_dp[j]++;
