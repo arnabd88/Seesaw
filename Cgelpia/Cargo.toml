@@ -1,0 +1,39 @@
+[package]
+name = "gelpia"
+version = "0.0.1"
+authors = ["Mark S. Baranowski <mark.s.baranowski@gmail.com>", "Ian Briggs <ianbriggsutah@gmail.com>"]
+
+[[bin]]
+name = "cooperative"
+path = "src/bin/cooperative.rs"
+
+[[bin]]
+name = "serial"
+path = "src/bin/serial.rs"
+
+[[bin]]
+name = "cooperative-mt"
+path = "src/bin/cooperative-mt.rs"
+
+[dependencies]
+gr = { path = "src/gr" }
+gelpia_utils = { path = "src/gelpia_utils" }
+ga = { path = "src/ga" }
+args = { path = "src/args" }
+function = { path = "src/function" }
+getopts = "0.2.*"
+rand = "0.3.*"
+time = "0.1.*"
+threadpool = "1.3.*"
+num_cpus = "0.*"
+
+[dependencies.scoped_threadpool]
+git = "https://github.com/Kimundi/scoped-threadpool-rs"
+
+[profile.release]
+opt-level = 3
+debug = false
+rpath = false
+#lto = true
+debug-assertions = false
+codegen-units = 1
