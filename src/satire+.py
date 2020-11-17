@@ -114,7 +114,7 @@ def abstractNodes(results):
 	
 	for node, res in results.items():
 		Globals.FID += 1
-		name = seng.var("_F"+str(Globals.FID))
+		name = seng.var("FR"+str(Globals.FID))
 		node.__class__ = FreeVar
 		node.children = ()
 		node.depth = 0
@@ -165,6 +165,7 @@ def full_analysis(probeList, argList, maxdepth):
 	print("Full Analysis Block:\n")
 	res = simplify_with_abstraction(probeList, argList, maxdepth,final=True)
 	print("-----------------------------------\n")
+	print(res)
 	return res
 	
 

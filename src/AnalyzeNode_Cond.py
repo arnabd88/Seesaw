@@ -204,7 +204,7 @@ class AnalyzeNode_Cond(object):
 				(cond_expr,free_symbols)	=	self.parse_cond(cond)
 				print("PROCESS_EXPRESSION_LOC3")
 				[errIntv, res_avg_maxres] = self.process_expression( expr, cond_expr, free_symbols, get_stats=Globals.argList.stat_err_enable or Globals.argList.stat )
-				err = max([abs(i) for i in errIntv])
+				err = max([abs(i) for i in errIntv]) if errIntv is not None else 0
 				maxres = err if res_avg_maxres is None else res_avg_maxres[1]
 				#avg_res = res_avg_maxres[0]
 				if Globals.argList.stat:
@@ -645,14 +645,14 @@ class AnalyzeNode_Cond(object):
 		Globals.simplify = True
 		## rebuild AST for cond sym nodes
 		for csym, symNode in Globals.predTable.items():
-			print("Ever came here1?")
+			#print("Ever came here1?")
 			self.rebuildASTNode(symNode, local_completed)
 			print("CSYM:", csym, symNode.depth)
 				
 
 		## rebuild AST for regular nodes
 		for node in probeList:
-			print("Ever came here2?")
+			#print("Ever came here2?")
 			if not local_completed.__contains__(node):
 				self.rebuildASTNode(node, local_completed)
 
@@ -666,7 +666,7 @@ class AnalyzeNode_Cond(object):
 		
 		for node, res in results.items():
 			Globals.FID += 1
-			name = seng.var("_F"+str(Globals.FID))
+			name = seng.var("FR"+str(Globals.FID))
 			node.__class__ = FreeVar
 			node.children = ()
 			node.depth = 0
@@ -682,7 +682,7 @@ class AnalyzeNode_Cond(object):
 		obj = AnalyzeNode_Cond(sel_candidate_list, self.argList, MaxDepth, paving=Globals.argList.realpaver)
 		results = obj.start(bound_min=bound_min, bound_max=bound_max)
 
-		print("Ever came here3?")
+		#print("Ever came here3?")
 		self.abstractNodes(results)
 		return self.rebuildAST(self.trimList)
 
