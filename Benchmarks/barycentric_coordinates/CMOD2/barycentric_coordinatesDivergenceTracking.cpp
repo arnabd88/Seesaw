@@ -166,7 +166,7 @@ int main(int argc, char** argv)
 	__float80 err_qp_dp = 0;
 
     __float80 maxerrlp = 0.0;
-	__float80 maxerrdp = 0.0 ;
+	__float80 maxerrdp = 0.0;
 	
 
     int num_predicates = 2;

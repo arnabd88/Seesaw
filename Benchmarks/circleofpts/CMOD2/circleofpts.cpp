@@ -1,4 +1,5 @@
 
+
 #include <cstdio>
 #include <iostream>
 #include <unistd.h>
@@ -9,20 +10,40 @@
 #include <fstream>
 #include <sstream>
 
-#define X_low  -1.0
-#define X_high 1.0
-#define Y_low  -1.0
-#define Y_high 1.0
+#define eps_low  -0.002
+#define eps_high 0.002
+#define px0_low  0
+#define px0_high 12
+#define py0_low  0
+#define py0_high 10
+#define cx0_low  2.0
+#define cx0_high 2.0
+#define cy0_low  3.0
+#define cy0_high 3.0
+#define radius_low   10.0
+#define radius_high  10.0
+
 
 using namespace std ;
 
-double _r_X ;
-double _r_Y ;
+ double _eps ;
+ double _px0 ;
+ double _py0  ;
+ double _cx0 ;
+ double _cy0 ;
+ double _radius  ;
+
 
 template<class T>
 void init() {
-	_r_X = X_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(X_high - X_low))) ;
-	_r_Y = X_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(Y_high - Y_low))) ;
+
+	_eps =	eps_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(eps_high - eps_low))) ;
+	_px0 =	(px0_low - _eps) + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/((px0_high + _eps) - (px0_low - _eps)))) ;
+	_py0 =	(py0_low - _eps) + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/((py0_high + _eps) - (py0_low - _eps)))) ;
+	_cx0 =	cx0_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(cx0_high - cx0_low))) ;
+	_cy0 =	cy0_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(cy0_high - cy0_low))) ;
+	_radius =	radius_low  + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(radius_high  - radius_low))) ;
+
 }
 
 
@@ -30,54 +51,29 @@ template<class T>
 T execute_spec_precision(int conditions[])
 {
 
-	T r_X = (T) _r_X ;
-	T r_Y = (T) _r_Y ;
+ T   final_radius = (T) _radius;
+ T	 cx =	(T)	_cx0;
+ T	 cy =	(T)	_cy0;
 
-	T res ;
+ T	 dx0  =	(T)	(_px0 - _cx0);
+ T	 dy0 =	(T)	(_py0 - _cy0);
 
+	T dist2 = dx0*dx0 + dy0*dy0;
+    T newRadius;
 
-	if (r_X -1 <= -0.0000000000000004440892098500627-1) {
+	if (dist2 > (final_radius*final_radius)) {
 	    conditions[0] = 1;
-		if (r_Y -1 <= -0.0000000000000004440892098500627 -1 ) {
-		    conditions[1] = 0;
-		 	res = (0.0958099 - ((0.0557219 * r_X) - (0.0557219 * r_Y))) ;
-		} else {
-		    conditions[1] = 1;
-            if (r_Y + 1>0.0000000000000004440892098500627 + 1) {
-                conditions[2] = 1;
-               res = (-0.0958099 + ((0.0557219 * r_X) - (0.0557219 * r_Y)));
-            } else {
-                conditions[2] = 0;
-                res = 0 ;
-            }
-		}
+	    T dist = sqrt((double) dist2);
+	    newRadius = (final_radius + dist) * 0.5 ;
+	    T k = (newRadius - _radius)/dist ;
+	    cx = _cx0 + dx0*k;
+		cy = _cy0 + dy0*k;
+		final_radius = newRadius ;
 	} else {
-	    conditions[0] = 0;
-        if (r_X +1>0.0000000000000004440892098500627 +1) {
-            conditions[3] = 1;
-            if (r_Y -1<=-0.0000000000000004440892098500627 -1) {
-                conditions[4] = 1;
-                res = (-0.0958099 - ((0.0557219 * r_X) + (0.0557219 * r_Y)));
-            } else {
-                conditions[4] = 0;
-                if (r_Y +1 > 0.0000000000000004440892098500627+1) {
-                    conditions[5] = 1;
-                    res = (0.0958099 + ((0.0557219 * r_X) + (0.0557219 * r_Y))) ;
-                }  else {
-                    conditions[5] = 0;
-                    res = 0 ;
-                }
-            }
-        } else {
-            conditions[3] = 0;
-            res = 0;
-        }
+        conditions[0] = 0;
 	}
-	
 
-	return res ;
-
-
+	return final_radius ;
 }
 
 template <typename T>
@@ -89,6 +85,7 @@ std::string to_string_with_precision(const T a_value, const int n = 6)
     return out.str();
 }
 
+
 int main(int argc, char** argv)
 
 {
@@ -98,9 +95,9 @@ int main(int argc, char** argv)
 	FILE *fp ;
 	int N;
 	sscanf(argv[1], "%d", &N);
-	fp = fopen("linearfit_profile.csv", "w+");
-    ofstream fp_divergence_inputs;
-	fp_divergence_inputs.open("linearfit_divergence_inputs.csv", ios::out | ios::app);
+	fp = fopen("circleofpts_profile.csv", "w+");
+	ofstream fp_divergence_inputs;
+	fp_divergence_inputs.open("circleofpts_divergence_inputs.csv", ios::out | ios::app);
 
     __float80 val_lp = 0;
 	__float80 val_dp = 0;
@@ -111,7 +108,8 @@ int main(int argc, char** argv)
     __float80 maxerrlp = 0.0;
 	__float80 maxerrdp = 0.0 ;
 
-    int num_predicates = 6;
+
+    int num_predicates = 1;
 	int conditions_lp[num_predicates];
 	int conditions_dp[num_predicates];
 	int conditions_qp[num_predicates];
@@ -148,7 +146,7 @@ int main(int argc, char** argv)
 		if ( maxerrdp < fabs(val_qp - val_dp)) maxerrdp = fabs(val_qp - val_dp) ;
 		for(int j = 0; j < num_predicates; j++) {
             if(conditions_lp[j] != conditions_dp[j] && conditions_lp[j] != -1 && conditions_dp[j] != -1) {
-                string str = "instability_lp:" + to_string_with_precision(fabs(val_dp - val_lp), 16) + ",Pred:" + to_string(j) + ",_r_X:" + to_string_with_precision(_r_X, 16) + ",_r_Y:" + to_string_with_precision(_r_Y, 16) + "\n";
+                string str = "instability_lp:" + to_string_with_precision(fabs(val_dp - val_lp), 16) + ",Pred:" + to_string(j) + ",_eps:" + to_string_with_precision(_eps, 16) + ",px0:" + to_string_with_precision(_px0, 16) + ",_py0:" + to_string_with_precision(_py0, 16) + ",_cx0:" + to_string_with_precision(_cx0, 16) + ",_cy0:" + to_string_with_precision(_cy0, 16) + ",_radius:" + to_string_with_precision(_radius, 16) + "\n";
                 fp_divergence_inputs << str;
                 cout << str;
                 numinstability_lp[j]++;
@@ -156,7 +154,7 @@ int main(int argc, char** argv)
                 if ( maxinstabilitylp[j] < fabs(val_dp - val_lp)) maxinstabilitylp[j] = fabs(val_dp - val_lp) ;
             }
             if(conditions_dp[j] != conditions_qp[j] && conditions_dp[j] != -1 && conditions_qp[j] != -1) {
-                string str = "instability_dp:" + to_string_with_precision(fabs(val_qp - val_dp), 16) + ",Pred:" + to_string(j) + ",_r_X:" + to_string_with_precision(_r_X, 16) + ",_r_Y:" + to_string_with_precision(_r_Y, 16) + "\n";
+                string str = "instability_dp:" + to_string_with_precision(fabs(val_qp - val_dp), 16) + "Pred:" + to_string(j) + ",_eps:" + to_string_with_precision(_eps, 16) + ",px0:" + to_string_with_precision(_px0, 16) + ",_py0:" + to_string_with_precision(_py0, 16) + ",_cx0:" + to_string_with_precision(_cx0, 16) + ",_cy0:" + to_string_with_precision(_cy0, 16) + ",_radius:" + to_string_with_precision(_radius, 16) + "\n";
                 fp_divergence_inputs << str;
                 cout << str;
                 numinstability_dp[j]++;
@@ -173,7 +171,7 @@ int main(int argc, char** argv)
 	cout << "Max Error in LP -> " << maxerrlp << endl ;
 	cout << "Avg Error in DP -> " << err_qp_dp/N << endl ;
 	cout << "Max Error in DP -> " << maxerrdp << endl ;
-    for(int j = 0; j < num_predicates; j++) {
+	for(int j = 0; j < num_predicates; j++) {
 	    if(numinstability_lp[j] != 0) {
 	        cout << "Max Instability in LP due to predicate -> (" << to_string(j) << ", " << maxinstabilitylp[j] << ")" << endl ;
 	        cout << "Avg Instability in LP due to predicate -> (" << to_string(j) << ", " << instability_dp_lp[j]/numinstability_lp[j] << ")" << endl ;
@@ -187,3 +185,4 @@ int main(int argc, char** argv)
 	return 1;
 
 }
+

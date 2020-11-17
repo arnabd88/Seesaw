@@ -203,7 +203,7 @@ int main(int argc, char** argv)
     __float80 maxerrlp = 0.0;
 	__float80 maxerrdp = 0.0 ;
 
-    int num_predicates = 2;
+    int num_predicates = 7;
 	int conditions_lp[num_predicates];
 	int conditions_dp[num_predicates];
 	int conditions_qp[num_predicates];

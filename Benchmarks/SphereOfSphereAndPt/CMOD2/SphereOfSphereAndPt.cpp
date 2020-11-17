@@ -173,7 +173,7 @@ int main(int argc, char** argv)
 	sscanf(argv[1], "%d", &N);
 	fp = fopen("sphereofsphereandpoint_profile.csv", "w+");
     ofstream fp_divergence_inputs;
-	fp_divergence_inputs.open("barycentric_coordinates_divergence_inputs.csv", ios::out | ios::app);
+	fp_divergence_inputs.open("sphereofsphereandpoint_divergence_inputs.csv", ios::out | ios::app);
 
     __float80 val_lp = 0;
 	__float80 val_dp = 0;

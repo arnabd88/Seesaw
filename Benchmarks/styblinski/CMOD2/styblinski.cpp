@@ -8,8 +8,10 @@
 #include <fstream>
 #include <sstream>
 
-#define _low -5.0
-#define _high 5.0
+#define r_X_low -0.001
+#define r_X_high 0.001
+#define r_Y_low -0.001
+#define r_Y_high 0.001
 
 using namespace std ;
 
@@ -19,8 +21,8 @@ double _r_Y ;
 template<class T>
 void init() 
 {
-	_r_X = _low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(_high - _low))) ;
-	_r_Y = _low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(_high - _low))) ;
+	_r_X = r_X_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(r_X_high - r_X_low))) ;
+	_r_Y = r_Y_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(r_Y_high - r_Y_low))) ;
 }
 
 template<class T>
@@ -32,9 +34,9 @@ T execute_spec_precision(int conditions[])
 	T r_Y = (T) _r_Y ;
 	T res ;
 
-	if ( r_Y <= 0) {
+	if ( r_Y+1 <= 1) {
 	conditions[0] = 1;
-		if ( r_X <= 0) {
+		if ( r_X+1 <= 1) {
 		    conditions[1] = 1;
 			res = -1.4717 + 2.83079*r_X + 0.786996*r_X*r_X + 2.83079*r_Y - 1.07939e-16*r_X*r_Y + 0.786996*r_Y*r_Y;
 		} else {
@@ -43,7 +45,7 @@ T execute_spec_precision(int conditions[])
 		}
 	} else {
 	    conditions[0] = 0;
-		if ( r_X <= 0) {
+		if ( r_X+1 <= 1) {
 		    conditions[2] = 1;
 			res = -1.4717 + 2.83079*r_X + 0.786996*r_X*r_X - 2.33079*r_Y + 3.23816e-16*r_X*r_Y + 0.786996*r_Y*r_Y;
 		} else {

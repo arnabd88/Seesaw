@@ -9,20 +9,28 @@
 #include <fstream>
 #include <sstream>
 
-#define X_low  -1.0
-#define X_high 1.0
-#define Y_low  -1.0
-#define Y_high 1.0
+#define t_low 0.0
+#define t_high 1.0
+#define k1_low 0.0
+#define k1_high 1.0
+#define k2_low 0.0
+#define k2_high 1.0
+
 
 using namespace std ;
 
-double _r_X ;
-double _r_Y ;
+double _t ;
+double _k1 ;
+double _k2 ;
 
 template<class T>
 void init() {
-	_r_X = X_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(X_high - X_low))) ;
-	_r_Y = X_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(Y_high - Y_low))) ;
+
+
+	_t = t_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(t_high - t_low))) ;
+	_k1 = k1_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(k1_high - k1_low))) ;
+	_k2 = k2_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(k2_high - k2_low))) ;
+
 }
 
 
@@ -30,53 +38,34 @@ template<class T>
 T execute_spec_precision(int conditions[])
 {
 
-	T r_X = (T) _r_X ;
-	T r_Y = (T) _r_Y ;
+	T t	=	(T) _t ;
+	T k1 =	(T) _k1 ;
+	T k2 =	(T) _k2 ;
 
-	T res ;
 
+	T kHalfPI     = 1.570796326794896619231321 ;
+	
+	T kHalfPIrecip = 1.0/kHalfPI ;
 
-	if (r_X -1 <= -0.0000000000000004440892098500627-1) {
-	    conditions[0] = 1;
-		if (r_Y -1 <= -0.0000000000000004440892098500627 -1 ) {
-		    conditions[1] = 0;
-		 	res = (0.0958099 - ((0.0557219 * r_X) - (0.0557219 * r_Y))) ;
-		} else {
-		    conditions[1] = 1;
-            if (r_Y + 1>0.0000000000000004440892098500627 + 1) {
-                conditions[2] = 1;
-               res = (-0.0958099 + ((0.0557219 * r_X) - (0.0557219 * r_Y)));
-            } else {
-                conditions[2] = 0;
-                res = 0 ;
-            }
-		}
+	T f = k1*kHalfPIrecip + k2 - k1 + (1.0 - k2)*kHalfPIrecip;
+
+	T result ;
+
+	if ( t < k1) {
+	conditions[0] = 1;
+		result = k1*kHalfPIrecip*(sin((double) (t/k1*kHalfPI-kHalfPI)) + 1.0);
 	} else {
 	    conditions[0] = 0;
-        if (r_X +1>0.0000000000000004440892098500627 +1) {
-            conditions[3] = 1;
-            if (r_Y -1<=-0.0000000000000004440892098500627 -1) {
-                conditions[4] = 1;
-                res = (-0.0958099 - ((0.0557219 * r_X) + (0.0557219 * r_Y)));
-            } else {
-                conditions[4] = 0;
-                if (r_Y +1 > 0.0000000000000004440892098500627+1) {
-                    conditions[5] = 1;
-                    res = (0.0958099 + ((0.0557219 * r_X) + (0.0557219 * r_Y))) ;
-                }  else {
-                    conditions[5] = 0;
-                    res = 0 ;
-                }
-            }
-        } else {
-            conditions[3] = 0;
-            res = 0;
-        }
+		if ( t > k2 ) {
+		    conditions[1] = 1;
+			result = k1*kHalfPIrecip + k2 - k1 + (1.0 - k2)*kHalfPIrecip*sin((double) (((t-k2)/(1.0-k2))*kHalfPI));
+		} else {
+		    conditions[1] = 0;
+			result = k1*kHalfPIrecip + t - k1;
+		}
 	}
-	
 
-	return res ;
-
+	return result ;
 
 }
 
@@ -98,9 +87,9 @@ int main(int argc, char** argv)
 	FILE *fp ;
 	int N;
 	sscanf(argv[1], "%d", &N);
-	fp = fopen("linearfit_profile.csv", "w+");
-    ofstream fp_divergence_inputs;
-	fp_divergence_inputs.open("linearfit_divergence_inputs.csv", ios::out | ios::app);
+	fp = fopen("distsinusoid_profile.csv", "w+");
+	ofstream fp_divergence_inputs;
+	fp_divergence_inputs.open("distsinusoid_divergence_inputs.csv", ios::out | ios::app);
 
     __float80 val_lp = 0;
 	__float80 val_dp = 0;
@@ -109,9 +98,10 @@ int main(int argc, char** argv)
 	__float80 err_qp_dp = 0;
 
     __float80 maxerrlp = 0.0;
-	__float80 maxerrdp = 0.0 ;
+	__float80 maxerrdp = 0.0;
 
-    int num_predicates = 6;
+
+    int num_predicates = 2;
 	int conditions_lp[num_predicates];
 	int conditions_dp[num_predicates];
 	int conditions_qp[num_predicates];
@@ -121,6 +111,7 @@ int main(int argc, char** argv)
 	__float80 maxinstabilitydp[num_predicates];
 	__float80 instability_qp_dp[num_predicates];
 	__float80 instability_dp_lp[num_predicates];
+
 	for(int j = 0; j < num_predicates; j++) {
 	    numinstability_lp[j] = 0;
         numinstability_dp[j] = 0;
@@ -148,7 +139,7 @@ int main(int argc, char** argv)
 		if ( maxerrdp < fabs(val_qp - val_dp)) maxerrdp = fabs(val_qp - val_dp) ;
 		for(int j = 0; j < num_predicates; j++) {
             if(conditions_lp[j] != conditions_dp[j] && conditions_lp[j] != -1 && conditions_dp[j] != -1) {
-                string str = "instability_lp:" + to_string_with_precision(fabs(val_dp - val_lp), 16) + ",Pred:" + to_string(j) + ",_r_X:" + to_string_with_precision(_r_X, 16) + ",_r_Y:" + to_string_with_precision(_r_Y, 16) + "\n";
+                string str = "instability_lp:" + to_string_with_precision(fabs(val_dp - val_lp), 16) + ",Pred:" + to_string(j) + ",_t:" + to_string_with_precision(_t, 16) + ",_k1:" + to_string_with_precision(_k1, 16) + ",_k2:" + to_string_with_precision(_k2, 16) + "\n";
                 fp_divergence_inputs << str;
                 cout << str;
                 numinstability_lp[j]++;
@@ -156,7 +147,7 @@ int main(int argc, char** argv)
                 if ( maxinstabilitylp[j] < fabs(val_dp - val_lp)) maxinstabilitylp[j] = fabs(val_dp - val_lp) ;
             }
             if(conditions_dp[j] != conditions_qp[j] && conditions_dp[j] != -1 && conditions_qp[j] != -1) {
-                string str = "instability_dp:" + to_string_with_precision(fabs(val_qp - val_dp), 16) + ",Pred:" + to_string(j) + ",_r_X:" + to_string_with_precision(_r_X, 16) + ",_r_Y:" + to_string_with_precision(_r_Y, 16) + "\n";
+                string str = "instability_dp:" + to_string_with_precision(fabs(val_qp - val_dp), 16) + "Pred:" + to_string(j) + ",_t:" + to_string_with_precision(_t, 16) + ",_k1:" + to_string_with_precision(_k1, 16) + ",_k2:" + to_string_with_precision(_k2, 16) + "\n";
                 fp_divergence_inputs << str;
                 cout << str;
                 numinstability_dp[j]++;
@@ -173,7 +164,7 @@ int main(int argc, char** argv)
 	cout << "Max Error in LP -> " << maxerrlp << endl ;
 	cout << "Avg Error in DP -> " << err_qp_dp/N << endl ;
 	cout << "Max Error in DP -> " << maxerrdp << endl ;
-    for(int j = 0; j < num_predicates; j++) {
+	for(int j = 0; j < num_predicates; j++) {
 	    if(numinstability_lp[j] != 0) {
 	        cout << "Max Instability in LP due to predicate -> (" << to_string(j) << ", " << maxinstabilitylp[j] << ")" << endl ;
 	        cout << "Avg Instability in LP due to predicate -> (" << to_string(j) << ", " << instability_dp_lp[j]/numinstability_lp[j] << ")" << endl ;

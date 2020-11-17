@@ -7,8 +7,8 @@
 #include<cmath>
 #include <quadmath.h>
 #include <time.h>
-#include <cassert>
 #include <fstream>
+#include <sstream>
 
 #define s0_cx_low  -2.0
 #define s0_cx_high 0.0
@@ -104,6 +104,15 @@ T execute_spec_precision(int conditions[])
 
 }
 
+template <typename T>
+std::string to_string_with_precision(const T a_value, const int n = 6)
+{
+    std::ostringstream out;
+    out.precision(n);
+    out << std::fixed << a_value;
+    return out.str();
+}
+
 
 int main(int argc, char** argv)
 
@@ -164,7 +173,7 @@ int main(int argc, char** argv)
 		if ( maxerrdp < fabs(val_qp - val_dp)) maxerrdp = fabs(val_qp - val_dp) ;
 		for(int j = 0; j < num_predicates; j++) {
             if(conditions_lp[j] != conditions_dp[j] && conditions_lp[j] != -1 && conditions_dp[j] != -1) {
-                string str = "Pred:" + to_string(j) + ",_s0_cx:" + to_string(_s0_cx) + ",_s0_cy:" + to_string(_s0_cy) + ",_s0_r:" + to_string(_s0_r) + ",_s1_cx:" + to_string(_s1_cx) + ",_s1_cy:" + to_string(_s1_cy) + ",_s1_r:" + to_string(_s1_r) + "\n";
+                string str = "instability_lp:" + to_string_with_precision(fabs(val_dp - val_lp), 16) + "Pred:" + to_string(j) + ",_s0_cx:" + to_string_with_precision(_s0_cx, 16) + ",_s0_cy:" + to_string_with_precision(_s0_cy, 16) + ",_s0_r:" + to_string_with_precision(_s0_r, 16) + ",_s1_cx:" + to_string_with_precision(_s1_cx, 16) + ",_s1_cy:" + to_string_with_precision(_s1_cy, 16) + ",_s1_r:" + to_string_with_precision(_s1_r, 16) + "\n";
                 fp_divergence_inputs << str;
                 cout << str;
                 numinstability_lp[j]++;
@@ -172,7 +181,7 @@ int main(int argc, char** argv)
                 if ( maxinstabilitylp[j] < fabs(val_dp - val_lp)) maxinstabilitylp[j] = fabs(val_dp - val_lp) ;
             }
             if(conditions_dp[j] != conditions_qp[j] && conditions_dp[j] != -1 && conditions_qp[j] != -1) {
-                string str = "Pred:" + to_string(j) + ",_s0_cx:" + to_string(_s0_cx) + ",_s0_cy:" + to_string(_s0_cy) + ",_s0_r:" + to_string(_s0_r) + ",_s1_cx:" + to_string(_s1_cx) + ",_s1_cy:" + to_string(_s1_cy) + ",_s1_r:" + to_string(_s1_r) + "\n";
+                string str = "instability_dp:" + to_string_with_precision(fabs(val_qp - val_dp), 16) + "Pred:" + to_string(j) + ",_s0_cx:" + to_string_with_precision(_s0_cx, 16) + ",_s0_cy:" + to_string_with_precision(_s0_cy, 16) + ",_s0_r:" + to_string_with_precision(_s0_r, 16) + ",_s1_cx:" + to_string_with_precision(_s1_cx, 16) + ",_s1_cy:" + to_string_with_precision(_s1_cy, 16) + ",_s1_r:" + to_string_with_precision(_s1_r, 16) + "\n";
                 fp_divergence_inputs << str;
                 cout << str;
                 numinstability_dp[j]++;
