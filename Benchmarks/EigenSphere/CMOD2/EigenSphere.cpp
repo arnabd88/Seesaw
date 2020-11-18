@@ -67,15 +67,15 @@ void init() {
   _px1	=	px1_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(px1_high - px1_low))) ;
   _py1	=	py1_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(py1_high - py1_low))) ;
   _pz1	=	pz1_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(pz1_high - pz1_low))) ;
-  _px2	=	px1_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(px2_high - px2_low))) ;
-  _py2	=	py1_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(py2_high - py2_low))) ;
-  _pz2	=	pz1_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(pz2_high - pz2_low))) ;
-  _px3	=	px1_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(px3_high - px3_low))) ;
-  _py3	=	py1_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(py3_high - py3_low))) ;
-  _pz3	=	pz1_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(pz3_high - pz3_low))) ;
-  _px4	=	px1_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(px4_high - px4_low))) ;
-  _py4	=	py1_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(py4_high - py4_low))) ;
-  _pz4	=	pz1_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(pz4_high - pz4_low))) ;
+  _px2	=	px2_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(px2_high - px2_low))) ;
+  _py2	=	py2_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(py2_high - py2_low))) ;
+  _pz2	=	pz2_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(pz2_high - pz2_low))) ;
+  _px3	=	px3_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(px3_high - px3_low))) ;
+  _py3	=	py3_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(py3_high - py3_low))) ;
+  _pz3	=	pz3_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(pz3_high - pz3_low))) ;
+  _px4	=	px4_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(px4_high - px4_low))) ;
+  _py4	=	py4_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(py4_high - py4_low))) ;
+  _pz4	=	pz4_low + static_cast<T> (rand())/(static_cast<T>(RAND_MAX/(pz4_high - pz4_low))) ;
 
 }
 
