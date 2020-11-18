@@ -54,21 +54,21 @@ class bool_lexer(Lexer):
 		t.value = seng.var(t.value)
 		return t
 
-	@_(r'[\-]?\d+\.\d+([eE][-+]?\d+)?')
+	@_(r'[\-]?\d+[\.]?\d+([eE][-+]?\d+)?')
 	def FLOAT(self, t):
 		t.value = float(t.value)
 		return t
 
-	@_(r'[\-]?\d+[eE]([-+]?\d+)?')
-	def FLOAT(self, t):
-		t.value = float(t.value)
-		return t
+#	@_(r'[\-]?\d+[eE]([-+]?\d+)?')
+#	def FLOAT(self, t):
+#		t.value = float(t.value)
+#		return t
 
 
 	#@_(r'[\-]?\d+')
 	@_(r'[\-]?\d+([eE][-+]?\d+)?')
 	def INTEGER(self, t):
-		t.value = int(t.value)
+		t.value = float(t.value)
 		t.type = INTEGER
 		return t	
 
