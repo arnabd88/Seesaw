@@ -59,6 +59,12 @@ class bool_lexer(Lexer):
 		t.value = float(t.value)
 		return t
 
+	@_(r'[\-]?\d+[eE]([-+]?\d+)?')
+	def FLOAT(self, t):
+		t.value = float(t.value)
+		return t
+
+
 	#@_(r'[\-]?\d+')
 	@_(r'[\-]?\d+([eE][-+]?\d+)?')
 	def INTEGER(self, t):
