@@ -8,6 +8,7 @@ from gtokens import *
 
 from functools import reduce
 from PredicatedSymbol import Sym, SymTup, SymConcat
+import numpy as np
 
 
 class CToken(object):
@@ -97,7 +98,9 @@ class Num(AST):
 
 	@staticmethod
 	def get_noise(obj):
-		return 0.0
+		#return abs(float(BigFloat(obj.token.value,context=single_precision) - BigFloat(obj.token.value,context=double_precision)))
+		#return np.float64(obj.token.value) - np.float32(obj.token.value)
+		return obj.token.value
 
 
 

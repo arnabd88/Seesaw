@@ -264,7 +264,7 @@ class AnalyzeNode_Cond(object):
 						free_symbols = free_symbols1.union(free_symbols2)
 						print("PROCESS_EXPRESSION_LOC4", count)
 						[errIntv, res_avg_maxres] = self.process_expression( expr_diff, cond_expr, free_symbols, get_stats=Globals.argList.stat_err_enable or Globals.argList.stat)
-						print(errIntv, res_avg_maxres)
+						print("Instab-debug:", errIntv, res_avg_maxres)
 						if errIntv is not None :
 							print("Debug:", errIntv, Globals.gelpiaID)
 							err = max([abs(i) for i in errIntv if i is not None] if errIntv is not None else [0])
