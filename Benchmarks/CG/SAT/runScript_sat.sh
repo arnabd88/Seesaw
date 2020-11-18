@@ -1,4 +1,3 @@
-
 #!/bin/bash
 #SBATCH --time=72:00:00
 #SBATCH --partition=soc-kp
