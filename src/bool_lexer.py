@@ -2,10 +2,11 @@
 import symengine as seng
 from bool_tokens import *
 from sly import Lexer
+import numpy as np
 
 class bool_lexer(Lexer):
 
-	tokens = { INTEGER, FLOAT, PLUS, MINUS, POW1, POW2, SQRT,\
+	tokens = { INTEGER, FLOAT, MINF, PINF, PLUS, MINUS, POW1, POW2, SQRT,\
 			   MUL, DIV, EQ, NEQ, ASSIGN, LPAREN, RPAREN, \
 			   SEMICOLON, ID, AND, OR, NOT, \
 			   LEQ, LT, GEQ, GT, \
@@ -52,6 +53,18 @@ class bool_lexer(Lexer):
 
 	def ID(self, t):
 		t.value = seng.var(t.value)
+		return t
+
+	@_(r'-inf(\.\d)?')
+	def MINF(self, t):
+		t.value = -np.inf
+		t.type = FLOAT
+		return t
+
+	@_(r'[\+]inf(\.\d)?')
+	def PINF(self, t):
+		t.value = np.inf
+		t.type = FLOAT
 		return t
 
 	@_(r'[\-]?\d+[\.]?\d+([eE][-+]?\d+)?')

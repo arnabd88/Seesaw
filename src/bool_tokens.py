@@ -1,5 +1,7 @@
 INTEGER  	=	"INTEGER"
 FLOAT    	=	"FLOAT"
+MINF		=	"MINF"
+PINF		=	"PINF"
 PLUS     	=	"PLUS"
 MINUS    	=	"MINUS"
 POW1		=	"POW1"
