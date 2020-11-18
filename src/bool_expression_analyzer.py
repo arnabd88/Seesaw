@@ -64,11 +64,11 @@ class bool_expression_analyzer(object):
 			if node.token.type == LEQ:
 				exprStr = ((node.children[0].f_expression - node.children[1].f_expression),)
 			elif node.token.type == LT:
-				exprStr = ((node.children[0].f_expression - node.children[1].f_expression) + 1.1102230246251565e-12,)
+				exprStr = ((node.children[0].f_expression - node.children[1].f_expression) + 1.1102230246251565e-14,)
 			elif node.token.type == GEQ:
 				exprStr = ((node.children[1].f_expression - node.children[0].f_expression),)
 			elif node.token.type == GT:
-				exprStr = ((node.children[1].f_expression - node.children[0].f_expression) + 1.1102230246251565e-12,)
+				exprStr = ((node.children[1].f_expression - node.children[0].f_expression) + 1.1102230246251565e-14,)
 				print(node.children[0].f_expression, "---", node.children[1].f_expression)
 			else:
 				self.error()
