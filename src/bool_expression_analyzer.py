@@ -141,7 +141,7 @@ if __name__ == "__main__":
 	#print("\n\n")
 	#print(bool_Globals.ExprNegConstr)
 
-
+	print("Lexer:", text)
 	analyzer = bool_expression_analyzer(text)
 	analyzer.start()
 	end_analysis_time = time.time()

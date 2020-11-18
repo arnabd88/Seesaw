@@ -39,6 +39,8 @@ class bool_lexer(Lexer):
 	GEQ			=	r'\>='
 	GT			=	r'\>'
 
+	PINF		= 	r'inf(\.\d)?'
+
 	ID			=	r'[a-zA-Z_][a-zA-Z0-9_]*'
 	ID['TRUE']	=	BTRUE
 	ID['True']	=	BTRUE
@@ -61,7 +63,7 @@ class bool_lexer(Lexer):
 		t.type = FLOAT
 		return t
 
-	@_(r'[\+]inf(\.\d)?')
+	@_(r'inf(\.\d)?')
 	def PINF(self, t):
 		t.value = np.inf
 		t.type = FLOAT
@@ -93,7 +95,8 @@ class bool_lexer(Lexer):
 		self.lineno += t.value.count('\n')
 
 	def error(self, t):
-		print('Line %d: Bad character %r' % (self.lineno, t.value[0]))
+		print('Line %d: Bad character %r' % (self.lineno, t.value[0]), t)
+		raise Exception("Incorrect Lexing")
 
 	def create_token_generator(self, text):
 		self.tok = self.tokenize(text)
