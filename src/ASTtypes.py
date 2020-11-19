@@ -99,8 +99,9 @@ class Num(AST):
 	@staticmethod
 	def get_noise(obj):
 		#return abs(float(BigFloat(obj.token.value,context=single_precision) - BigFloat(obj.token.value,context=double_precision)))
-		#return np.float64(obj.token.value) - np.float32(obj.token.value)
-		return obj.token.value
+		return np.float64(obj.token.value) - np.float32(obj.token.value)
+		#return obj.token.value*pow(2,-53)
+		#return 0.0
 
 
 

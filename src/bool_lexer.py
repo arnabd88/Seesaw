@@ -83,7 +83,7 @@ class bool_lexer(Lexer):
 	#@_(r'[\-]?\d+')
 	@_(r'[\-]?\d+([eE][-+]?\d+)?')
 	def INTEGER(self, t):
-		t.value = float(t.value)
+		t.value = int(t.value)
 		t.type = INTEGER
 		return t	
 

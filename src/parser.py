@@ -543,7 +543,7 @@ class Sparser(object):
 			self.consume(RPAREN)
 
 			symVar = FreeVar(var_token, cond=Globals.__T__)
-			symVar.set_noise(symVar, (var_token.value, 0.0))
+			symVar.set_noise(symVar, (rexpr*pow(2,-53), 0.0))
 			symVar.set_rounding(fptype)
 			#self.current_symtab.insert(var_token.value, [[symVar,Globals.__T__]])
 			self.current_symtab.insert(var_token.value, ((symVar,Globals.__T__),)   )
