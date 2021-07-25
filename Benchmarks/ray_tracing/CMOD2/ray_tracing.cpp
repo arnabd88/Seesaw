@@ -242,7 +242,7 @@ int main(int argc, char** argv)
             if(conditions_lp[j] != conditions_dp[j] && conditions_lp[j] != -1 && conditions_dp[j] != -1) {
                 string str = "instability_lp:" + to_string_with_precision(fabs(val_dp - val_lp), 16) + ",Pred:" + to_string(j) + ",_TC_00:" + to_string_with_precision(_TC_00, 16) + ",_TC_01:" + to_string_with_precision(_TC_01, 16) + ",_TC_02:" + to_string_with_precision(_TC_02, 16) + ",_TC_03:" + to_string_with_precision(_TC_03, 16) + ",_TC_10:" + to_string_with_precision(_TC_10, 16) + ",_TC_11:" + to_string_with_precision(_TC_11, 16) + ",_TC_12:" + to_string_with_precision(_TC_12, 16) + ",_TC_13:" + to_string_with_precision(_TC_13, 16) + "\n";
                 fp_divergence_inputs << str;
-                cout << str;2
+                cout << str;
                 numinstability_lp[j]++;
                 instability_dp_lp[j] += fabs(val_dp - val_lp);
                 if ( maxinstabilitylp[j] < fabs(val_dp - val_lp)) maxinstabilitylp[j] = fabs(val_dp - val_lp) ;
